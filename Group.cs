@@ -26,10 +26,17 @@ namespace UcenikShuffle
 
 				for (int j = i + 1; j < studentPool.Count; j++)
 				{
-					if (!History.Contains(newEntry.Select(x => x.Id)))
+					var testEntry = new HashSet<int>
+					{
+						newEntry.First().Id,
+						studentPool[i].Id,
+						studentPool[j].Id
+					};
+
+					if (!History.Contains(testEntry, (h1, h2) => !h1.Except(h2).Any()))
 					{
 						newEntry.Add(studentPool.Pop(i));
-						newEntry.Add(studentPool.Pop(j));
+						newEntry.Add(studentPool.Pop(j - 1));
 						found = true;
 						break;
 					}
