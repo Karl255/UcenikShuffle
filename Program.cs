@@ -13,17 +13,17 @@ namespace UcenikShuffle
 			var allLVs = new List<List<int>>();
 			var groups = new List<Group>
 			{
-				new Group(1),
-				new Group(3),
-				new Group(3),
-				new Group(3),
-				new Group(3)
+				new Group(0, 1),
+				new Group(1, 3),
+				new Group(2, 3),
+				new Group(3, 3),
+				new Group(4, 3)
 			};
 
 
 			foreach (var studentId in studentIds)
 			{
-				students.Add(new Student(studentId, studentIds));
+				students.Add(new Student(studentId, studentIds, groups));
 			}
 
 			for (int lv = 0; lv < 14; lv++)
@@ -74,7 +74,7 @@ namespace UcenikShuffle
 			{
 				Console.WriteLine($"Ucenik { i + 1 }");
 
-				var satWith = students[i].SatWith.OrderBy(x => x.Key);
+				var satWith = students[i].SatWithStudent.OrderBy(x => x.Key);
 
 				foreach (var otherStudent in satWith)
 				{

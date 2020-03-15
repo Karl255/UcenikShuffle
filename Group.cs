@@ -6,16 +6,19 @@ namespace UcenikShuffle
 {
 	public class Group
 	{
+		public int Id;
 		public int Size;
 		public List<HashSet<int>> History = new List<HashSet<int>>();
 
-		public Group(int size)
+		public Group(int id, int size)
 		{
+			Id = id;
 			Size = size;
 		}
 
 		public void AddStudents(List<Student> studentPool)
 		{
+			studentPool = studentPool.OrderBy(x => x.SatInGroup[Id]).ToList();
 			var first = studentPool.Pop(0);
 			var newEntry = new HashSet<Student> { first };
 			bool found = false;
@@ -24,12 +27,12 @@ namespace UcenikShuffle
 			{
 				if (found) break;
 				
-				var studentPoolCopy = studentPool.OrderBy(x => x.SatWith[first.Id] * 100 + 100 - x.Id).ToList();
+				var studentPoolCopy = studentPool.OrderBy(x => x.SatWithStudent[first.Id]).ToList();
 				var second = studentPoolCopy.Pop(i);
 
 				for (int j = 0; j < studentPoolCopy.Count; j++)
 				{
-					var studentPoolCopyCopy = studentPoolCopy.OrderBy(x => x.SatWith[first.Id] + x.SatWith[second.Id]).ToList();
+					var studentPoolCopyCopy = studentPoolCopy.OrderBy(x => x.SatWithStudent[first.Id] + x.SatWithStudent[second.Id]).ToList();
 					var third = studentPoolCopyCopy.Pop(j);
 					var testEntry = new HashSet<int>
 					{
@@ -58,8 +61,9 @@ namespace UcenikShuffle
 					if (stud1 == stud2)
 						continue;
 
-					stud1.SatWith[stud2.Id]++;
+					stud1.SatWithStudent[stud2.Id]++;
 				}
+				stud1.SatInGroup[Id]++;
 			}
 
 			History.Add(new HashSet<int>(newEntry.Select(x => x.Id)));
@@ -72,6 +76,7 @@ namespace UcenikShuffle
 				throw new Exception("This overload is only for gorups of size 1.");
 			}
 
+			student.SatInGroup[Id]++;
 			History.Add(new HashSet<int> { student.Id });
 		}
 	}
