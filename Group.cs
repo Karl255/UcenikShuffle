@@ -16,7 +16,7 @@ namespace UcenikShuffle
 			Size = size;
 		}
 
-		public void AddStudents(List<Student> studentPool)
+		public void AddStudents(ref List<Student> studentPool)
 		{
 			studentPool = studentPool.OrderBy(x => x.SatInGroup[Id]).ToList();
 			var first = studentPool.Pop(0);

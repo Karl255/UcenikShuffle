@@ -36,7 +36,7 @@ namespace UcenikShuffle
 
 				for (int i = 1; i <= 4; i++)
 				{
-					groups[i].AddStudents(studentPool);
+					groups[i].AddStudents(ref studentPool);
 					allLVs[lv].Add(groups[i].History[lv]);
 				}
 			}
