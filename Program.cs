@@ -69,6 +69,20 @@ namespace UcenikShuffle
 				}
 				Console.WriteLine();
 			}
+
+			for (int i = 0; i < 13; i++)
+			{
+				Console.WriteLine($"Ucenik { i + 1 }");
+
+				var satWith = students[i].SatWith.OrderBy(x => x.Key);
+
+				foreach (var otherStudent in satWith)
+				{
+					Console.WriteLine($"{ otherStudent.Key } { otherStudent.Value }");
+				}
+				Console.WriteLine();
+			}
+
 		}
 	}
 }
