@@ -16,27 +16,34 @@ namespace UcenikShuffle
 
 		public void AddStudents(List<Student> studentPool)
 		{
-			var newEntry = new HashSet<Student> { studentPool.Pop(0) };
-			studentPool = studentPool.OrderBy(x => newEntry.First().SatWith[x.Id]).ToList();
+			var first = studentPool.Pop(0);
+			var newEntry = new HashSet<Student> { first };
 			bool found = false;
 
 			for (int i = 0; i < studentPool.Count; i++)
 			{
 				if (found) break;
+				
+				var studentPoolCopy = studentPool.OrderBy(x => x.SatWith[first.Id] * 100 + 100 - x.Id).ToList();
+				var second = studentPoolCopy.Pop(i);
 
-				for (int j = i + 1; j < studentPool.Count; j++)
+				for (int j = 0; j < studentPoolCopy.Count; j++)
 				{
+					var studentPoolCopyCopy = studentPoolCopy.OrderBy(x => x.SatWith[first.Id] + x.SatWith[second.Id]).ToList();
+					var third = studentPoolCopyCopy.Pop(j);
 					var testEntry = new HashSet<int>
 					{
-						newEntry.First().Id,
-						studentPool[i].Id,
-						studentPool[j].Id
+						first.Id,
+						second.Id,
+						third.Id
 					};
 
 					if (!History.Contains(testEntry, (h1, h2) => !h1.Except(h2).Any()))
 					{
-						newEntry.Add(studentPool.Pop(i));
-						newEntry.Add(studentPool.Pop(j - 1));
+						studentPool.Remove(second);
+						studentPool.Remove(third);
+						newEntry.Add(second);
+						newEntry.Add(third);
 						found = true;
 						break;
 					}
