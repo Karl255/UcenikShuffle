@@ -4,80 +4,85 @@ using System.Linq;
 
 namespace UcenikShuffle
 {
-	public class Group
-	{
-		public int Id;
-		public int Size;
-		public List<HashSet<int>> History = new List<HashSet<int>>();
+    public class Group
+    {
+        //All groups on laboratory exercises (should be changed if calculations are needed for another situation)
+        public static List<Group> Groups = new List<Group>
+        {
+            new Group(0, 1),
+            new Group(1, 3),
+            new Group(2, 3),
+            new Group(3, 3),
+            new Group(4, 3)
+        };
+        public int Id;
+        public int Size;
+        public static List<HashSet<int>> History = new List<HashSet<int>>();
 
-		public Group(int id, int size)
-		{
-			Id = id;
-			Size = size;
-		}
+        public Group(int id, int size)
+        {
+            Id = id;
+            Size = size;
+        }
 
-		public void AddStudents(ref List<Student> studentPool)
-		{
-			studentPool = studentPool.OrderBy(x => x.SatInGroup[Id]).ToList();
-			var first = studentPool.Pop(0);
-			var newEntry = new HashSet<Student> { first };
-			bool found = false;
+        public void AddStudents(ref List<Student> studentPool)
+        {
+            //Getting the student that sat the least ammount of times in the current group
+            studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[Id]).ToList();
+            var studentPoolCopy = studentPool.ToList();
 
-			for (int i = 0; i < studentPool.Count; i++)
-			{
-				if (found) break;
-				
-				var studentPoolCopy = studentPool.OrderBy(x => x.SatWithStudent[first.Id]).ToList();
-				var second = studentPoolCopy.Pop(i);
+            //Getting all combinations for a group and ordering them from the best combination to worst
+            var combinations = HelperFunctions.GetAllNumberCombinations(Size, studentPool.Count).ToList();
+            combinations = (from combination in combinations
+                            //Ordering by ammount of times the current student sat with other students
+                            orderby (from index in combination
+                                         //Getting the ammount of times students in a group sat with each other
+                                     select (from history in studentPoolCopy[index].StudentSittingHistory
+                                             where combination.Contains(Student.GetIndexOfId(studentPoolCopy, history.Key))
+                                             select history.Value).Sum()).Sum(),
+                                             //Ordering by group sitting history
+                                             (from index in combination
+                                              select index).Sum()
+                            select combination).ToList();
 
-				for (int j = 0; j < studentPoolCopy.Count; j++)
-				{
-					var studentPoolCopyCopy = studentPoolCopy.OrderBy(x => x.SatWithStudent[first.Id] + x.SatWithStudent[second.Id]).ToList();
-					var third = studentPoolCopyCopy.Pop(j);
-					var testEntry = new HashSet<int>
-					{
-						first.Id,
-						second.Id,
-						third.Id
-					};
+            //Going trough all group combinations
+            HashSet<int> newEntry = null;
+            foreach (var combination in combinations)
+            {
+                newEntry = new HashSet<int>(combination.Select(x => studentPoolCopy[x].Id));
 
-					if (!History.Contains(testEntry, (h1, h2) => !h1.Except(h2).Any()))
-					{
-						studentPool.Remove(second);
-						studentPool.Remove(third);
-						newEntry.Add(second);
-						newEntry.Add(third);
-						found = true;
-						break;
-					}
-				}
-			}
+                //Checking if current group combination is unique (exiting the loop if that's the case)
+                if (History.Contains(newEntry, (h1, h2) => h1.Count == h2.Count && !h1.Except(h2).Any()) == false)
+                {
+                    foreach (var studentId in newEntry)
+                    {
+                        studentPool.RemoveAt(Student.GetIndexOfId(studentPool, studentId));
+                    }
+                    break;
+                }
+            }
 
+            //If all groups have been tried out
+            if (newEntry == null)
+            {
+                newEntry = new HashSet<int>(combinations.First().Select(x => studentPoolCopy[x].Id));
+            }
 
-			foreach (var stud1 in newEntry)
-			{
-				foreach (var stud2 in newEntry)
-				{
-					if (stud1 == stud2)
-						continue;
+            //Updating histories of individual students
+            foreach (var stud1 in newEntry)
+            {
+                foreach (var stud2 in newEntry)
+                {
+                    if (stud1 == stud2)
+                        continue;
 
-					stud1.SatWithStudent[stud2.Id]++;
-				}
-				stud1.SatInGroup[Id]++;
-			}
+                    studentPoolCopy[Student.GetIndexOfId(studentPoolCopy, stud1)].StudentSittingHistory[stud2]++;
+                }
+                studentPoolCopy[Student.GetIndexOfId(studentPoolCopy, stud1)].GroupSittingHistory[Id]++;
+            }
 
-			History.Add(new HashSet<int>(newEntry.Select(x => x.Id)));
-		}
-
-		public void AddStudent(Student student)
-		{
-			if (Size > 1)
-			{
-				throw new Exception("This overload is only for gorups of size 1.");
-			}
-
-			student.SatInGroup[Id]++;
-			History.Add(new HashSet<int> { student.Id });
-		}
-	}
+            //Updating history for the current group
+            History.Add(new HashSet<int>(newEntry));
+        }
+    }
 }

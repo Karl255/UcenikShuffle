@@ -8,36 +8,24 @@ namespace UcenikShuffle
 	{
 		static void Main()
 		{
-			int[] studentIds = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
+			int lvCount = 14;
+			int[] studentIds = Enumerable.Range(0, 13).ToArray();
 			var students = new List<Student>();
 			var allLVs = new List<List<int>>();
-			var groups = new List<Group>
-			{
-				new Group(0, 1),
-				new Group(1, 3),
-				new Group(2, 3),
-				new Group(3, 3),
-				new Group(4, 3)
-			};
 
-
+			//Adding students to students list
 			foreach (var studentId in studentIds)
 			{
-				students.Add(new Student(studentId, studentIds, groups));
+				students.Add(new Student(studentId, studentIds, Group.Groups));
 			}
 
-			for (int lv = 0; lv < 14; lv++)
+			//Going trough each laboratory exercise (lv)
+			for (int lv = 0; lv < lvCount; lv++)
 			{
-				allLVs.Add(new List<int>());
 				var studentPool = new List<Student>(students);
-
-				groups[0].AddStudent(studentPool.Pop(lv % 13));
-				allLVs[lv].Add(groups[0].History[lv]);
-
-				for (int i = 1; i <= 4; i++)
+				for (int i = 0; i < Group.Groups.Count; i++)
 				{
-					groups[i].AddStudents(ref studentPool);
-					allLVs[lv].Add(groups[i].History[lv]);
+					Group.Groups[i].AddStudents(ref studentPool);
 				}
 			}
 
@@ -56,33 +44,31 @@ namespace UcenikShuffle
 			}
 			Console.WriteLine();
 
-			for (int i = 0; i < 14; i++)
+			for (int i = 0; i < lvCount; i++)
 			{
-				Console.Write("{0,3} |        ", i + 1);
-				for (int j = 0; j < allLVs[i].Count; j++)
+				for(int j = 0; j < Group.Groups.Count; j++)
 				{
-					if ((j + 2) % 3 == 0)
+					foreach(var student in Group.History[i * Group.Groups.Count + j])
 					{
-						Console.Write(" |");
+						Console.Write($"{student} ");
 					}
-					Console.Write("{0,4}", allLVs[i][j]);
+					Console.Write(" | ");
 				}
 				Console.WriteLine();
 			}
 
-			for (int i = 0; i < 13; i++)
+			for (int i = 0; i < students.Count; i++)
 			{
 				Console.WriteLine($"Ucenik { i + 1 }");
 
-				var satWith = students[i].SatWithStudent.OrderBy(x => x.Key);
+				var satWith = students[i].StudentSittingHistory.OrderBy(x => x.Key);
 
 				foreach (var otherStudent in satWith)
 				{
-					Console.WriteLine($"{ otherStudent.Key } { otherStudent.Value }");
+					Console.WriteLine($"{ otherStudent.Key + 1 } { otherStudent.Value }");
 				}
 				Console.WriteLine();
 			}
-
 		}
 	}
 }
