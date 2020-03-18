@@ -25,7 +25,7 @@ namespace UcenikShuffle
                 {
                     foreach (var student in Group.History[j])
                     {
-                        Console.Write($"{student} ");
+                        Console.Write($"{student.Id} ");
                     }
                     Console.Write("| ");
                 }
@@ -36,11 +36,11 @@ namespace UcenikShuffle
             {
                 Console.WriteLine($"Ucenik { i + 1 }");
 
-                var satWith = Student.Students[i].StudentSittingHistory.OrderBy(x => x.Key);
+                var satWith = Student.Students[i].StudentSittingHistory.OrderBy(x => x.Key.Id);
 
                 foreach (var otherStudent in satWith)
                 {
-                    Console.WriteLine($"{ (int)otherStudent.Key + 1 } { (int)otherStudent.Value }");
+                    Console.WriteLine($"{ otherStudent.Key.Id + 1 } { (int)otherStudent.Value }");
                 }
                 Console.WriteLine();
             }

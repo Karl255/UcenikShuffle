@@ -4,9 +4,9 @@ using System.Text;
 
 namespace UcenikShuffle
 {
-    public class CustomDictionary : Dictionary<int, int>
+    public class CustomDictionary<T1> : Dictionary<T1, int>
     {
-        new public int this [int index]
+        new public int this[T1 index]
         {
             get
             {

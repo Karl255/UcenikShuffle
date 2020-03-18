@@ -15,13 +15,11 @@ namespace UcenikShuffle
             new Group(3, 3),
             new Group(4, 3)
         };
-        public static List<HashSet<int>> History = new List<HashSet<int>>();
-        public int Id;
+        public static List<HashSet<Student>> History = new List<HashSet<Student>>();
         public int Size;
 
         public Group(int id, int size)
         {
-            Id = id;
             Size = size;
         }
 
@@ -33,7 +31,7 @@ namespace UcenikShuffle
         public List<Student> AddStudents(List<Student> studentPool)
         {
             //Getting the student that sat the least ammount of times in the current group
-            studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[Id]).ToList();
+            studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[this]).ToList();
 
             //Getting all combinations for a group and ordering them from the best combination to worst
             var combinations = HelperFunctions.GetAllNumberCombinations(Size, studentPool.Count).ToList();
@@ -42,7 +40,7 @@ namespace UcenikShuffle
                             orderby (from index in combination
                                          //Getting the ammount of times students in a group sat with each other
                                      select (from history in studentPool[index].StudentSittingHistory
-                                             where combination.Contains(Student.GetIndexOfId(studentPool, (int)history.Key))
+                                             where combination.Contains(Student.GetIndexOfId(studentPool, (int)history.Key.Id))
                                              select (int)history.Value).Sum()).Sum(),
                                              //Ordering by group sitting history
                                              (from index in combination
@@ -50,10 +48,10 @@ namespace UcenikShuffle
                             select combination).ToList();
 
             //Going trough all group combinations
-            HashSet<int> newEntry = null;
+            HashSet<Student> newEntry = null;
             foreach (var combination in combinations)
             {
-                newEntry = new HashSet<int>(combination.Select(x => studentPool[x].Id));
+                newEntry = new HashSet<Student>(combination.Select(x => studentPool[x]));
 
                 //Checking if current group combination is unique (exiting the loop if that's the case)
                 if (History.Contains(newEntry, (h1, h2) => h1.Count == h2.Count && !h1.Except(h2).Any()) == false)
@@ -65,7 +63,7 @@ namespace UcenikShuffle
             //If all groups have been tried out
             if (newEntry == null)
             {
-                newEntry = new HashSet<int>(combinations.First().Select(x => studentPool[x].Id));
+                newEntry = new HashSet<Student>(combinations.First().Select(x => studentPool[x]));
             }
 
             //Updating histories of individual students
@@ -75,21 +73,18 @@ namespace UcenikShuffle
                 {
                     if (stud1 == stud2)
                         continue;
-
-                    var studentSittingHistory = studentPool[Student.GetIndexOfId(studentPool, stud1)].StudentSittingHistory;
-                    studentSittingHistory[stud2] = (int)studentSittingHistory[stud2] + 1;
+                    stud1.StudentSittingHistory[stud2] = stud1.StudentSittingHistory[stud2] + 1;
                 }
-                var groupSittingHistory = studentPool[Student.GetIndexOfId(studentPool, stud1)].GroupSittingHistory;
-                groupSittingHistory[Id] = ((int)groupSittingHistory[Id]) + 1;
+                stud1.GroupSittingHistory[this] = stud1.GroupSittingHistory[this] + 1;
             }
 
             //Updating history for the current group
-            History.Add(new HashSet<int>(newEntry));
+            History.Add(new HashSet<Student>(newEntry));
 
             //Removing students in the chosen group from the result
-            foreach (var studentId in newEntry)
+            foreach (var student in newEntry)
             {
-                studentPool.RemoveAt(Student.GetIndexOfId(studentPool, studentId));
+                studentPool.Remove(student);
             }
 
             return studentPool;

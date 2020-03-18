@@ -6,8 +6,8 @@ namespace UcenikShuffle
 	public class Student
 	{
 		public int Id;
-		public CustomDictionary StudentSittingHistory = new CustomDictionary();
-		public CustomDictionary GroupSittingHistory = new CustomDictionary();
+		public CustomDictionary<Student> StudentSittingHistory = new CustomDictionary<Student>();
+		public CustomDictionary<Group> GroupSittingHistory = new CustomDictionary<Group>();
 		public static List<Student> Students = new List<Student>(from id in Enumerable.Range(1, 13)
 																 select new Student(id));
 
@@ -15,12 +15,6 @@ namespace UcenikShuffle
 		{
 			Id = id;
 		}
-
-		/// <summary>
-		/// This function returns the ID of a student that the current student sat the least ammounts of time with
-		/// </summary>
-		/// <returns></returns>
-		public int GetLeastSatWith() => (int)StudentSittingHistory.OrderBy(student => (int)student.Value).First().Key;
 
 		/// <summary>
 		/// This function searches for a student with the specified ID and returns his index
