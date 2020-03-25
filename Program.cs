@@ -8,7 +8,7 @@ namespace UcenikShuffle
 	{
 		static void Main()
 		{
-			int lvCount = 50;
+			int lvCount = 14;
 			Group.CreateGroupsForLvs(lvCount);
 			PrintResult();
 		}
@@ -56,7 +56,7 @@ namespace UcenikShuffle
 			for (int i = 0; i < Student.Students.Count; i++)
 			{
 				Console.WriteLine($"Ucenik { i + 1 }");
-				Console.WriteLine("ID\tBrojSjedenja");
+				Console.WriteLine("ID\tBroj sjedenja");
 
 				var satWith = Student.Students[i].StudentSittingHistory.OrderBy(x => x.Key.Id);
 
@@ -71,7 +71,7 @@ namespace UcenikShuffle
 			Console.WriteLine("Repeating groups:");
 			var groupHistory = Group.History.ToList();
 			var repeatingGroups = (from _group in groupHistory
-								   where Group.SearchHistory(_group).Count() != 1
+								   where Group.SearchGroupHistory(_group).Count() != 1
 								   select _group).ToList();
 			while (repeatingGroups.Count > 0)
 			{
@@ -80,7 +80,7 @@ namespace UcenikShuffle
 				Console.Write("| Repeat count: ");
 				int repeatCount = repeatingGroups.Count;
 				var currentGroup = repeatingGroups[0];
-				repeatingGroups.RemoveAll(g => g.Except(currentGroup).Count() == 0);
+				repeatingGroups.RemoveAll(g => Group.CompareGroupHistoryRecords(g, currentGroup));
 				repeatCount -= repeatingGroups.Count;
 				Console.WriteLine(repeatCount);
 			}
