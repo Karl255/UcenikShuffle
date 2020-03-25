@@ -54,7 +54,7 @@ namespace UcenikShuffle
                 newEntry = new HashSet<Student>(combination.Select(x => studentPool[x]));
 
                 //Checking if current group combination is unique (exiting the loop if that's the case)
-                if (History.Contains(newEntry, (h1, h2) => h1.Count == h2.Count && !h1.Except(h2).Any()) == false)
+                if (SearchHistory(newEntry).Count() == 0)
                 {
                     break;
                 }
@@ -104,6 +104,24 @@ namespace UcenikShuffle
                     studentPool = Group.Groups[i].AddStudents(studentPool);
                 }
             }
+        }
+
+        /// <summary>
+        /// This function returns all groups from group history which contain all students in <paramref name="students"/> parameter and don't contain any other students
+        /// </summary>
+        /// <param name="students"></param>
+        public static IEnumerable<IEnumerable<Student>> SearchHistory(IEnumerable<Student> students)
+        {
+            //Going trough all groups that match the size
+            foreach(var history in History.Where(h => h.Count == students.Count()))
+            {
+                ///Returning the history information if it matches parameter <param name="students"/>
+                if (history.Except(students).Count() == 0)
+                {
+                    yield return history.AsEnumerable();
+                }
+            }
+            yield break;
         }
     }
 }
