@@ -17,19 +17,40 @@ namespace UcenikShuffle
 		{
 			int lvCount = Group.History.Count / Group.Groups.Count;
 
+			//table header
+			Console.Write("  LV");
+			for (int i = 0; i < Group.Groups.Count; i++)
+			{
+				Console.Write(" │{0,12}", $"Grupa {i + 1}");
+			}
+			Console.WriteLine();
+
+			//line between header and content
+			Console.Write("────");
+			for (int i = 0; i < Group.Groups.Count; i++)
+			{
+				Console.Write("─┼────────────");
+			}
+			Console.WriteLine();
+
+			//table content
 			for (int i = 0; i < lvCount; i++)
 			{
-				Console.Write($"LV {i + 1}\t| ");
+				Console.Write($"{i + 1,4} │        ");
 				int beginningJ = i * Group.Groups.Count;
+
 				for (int j = beginningJ; j < beginningJ + Group.Groups.Count; j++)
 				{
+					if (j != beginningJ)
+					{
+						Console.Write(" │");
+					}
 					foreach (var student in Group.History[j])
 					{
-						Console.Write($"{student.Id} ");
+						Console.Write($"{student.Id,4}");
 					}
-					Console.Write("| ");
 				}
-				Console.WriteLine("\n");
+				Console.WriteLine();
 			}
 
 			for (int i = 0; i < Student.Students.Count; i++)
