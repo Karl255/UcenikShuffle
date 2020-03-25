@@ -62,7 +62,7 @@ namespace UcenikShuffle
 
 				foreach (var otherStudent in satWith)
 				{
-					Console.WriteLine($"{ otherStudent.Key.Id + 1 }\t{ (int)otherStudent.Value }");
+					Console.WriteLine($"{ otherStudent.Key.Id }\t{ (int)otherStudent.Value }");
 				}
 				Console.WriteLine();
 			}
