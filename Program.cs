@@ -21,7 +21,7 @@ namespace UcenikShuffle
 			Console.Write("  LV");
 			for (int i = 0; i < Group.Groups.Count; i++)
 			{
-				Console.Write(" │{0,12}", $"Grupa {i + 1}");
+				Console.Write(" │{0,12}", $"Group {i + 1}");
 			}
 			Console.WriteLine();
 
@@ -55,8 +55,8 @@ namespace UcenikShuffle
 
 			for (int i = 0; i < Student.Students.Count; i++)
 			{
-				Console.WriteLine($"Ucenik { i + 1 }");
-				Console.WriteLine("ID\tBroj sjedenja");
+				Console.WriteLine($"Student { i + 1 }");
+				Console.WriteLine("ID\tSat with ammount");
 
 				var satWith = Student.Students[i].StudentSittingHistory.OrderBy(x => x.Key.Id);
 
