@@ -1,19 +1,32 @@
 ﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace UcenikShuffle
+namespace UcenikShuffle.ConsoleApp.Common
 {
 	public class Student
 	{
 		public int Id;
+		public string Label;
 		public CustomDictionary<Student> StudentSittingHistory = new CustomDictionary<Student>();
 		public CustomDictionary<Group> GroupSittingHistory = new CustomDictionary<Group>();
-		public static List<Student> Students = new List<Student>(from id in Enumerable.Range(1, 13)
-																 select new Student(id));
+		public static ObservableCollection<Student> Students = new ObservableCollection<Student>();
 
-		public Student(int id)
+		static Student()
 		{
-			Id = id;
+			Students.CollectionChanged += (o, e) => {
+				//Ordering student Id's by their label
+				var students = Students.OrderBy(s => s.Label).ToList();
+				for(int i = 0; i < students.Count; i++)
+				{
+					students[i].Id = i + 1;
+					Students[i] = students[i];
+				}
+			};
+		}
+
+		public Student()
+		{
 		}
 
 		/// <summary>

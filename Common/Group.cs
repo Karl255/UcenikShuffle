@@ -2,23 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace UcenikShuffle
+namespace UcenikShuffle.ConsoleApp.Common
 {
     public class Group
     {
         //All groups on laboratory exercises (should be changed if calculations are needed for another situation)
-        public static List<Group> Groups = new List<Group>
-        {
-            new Group(0, 1),
-            new Group(1, 3),
-            new Group(2, 3),
-            new Group(3, 3),
-            new Group(4, 3)
-        };
+        public static List<Group> Groups = new List<Group>();
         public static List<HashSet<Student>> History = new List<HashSet<Student>>();
         public int Size;
 
-        public Group(int id, int size)
+        public Group(int size)
         {
             Size = size;
         }

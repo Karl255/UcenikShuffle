@@ -1,19 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using UcenikShuffle.ConsoleApp.Common;
 
-namespace UcenikShuffle
+namespace UcenikShuffle.ConsoleApp
 {
-	class Program
+	class Print
 	{
-		static void Main()
-		{
-			int lvCount = 14;
-			Group.CreateGroupsForLvs(lvCount);
-			PrintResult();
-		}
-
-		static void PrintResult()
+		public static void PrintResult()
 		{
 			int lvCount = Group.History.Count / Group.Groups.Count;
 
@@ -90,7 +85,7 @@ namespace UcenikShuffle
 		/// This function prints out a history record
 		/// </summary>
 		/// <param name="record"></param>
-		static void PrintGroupHistoryRecord(IEnumerable<Student> record)
+		public static void PrintGroupHistoryRecord(IEnumerable<Student> record)
 		{
 			record.ToList().ForEach(s => Console.Write($"{s.Id} "));
 		}

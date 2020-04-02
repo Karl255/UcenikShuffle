@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UcenikShuffle
+namespace UcenikShuffle.ConsoleApp.Common
 {
 	public class HelperFunctions
 	{

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UcenikShuffle
+namespace UcenikShuffle.ConsoleApp.Common
 {
 	public class CustomDictionary<T1> : Dictionary<T1, int>
 	{
