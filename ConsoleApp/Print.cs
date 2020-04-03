@@ -8,7 +8,7 @@ namespace UcenikShuffle.ConsoleApp
 {
 	class Print
 	{
-		public static void PrintResult()
+		public static void PrintResult(bool detailedOutput, DateTime? startDate, int? frequency)
 		{
 			int lvCount = Group.History.Count / Group.Groups.Count;
 
@@ -31,7 +31,8 @@ namespace UcenikShuffle.ConsoleApp
 			//table content
 			for (int i = 0; i < lvCount; i++)
 			{
-				Console.Write($"{i + 1,4} │        ");
+				DateTime lvDate = ((DateTime)startDate).AddDays(frequency == null ? 0 : (int)frequency * i);
+				Console.Write($"{i + 1,4} {lvDate.ToString("dd.MM.yyyy.")} │        ");
 				int beginningJ = i * Group.Groups.Count;
 
 				for (int j = beginningJ; j < beginningJ + Group.Groups.Count; j++)
@@ -42,12 +43,19 @@ namespace UcenikShuffle.ConsoleApp
 					}
 					foreach (var student in Group.History[j])
 					{
-						Console.Write($"{student.Id,4}");
+						Console.Write($"{(student.Label == null ? student.Id.ToString() : student.Label),20}");
 					}
 				}
 				Console.WriteLine();
 			}
 
+			///No additional info will be printed if <param name="detailedOutput"/> is set to false
+			if(detailedOutput == false)
+			{
+				return;
+			}
+
+			//Printing out how many times students sat with each other
 			for (int i = 0; i < Student.Students.Count; i++)
 			{
 				Console.WriteLine($"Student { i + 1 }");

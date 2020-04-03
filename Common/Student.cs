@@ -20,7 +20,6 @@ namespace UcenikShuffle.ConsoleApp.Common
 				for(int i = 0; i < students.Count; i++)
 				{
 					students[i].Id = i + 1;
-					Students[i] = students[i];
 				}
 			};
 		}

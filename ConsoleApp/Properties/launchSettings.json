@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ConsoleApp": {
+      "commandName": "Project",
+      "commandLineArgs": "-load \"C:\\Users\\Korisnik\\Desktop\\1.txt\""
+    }
+  }
+}

@@ -20,6 +20,8 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		[InlineData("-do", Commands.DetailedOutput)]
 		[InlineData("-save", Commands.Save)]
 		[InlineData("-lOAd", Commands.Load)]
+		[InlineData("-f", Commands.Frequency)]
+		[InlineData("-sd", Commands.StartDate)]
 		public void ParameterToCommand_ShouldWork(string parameter, Commands expected)
 		{
 			var actual = Parameter.ParameterToCommand(parameter);
@@ -39,12 +41,13 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		}
 
 		[Theory]
-		[InlineData(new string[] { "-g", "1", "2", "1", "-s", "Pero Peric", "Markic", "Barkic", "Bono Pls" }, new int[3] { 1, 1, 2 }, new string[4] { "Pero Peric", "Markic", "Barkic", "Bono Pls" })]
+		[InlineData(new string[] { "-g", "1", "2", "1", "-s", "Pero Peric", "Markic", "Barkic", "Bono Pls", "-c", "14" }, new int[3] { 1, 1, 2 }, new string[4] { "Pero Peric", "Markic", "Barkic", "Bono Pls" })]
 		public void Execute_ShouldWork(string[] args, int[] expectedGroupSizes, string[] expectedStudentLabels)
 		{
 			Parameter.Execute(args);
 			Group.Groups = Group.Groups.OrderBy(g => g.Size).ToList();
 			expectedGroupSizes = expectedGroupSizes.OrderBy(s => s).ToArray();
+			expectedStudentLabels = expectedStudentLabels.OrderBy(l => l).ToArray();
 			
 			//Checking if groups are correct
 			for(int i = 0; i < expectedGroupSizes.Length; i++)
@@ -55,14 +58,16 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 				}
 			}
 
-			//Checking if student labels are correct
+			//Checking if student labels and ID's are correct
 			for(int i = 0; i < expectedStudentLabels.Length; i++)
 			{
-				if((from s in Student.Students
-				   where expectedStudentLabels.Contains(s.Label)
-				   select s).Count() != 1)
+				if (Student.Students[i].Label.CompareTo(expectedStudentLabels[i]) != 0)
 				{
-					throw new Exception("Wrong student labels");
+					throw new Exception("Wrong student label");
+				}
+				if(Student.Students[i].Id != i + 1)
+				{
+					throw new Exception("Wrong student ID");
 				}
 			}
 		}
