@@ -16,7 +16,9 @@ namespace UcenikShuffle.ConsoleApp.Common
 		{
 			Students.CollectionChanged += (o, e) => {
 				//Ordering student Id's by their label
-				var students = Students.OrderBy(s => s.Label).ToList();
+				var students = (from s in Students
+							   where string.IsNullOrEmpty(s.Label) == false
+							   select s).ToList();
 				for(int i = 0; i < students.Count; i++)
 				{
 					students[i].Id = i + 1;

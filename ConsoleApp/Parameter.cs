@@ -182,14 +182,12 @@ namespace UcenikShuffle.ConsoleApp
 			return result.Key;
 		}
 
-		public static void Execute(string[] args)
+		public static void Execute(ParseResult parseResult, string[] args)
 		{
-			var parseResults = ParseParameters(args);
-
 			//Loading the commands from the file, executing them and exiting the function if the load command has been used
-			if(parseResults.LoadFilePath != null)
+			if(parseResult.LoadFilePath != null)
 			{
-				var text = File.ReadAllText(parseResults.LoadFilePath);
+				var text = File.ReadAllText(parseResult.LoadFilePath);
 				Process cmd = new Process();
 				cmd.StartInfo = new ProcessStartInfo() { Arguments = text, CreateNoWindow = false, FileName = Path.GetFileName(Assembly.GetExecutingAssembly().CodeBase).Replace(".dll", ".exe") };
 				cmd.Start();
@@ -198,37 +196,42 @@ namespace UcenikShuffle.ConsoleApp
 			}
 
 			//Creating the groups
-			foreach (var size in parseResults.GroupSizes)
+			foreach (var size in parseResult.GroupSizes)
 			{
 				Group.Groups.Add(new Group(size));
 			}
 
 			//Creating students
 			//Students which have a label will be first in the list
-			foreach (var label in parseResults.StudentLabels.OrderBy(l => l))
+			foreach (var label in parseResult.StudentLabels.OrderBy(l => l))
 			{
 				Student.Students.Add(new Student() { Label = label });
 			}
 			//Students which don't have a label will be last in the list
-			for(int i = parseResults.StudentLabels.Count(); i < parseResults.GroupSizes.Sum(); i++)
+			for(int i = parseResult.StudentLabels.Count(); i < parseResult.GroupSizes.Sum(); i++)
 			{
 				Student.Students.Add(new Student());
 			}
 
 			//Calculating the result and printing it
-			Group.CreateGroupsForLvs((int)parseResults.LvCount);
-			Print.PrintResult(parseResults.DetailedOutput, parseResults.StartDate, parseResults.Frequency);
+			Group.CreateGroupsForLvs((int)parseResult.LvCount);
+			Print.PrintResult(parseResult.DetailedOutput, parseResult.StartDate, parseResult.Frequency);
 
 			//Saving the executed commands if the save command has been chosen
-			if(parseResults.SaveFilePath != null)
+			if(parseResult.SaveFilePath != null)
 			{
-				StringBuilder builder = new StringBuilder(256);
-				foreach(var arg in args)
-				{
-					builder.Append($"\"{arg}\" ");
-				}
-				File.WriteAllText(parseResults.SaveFilePath, builder.ToString());
+				File.WriteAllText(parseResult.SaveFilePath, ParametersToString(args));
 			}
+		}
+
+		public static string ParametersToString(string[] args)
+		{
+			StringBuilder result = new StringBuilder(256);
+			foreach (var a in args)
+			{
+				result.Append($"\"{a}\" ");
+			}
+			return result.ToString();
 		}
 	}
 }

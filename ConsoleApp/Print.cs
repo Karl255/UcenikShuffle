@@ -31,8 +31,12 @@ namespace UcenikShuffle.ConsoleApp
 			//table content
 			for (int i = 0; i < lvCount; i++)
 			{
-				DateTime lvDate = ((DateTime)startDate).AddDays(frequency == null ? 0 : (int)frequency * i);
-				Console.Write($"{i + 1,4} {lvDate.ToString("dd.MM.yyyy.")} │        ");
+				string dateString = null;
+				if (startDate != null)
+				{
+					dateString = ((DateTime)startDate).AddDays(frequency == null ? 0 : (int)frequency * i).ToString("dd.MM.yyyy.");
+				}
+				Console.Write($"{i + 1,4} {dateString} │        ");
 				int beginningJ = i * Group.Groups.Count;
 
 				for (int j = beginningJ; j < beginningJ + Group.Groups.Count; j++)

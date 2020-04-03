@@ -9,7 +9,7 @@ namespace UcenikShuffle.ConsoleApp
 	{
 		static void Main(string[] args)
 		{
-			Parameter.Execute(args);
+			Parameter.Execute(Parameter.ParseParameters(args), args);
 		}
 	}
 }
