@@ -11,20 +11,25 @@ namespace UcenikShuffle.ConsoleApp
 		public static void PrintResult(bool detailedOutput, DateTime? startDate, int? frequency)
 		{
 			int lvCount = Group.History.Count / Group.Groups.Count;
+			var maxLabelLength = (from s in Student.Students
+								  select s.Label.Length).Max();
+			var maxGroupSize = (from g in Group.Groups
+								select g.Size).Max();
 
 			//table header
-			Console.Write("  LV");
+			Console.Write("  LV  ");
 			for (int i = 0; i < Group.Groups.Count; i++)
 			{
-				Console.Write(" │{0,12}", $"Group {i + 1}");
+				var groupLabel = "| Group " + (i + 1).ToString();
+				PrintMessage(groupLabel, (maxLabelLength + 1) * Group.Groups[i].Size + 3);
 			}
 			Console.WriteLine();
 
 			//line between header and content
-			Console.Write("────");
+			Console.Write("──────");
 			for (int i = 0; i < Group.Groups.Count; i++)
 			{
-				Console.Write("─┼────────────");
+				PrintMessage("┼", (maxLabelLength + 1) * Group.Groups[i].Size + 3, '─');
 			}
 			Console.WriteLine();
 
@@ -36,18 +41,18 @@ namespace UcenikShuffle.ConsoleApp
 				{
 					dateString = ((DateTime)startDate).AddDays(frequency == null ? 0 : (int)frequency * i).ToString("dd.MM.yyyy.");
 				}
-				Console.Write($"{i + 1,4} {dateString} │        ");
+				Console.Write($"{i + 1,4} {dateString} │ ");
 				int beginningJ = i * Group.Groups.Count;
 
 				for (int j = beginningJ; j < beginningJ + Group.Groups.Count; j++)
 				{
 					if (j != beginningJ)
 					{
-						Console.Write(" │");
+						Console.Write(" │ ");
 					}
 					foreach (var student in Group.History[j])
 					{
-						Console.Write($"{(student.Label == null ? student.Id.ToString() : student.Label),20}");
+						PrintMessage(student.Label, maxLabelLength + 1);
 					}
 				}
 				Console.WriteLine();
@@ -60,16 +65,19 @@ namespace UcenikShuffle.ConsoleApp
 			}
 
 			//Printing out how many times students sat with each other
+			Console.WriteLine();
 			for (int i = 0; i < Student.Students.Count; i++)
 			{
 				Console.WriteLine($"Student { i + 1 }");
-				Console.WriteLine("ID\tSat with ammount");
+				PrintMessage("Label", maxLabelLength);
+				Console.WriteLine(" Sat with ammount");
 
 				var satWith = Student.Students[i].StudentSittingHistory.OrderBy(x => x.Key.Id);
 
 				foreach (var otherStudent in satWith)
 				{
-					Console.WriteLine($"{ otherStudent.Key.Id }\t{ (int)otherStudent.Value }");
+					PrintMessage(otherStudent.Key.Label, maxLabelLength);
+					Console.WriteLine($" { (int)otherStudent.Value }");
 				}
 				Console.WriteLine();
 			}
@@ -80,26 +88,43 @@ namespace UcenikShuffle.ConsoleApp
 			var repeatingGroups = (from _group in groupHistory
 								   where Group.SearchGroupHistory(_group).Count() != 1
 								   select _group).ToList();
+			var repeatingGroupsDictionary = new Dictionary<HashSet<Student>, int>();
 			while (repeatingGroups.Count > 0)
 			{
-				Console.Write("Group: ");
-				PrintGroupHistoryRecord(repeatingGroups[0]);
-				Console.Write("| Repeat count: ");
 				int repeatCount = repeatingGroups.Count;
 				var currentGroup = repeatingGroups[0];
 				repeatingGroups.RemoveAll(g => Group.CompareGroupHistoryRecords(g, currentGroup));
 				repeatCount -= repeatingGroups.Count;
-				Console.WriteLine(repeatCount);
+				repeatingGroupsDictionary.Add(currentGroup, repeatCount);
+			}
+			repeatingGroupsDictionary = new Dictionary<HashSet<Student>, int>(repeatingGroupsDictionary.OrderByDescending(g => g.Value));
+			foreach(var repeatingGroup in repeatingGroupsDictionary)
+			{
+				StringBuilder message = new StringBuilder(128);
+				var lastStudent = repeatingGroup.Key.Last();
+				repeatingGroup.Key.Remove(lastStudent);
+				repeatingGroup.Key.ToList().ForEach(s => message.Append($"{s.Label}-"));
+				repeatingGroup.Key.Add(lastStudent);
+				message.Append(lastStudent.Label);
+				PrintMessage(message.ToString(), (maxLabelLength + 1) * maxGroupSize, ' ');
+				Console.Write("| Repeat count: ");
+				Console.WriteLine(repeatingGroup.Value);
 			}
 		}
 
 		/// <summary>
-		/// This function prints out a history record
+		/// This function prints out the wanted message to the console screen 
 		/// </summary>
-		/// <param name="record"></param>
-		public static void PrintGroupHistoryRecord(IEnumerable<Student> record)
+		/// <param name="message">Message to be printed</param>
+		/// <param name="minSize">Minimum message size</param>
+		/// <param name="fillCharacter">Character that will be printed until the message is long enough</param>
+		static void PrintMessage(string message, int minSize, char fillCharacter = ' ')
 		{
-			record.ToList().ForEach(s => Console.Write($"{s.Id} "));
+			Console.Write(message);
+			for(int i = message.Length; i < minSize; i++)
+			{
+				Console.Write(fillCharacter);
+			}
 		}
 	}
 }

@@ -2,7 +2,7 @@
   "profiles": {
     "ConsoleApp": {
       "commandName": "Project",
-      "commandLineArgs": "-g 2 3 2 -c 100 -do -s \"Pero Peric\" \"Marko Markic\" \"Ana Anic\" -save \"C:\\Users\\Korisnik\\Desktop\\file.txt\""
+      "commandLineArgs": "-g 1 3 2 3 -c 500 -do -s \"Pero Peric\" \"Marko Markic\" \"Ana Anic\" -save \"C:\\Users\\Korisnik\\Desktop\\file.txt\""
     }
   }
 }

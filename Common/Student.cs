@@ -7,7 +7,18 @@ namespace UcenikShuffle.ConsoleApp.Common
 	public class Student
 	{
 		public int Id;
-		public string Label;
+		string label;
+		public string Label 
+		{
+			get => label== null ? Id.ToString() : label;
+			set
+			{
+				if(label != value)
+				{
+					label = value;
+				}
+			}
+		}
 		public CustomDictionary<Student> StudentSittingHistory = new CustomDictionary<Student>();
 		public CustomDictionary<Group> GroupSittingHistory = new CustomDictionary<Group>();
 		public static ObservableCollection<Student> Students = new ObservableCollection<Student>();
