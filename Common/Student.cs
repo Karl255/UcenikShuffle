@@ -16,12 +16,16 @@ namespace UcenikShuffle.ConsoleApp.Common
 		{
 			Students.CollectionChanged += (o, e) => {
 				//Ordering student Id's by their label
-				var students = (from s in Students
-							   where string.IsNullOrEmpty(s.Label) == false
-							   select s).ToList();
-				for(int i = 0; i < students.Count; i++)
+				var students = Students.Where(s => string.IsNullOrEmpty(s.Label) == false).ToList();
+				int i;
+				for (i = 0; i < students.Count; i++)
 				{
 					students[i].Id = i + 1;
+				}
+				students = Students.Where(s => string.IsNullOrEmpty(s.Label) == true).ToList();
+				for (int j = 0; j < students.Count; j++)
+				{
+					students[j].Id = i + 1 + j;
 				}
 			};
 		}
