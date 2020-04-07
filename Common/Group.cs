@@ -119,6 +119,7 @@ namespace UcenikShuffle.ConsoleApp.Common
             yield break;
         }
 
-        public static bool CompareGroupHistoryRecords(IEnumerable<Student> group1, IEnumerable<Student> group2) => group1.Count() == group2.Count() && group1.Except(group2).Count() == 0;
+        public static bool CompareGroupHistoryRecords(IEnumerable<Student> group1, IEnumerable<Student> group2) => 
+            group1 != null && group2 != null && group1.Count() == group2.Count() && group1.Except(group2).Count() == 0;
     }
 }

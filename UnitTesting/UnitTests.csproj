@@ -16,10 +16,6 @@
   </ItemGroup>
   
   <ItemGroup>
-    <Folder Include="CommonTests\" />
-  </ItemGroup>
-  
-  <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
     <ProjectReference Include="..\ConsoleApp\ConsoleApp.csproj" />
   </ItemGroup>
