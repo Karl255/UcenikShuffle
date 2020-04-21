@@ -126,5 +126,31 @@ namespace UcenikShuffle.ConsoleApp
 				Console.Write(fillCharacter);
 			}
 		}
+
+		/// <summary>
+		/// Prints out help for all program arguments
+		/// </summary>
+		public static void PrintHelp()
+		{
+			var commandGroups = (from command in Parameter.CommandDictionary
+			 group command by command.Value into g
+							select g);
+			StringBuilder commandsString = new StringBuilder(128);
+			foreach (var commands in commandGroups)
+			{
+				commandsString.Clear();
+				foreach(var command in commands)
+				{
+					commandsString.Append(command.Key);
+					commandsString.Append(", ");
+				}
+				commandsString.Remove(commandsString.Length - 2, 2);
+				Console.WriteLine(commandsString.ToString());
+				Console.WriteLine((from description in Parameter.DescriptionDictionary
+								   where description.Key == commands.First().Value
+								   select description.Value).First());
+				Console.WriteLine();
+			}
+		}
 	}
 }

@@ -13,6 +13,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[Fact]
 		public void GetIndexOfId_ShouldWork()
 		{
+			Helpers.ResetData();
 			Student.Students.Add(new Student());
 			Student.Students.Add(new Student());
 			var students = (from s in Student.Students select s).ToList();

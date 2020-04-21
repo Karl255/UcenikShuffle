@@ -17,15 +17,18 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		const string testFilePath = @"C:\Users\Korisnik\Desktop\le clerc o beat.txt";
 
 		[Theory]
-		[InlineData("-s", Commands.Student)]
-		[InlineData("-g", Commands.Group)]
-		[InlineData("-G", Commands.Group)]
-		[InlineData("-dO", Commands.DetailedOutput)]
-		[InlineData("-do", Commands.DetailedOutput)]
-		[InlineData("-save", Commands.Save)]
-		[InlineData("-lOAd", Commands.Load)]
-		[InlineData("-f", Commands.Frequency)]
-		[InlineData("-sd", Commands.StartDate)]
+		[InlineData("/s", Commands.Student)]
+		[InlineData("/g", Commands.Group)]
+		[InlineData("/G", Commands.Group)]
+		[InlineData("/dO", Commands.DetailedOutput)]
+		[InlineData("/do", Commands.DetailedOutput)]
+		[InlineData("/save", Commands.Save)]
+		[InlineData("/lOAd", Commands.Load)]
+		[InlineData("/f", Commands.Frequency)]
+		[InlineData("/sd", Commands.StartDate)]
+		[InlineData("/starTDATE", Commands.StartDate)]
+		[InlineData("/?", Commands.Help)]
+		[InlineData("/help", Commands.Help)]
 		public void ParameterToCommand_ShouldWork(string parameter, Commands expected)
 		{
 			var actual = Parameter.ParameterToCommand(parameter);
@@ -35,9 +38,9 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		[Theory]
 		[InlineData(null)]
 		[InlineData("")]
-		[InlineData("-test")]
-		[InlineData("-bla bla")]
-		[InlineData("-g s")]
+		[InlineData("/test")]
+		[InlineData("/bla bla")]
+		[InlineData("/g s")]
 		[InlineData("dO")]
 		public void ParameterToCommand_ShouldThrowUnknownCommandException(string parameter)
 		{
@@ -54,10 +57,10 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 			new ParseResult(){ LoadFilePath = testFilePath }
 		};
 		[Theory]
-		[InlineData(new string[] { "-g", "1", "2", "1", "-s", "Pero Peric", "Markic", "Barkic", "Bono Pls", "-c", "14", "-sd", "27/11/2002", "-f", "7" }, 0)]
-		[InlineData(new string[] { "-do", "-f", "10", "-g", "3", "5", "-c", "3", "-save", testFilePath, "-sd", "1900-1-1", "-s", "DD" }, 1)]
-		[InlineData(new string[] { "-c", "3", "-g", "1" }, 2)]
-		[InlineData(new string[] { "-load", testFilePath }, 3)]
+		[InlineData(new string[] { "/g", "1", "2", "1", "/s", "Pero Peric", "Markic", "Barkic", "Bono Pls", "/c", "14", "/sd", "27/11/2002", "/f", "7" }, 0)]
+		[InlineData(new string[] { "/do", "/f", "10", "/g", "3", "5", "/c", "3", "/save", testFilePath, "/sd", "1900-1-1", "/s", "DD" }, 1)]
+		[InlineData(new string[] { "/c", "3", "/g", "1" }, 2)]
+		[InlineData(new string[] { "/load", testFilePath }, 3)]
 		public void Execute_ShouldWork(string[] args, int resultID)
 		{
 			var parseResult = execute_results[resultID];
@@ -65,9 +68,10 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 			//Writing test commands to file which from which the commands will be loaded
 			if (parseResult.LoadFilePath != null)
 			{
-				File.WriteAllText(parseResult.LoadFilePath, "-g 1 -c 5");
+				File.WriteAllText(parseResult.LoadFilePath, "/g 1 /c 5");
 			}
 
+			Helpers.ResetData();
 			Parameter.Execute(ParseParameters(args), args);
 
 			//Exiting the function if commands have been loaded from a file (this is done because results can't be checked - program is executed as a separate program so all the data gets saved in that program and not this one (all data including users, groups etc. will be empty for this program))
@@ -153,11 +157,7 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 					}
 				}
 			}
-
-			//Cleanup
-			Group.Groups.Clear();
-			Group.History.Clear();
-			Student.Students.Clear();
+			Helpers.ResetData();
 		}
 		#endregion
 
@@ -170,9 +170,9 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 			new ParseResult(){ LoadFilePath = @"C:\file.txt" }
 		};
 		[Theory]
-		[InlineData(new string[] { "-g", "1", "2", "1", "-s", "A", "B", "C", "D", "-c", "100" }, 0)]
-		[InlineData(new string[] { "-do", "-f", "6", "-g", "1", "-save", @"C:\Users\file.txt", "-c", "30", "-sd", "11.11.2000.", "-s", "A", "B", "C", "-g", "-s" }, 1)]
-		[InlineData(new string[] { "-load", @"C:\file.txt" }, 2)]
+		[InlineData(new string[] { "/g", "1", "2", "1", "/s", "A", "B", "C", "D", "/c", "100" }, 0)]
+		[InlineData(new string[] { "/do", "/f", "6", "/g", "1", "/save", @"C:\Users\file.txt", "/c", "30", "/sd", "11.11.2000.", "/s", "A", "B", "C", "/g", "/s" }, 1)]
+		[InlineData(new string[] { "/load", @"C:\file.txt" }, 2)]
 		public void ParseParameters_ShouldWork(string[] args, int resultID)
 		{
 			var result = Parameter.ParseParameters(args);
@@ -188,20 +188,20 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		}
 
 		[Theory]
-		[InlineData(new string[] { "-save" }, 0)]
-		[InlineData(new string[] { "-load" }, 0)]
-		[InlineData(new string[] { "-sd" }, 0)]
-		[InlineData(new string[] { "-f" }, 0)]
-		[InlineData(new string[] { "-c" }, 0)]
-		[InlineData(new string[] { "-save", "A", "B" }, 0)]
-		[InlineData(new string[] { "-load", "A", "B" }, 0)]
-		[InlineData(new string[] { "-sd", "11.12.2002.", "12/12/2004" }, 0)]
-		[InlineData(new string[] { "-f", "100", "50" }, 0)]
-		[InlineData(new string[] { "-c", "50", "10" }, 0)]
-		[InlineData(new string[] { "-sd", "32.12.2002." }, 0)]
-		[InlineData(new string[] { "-sd", "5" }, 0)]
-		[InlineData(new string[] { "-f", "A" }, 0)]
-		[InlineData(new string[] { "-c", "A" }, 0)]
+		[InlineData(new string[] { "/save" }, 0)]
+		[InlineData(new string[] { "/load" }, 0)]
+		[InlineData(new string[] { "/sd" }, 0)]
+		[InlineData(new string[] { "/f" }, 0)]
+		[InlineData(new string[] { "/c" }, 0)]
+		[InlineData(new string[] { "/save", "A", "B" }, 0)]
+		[InlineData(new string[] { "/load", "A", "B" }, 0)]
+		[InlineData(new string[] { "/sd", "11.12.2002.", "12/12/2004" }, 0)]
+		[InlineData(new string[] { "/f", "100", "50" }, 0)]
+		[InlineData(new string[] { "/c", "50", "10" }, 0)]
+		[InlineData(new string[] { "/sd", "32.12.2002." }, 0)]
+		[InlineData(new string[] { "/sd", "5" }, 0)]
+		[InlineData(new string[] { "/f", "A" }, 0)]
+		[InlineData(new string[] { "/c", "A" }, 0)]
 		public void ParseParameters_ShouldThrowInvalidCommandUsageException(string[] args, int a)
 		{
 			Assert.Throws<InvalidCommandUsageException>(() => Parameter.ParseParameters(args));
@@ -209,16 +209,16 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 
 		[Theory]
 		[InlineData(new string[] {  }, 0)]
-		[InlineData(new string[] { "-g", "1" }, 0)]
-		[InlineData(new string[] { "-c", "1" }, 0)]
+		[InlineData(new string[] { "/g", "1" }, 0)]
+		[InlineData(new string[] { "/c", "1" }, 0)]
 		public void ParseParameters_ShouldThrowRequiredParameterNotUsedException(string[] args, int a)
 		{
 			Assert.Throws<RequiredParameterNotUsedException>(() => Parameter.ParseParameters(args));
 		}
 
 		[Theory]
-		[InlineData("-bla")]
-		[InlineData("-test")]
+		[InlineData("/bla")]
+		[InlineData("/test")]
 		public void ParseParameters_ShouldThrowUnknownCommandException(string command)
 		{
 			var args = new string[] { command };

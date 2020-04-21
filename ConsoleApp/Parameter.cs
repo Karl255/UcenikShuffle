@@ -12,19 +12,38 @@ namespace UcenikShuffle.ConsoleApp
 {
 	public class Parameter
 	{
-		public enum Commands { Student, Group, DetailedOutput, Save, Load, StartDate, Frequency, LvCount };
-		static Dictionary<string, Commands> commandDictionary = new Dictionary<string, Commands>();
+		public enum Commands { Student, Group, DetailedOutput, Save, Load, StartDate, Frequency, LvCount, Help };
+		public static Dictionary<string, Commands> CommandDictionary = new Dictionary<string, Commands>();
+		public static Dictionary<Commands, string> DescriptionDictionary = new Dictionary<Commands, string>();
 
 		static Parameter()
 		{
-			commandDictionary.Add("-do", Commands.DetailedOutput);
-			commandDictionary.Add("-g", Commands.Group);
-			commandDictionary.Add("-load", Commands.Load);
-			commandDictionary.Add("-save", Commands.Save);
-			commandDictionary.Add("-s", Commands.Student);
-			commandDictionary.Add("-sd", Commands.StartDate);
-			commandDictionary.Add("-f", Commands.Frequency);
-			commandDictionary.Add("-c", Commands.LvCount);
+			CommandDictionary.Add("/do", Commands.DetailedOutput);
+			CommandDictionary.Add("/detailedoutput", Commands.DetailedOutput);
+			DescriptionDictionary.Add(Commands.DetailedOutput, "Prints out a detailed output of the result.\nExample: /g 1 2 /do");
+			CommandDictionary.Add("/g", Commands.Group);
+			CommandDictionary.Add("/group", Commands.Group);
+			DescriptionDictionary.Add(Commands.Group, "Used for specifying sizes of groups.\nExample: /g 1 2 3");
+			CommandDictionary.Add("/load", Commands.Load);
+			DescriptionDictionary.Add(Commands.Load, "Loads commands from a file and executed them.\nExample: /load C:\\Users\\Korisnik\file.txt");
+			CommandDictionary.Add("/save", Commands.Save);
+			DescriptionDictionary.Add(Commands.Save, "Saves commands that are being executed to a specified file.\nC:\\Users\\Korisnik\\file.txt");
+			CommandDictionary.Add("/s", Commands.Student);
+			CommandDictionary.Add("/student", Commands.Student);
+			DescriptionDictionary.Add(Commands.Student, "Used for specifying student names/lables.\nExample: \"A\" \"B\" \"C\"");
+			CommandDictionary.Add("/sd", Commands.StartDate);
+			CommandDictionary.Add("/startdate", Commands.StartDate);
+			DescriptionDictionary.Add(Commands.StartDate, "Used for specifying a start date.\nExample: /sd 11.4.2020.");
+			CommandDictionary.Add("/f", Commands.Frequency);
+			CommandDictionary.Add("/frequency", Commands.Frequency);
+			DescriptionDictionary.Add(Commands.Frequency, "Used for specifying frequency of the laboratory exercises (in weeks).\nExample: /f 5");
+			CommandDictionary.Add("/c", Commands.LvCount);
+			CommandDictionary.Add("/count", Commands.LvCount);
+			DescriptionDictionary.Add(Commands.LvCount, "Used for specifying the ammount of laboratory exercises.\nExample: /c 10");
+			CommandDictionary.Add("/?", Commands.Help);
+			CommandDictionary.Add("/h", Commands.Help);
+			CommandDictionary.Add("/help", Commands.Help);
+			DescriptionDictionary.Add(Commands.Help, "Prints out help.\nExample: /?");
 		}
 
 		public static ParseResult ParseParameters(string[] args)
@@ -39,10 +58,21 @@ namespace UcenikShuffle.ConsoleApp
 			for (int i = 0; i < args.Length; i++)
 			{
 				//If the current parameter is a command
-				if (args[i][0] == '-')
+				if (args[i][0] == '/')
 				{
 					commandCount++;
 					currentCommand = ParameterToCommand(args[i]);
+
+					//If user chose to print help
+					if(currentCommand == Commands.Help)
+					{
+						if(i != 0)
+						{
+							throw new InvalidCommandUsageException(CommandToParameter((Commands)currentCommand), "This command should be the only parameter!");
+						}
+						Print.PrintHelp();
+						Environment.Exit(0);
+					}
 				}
 				//If the current parameter is a command parameter
 				else
@@ -51,8 +81,12 @@ namespace UcenikShuffle.ConsoleApp
 				}
 
 				//If the next parameter is a command or if this is the last parameter
-				if (i == args.Length - 1 || args[i + 1][0] == '-')
+				if (i == args.Length - 1 || args[i + 1][0] == '/')
 				{
+					if(currentCommand == null)
+					{
+						throw new UnknownCommandException(args[0]);
+					}
 					string currentCommandString = CommandToParameter((Commands)currentCommand);
 
 					//Getting the command before this one and executing different operations based on what command it was
@@ -156,7 +190,7 @@ namespace UcenikShuffle.ConsoleApp
 		public static Commands ParameterToCommand(string command)
 		{
 			//If the command wasn't found
-			if (command == null || commandDictionary.TryGetValue(command.ToLower(), out Commands result) == false)
+			if (command == null || CommandDictionary.TryGetValue(command.ToLower(), out Commands result) == false)
 			{
 				throw new UnknownCommandException(command);
 			}
@@ -168,7 +202,7 @@ namespace UcenikShuffle.ConsoleApp
 		public static string CommandToParameter(Commands command)
 		{
 			//Getting the first command parameter from the dictionary
-			var result = (from _command in commandDictionary
+			var result = (from _command in CommandDictionary
 						  where _command.Value == command
 						  select _command).FirstOrDefault();
 
