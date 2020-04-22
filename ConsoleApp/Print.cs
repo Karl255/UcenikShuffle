@@ -18,6 +18,13 @@ namespace UcenikShuffle.ConsoleApp
 
 			//table header
 			Console.Write("  LV  ");
+			if(startDate != null)
+			{
+				for(int i = 0; i < 11; i++)
+				{
+					Console.Write(" ");
+				}
+			}
 			for (int i = 0; i < Group.Groups.Count; i++)
 			{
 				var groupLabel = "| Group " + (i + 1).ToString();
@@ -27,6 +34,13 @@ namespace UcenikShuffle.ConsoleApp
 
 			//line between header and content
 			Console.Write("──────");
+			if (startDate != null)
+			{
+				for (int i = 0; i < 11; i++)
+				{
+					Console.Write("─");
+				}
+			}
 			for (int i = 0; i < Group.Groups.Count; i++)
 			{
 				PrintMessage("┼", (maxLabelLength + 1) * Group.Groups[i].Size + 3, '─');
@@ -68,7 +82,7 @@ namespace UcenikShuffle.ConsoleApp
 			Console.WriteLine();
 			for (int i = 0; i < Student.Students.Count; i++)
 			{
-				Console.WriteLine($"Student { i + 1 }");
+				Console.WriteLine(Student.Students[i].Label);
 				PrintMessage("Label", maxLabelLength);
 				Console.WriteLine(" Sat with ammount");
 
