@@ -167,16 +167,26 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		{
 			new ParseResult(){ GroupSizes = new List<int>(){ 1,2,1 }, StudentLabels = new List<string>(){ "A", "B", "C", "D" }, LvCount = 100 },
 			new ParseResult(){ DetailedOutput = true, Frequency = 6, GroupSizes = new List<int>(){ 1 }, LoadFilePath = null, SaveFilePath = @"C:\Users\file.txt", LvCount = 30, StartDate = new DateTime(2000,11,11), StudentLabels = new List<string>(){ "A", "B", "C" } },
-			new ParseResult(){ LoadFilePath = @"C:\file.txt" }
+			new ParseResult(){ LoadFilePath = @"C:\file.txt" },
+			null
 		};
 		[Theory]
 		[InlineData(new string[] { "/g", "1", "2", "1", "/s", "A", "B", "C", "D", "/c", "100" }, 0)]
 		[InlineData(new string[] { "/do", "/f", "6", "/g", "1", "/save", @"C:\Users\file.txt", "/c", "30", "/sd", "11.11.2000.", "/s", "A", "B", "C", "/g", "/s" }, 1)]
 		[InlineData(new string[] { "/load", @"C:\file.txt" }, 2)]
+		[InlineData(new string[] { "/?" }, 3)]
 		public void ParseParameters_ShouldWork(string[] args, int resultID)
 		{
 			var result = Parameter.ParseParameters(args);
 			var expectedResult = parseParameters_results[resultID];
+			
+			//If both parse parameter results are null
+			if(result == expectedResult && result == null)
+			{
+				return;
+			}
+
+			//Checking all properties of parse parameter results
 			Assert.Equal(expectedResult.DetailedOutput, result.DetailedOutput);
 			Assert.Equal(expectedResult.Frequency, result.Frequency);
 			Assert.True((expectedResult.GroupSizes == null && result.GroupSizes == null) || expectedResult.GroupSizes.Except(result.GroupSizes).Count() == 0);
@@ -202,6 +212,7 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		[InlineData(new string[] { "/sd", "5" }, 0)]
 		[InlineData(new string[] { "/f", "A" }, 0)]
 		[InlineData(new string[] { "/c", "A" }, 0)]
+		[InlineData(new string[] { "/?", "/c", "3" }, 0)]
 		public void ParseParameters_ShouldThrowInvalidCommandUsageException(string[] args, int a)
 		{
 			Assert.Throws<InvalidCommandUsageException>(() => Parameter.ParseParameters(args));

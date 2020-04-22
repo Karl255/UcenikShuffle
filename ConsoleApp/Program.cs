@@ -15,7 +15,12 @@ namespace UcenikShuffle.ConsoleApp
 				Console.WriteLine((e.ExceptionObject as UnknownCommandException).Message);
 				Environment.Exit(0);
 			};
-			Parameter.Execute(Parameter.ParseParameters(args), args);
+			var parseResult = Parameter.ParseParameters(args);
+			if (parseResult == null)
+			{
+				return;
+			}
+			Parameter.Execute(parseResult, args);
 		}
 	}
 }

@@ -20,26 +20,26 @@ namespace UcenikShuffle.ConsoleApp
 		{
 			CommandDictionary.Add("/do", Commands.DetailedOutput);
 			CommandDictionary.Add("/detailedoutput", Commands.DetailedOutput);
-			DescriptionDictionary.Add(Commands.DetailedOutput, "Prints out a detailed output of the result.\nExample: /g 1 2 /do");
+			DescriptionDictionary.Add(Commands.DetailedOutput, "Prints out a detailed output of the result.\nExample: /g 1 2 /c 5 /do");
 			CommandDictionary.Add("/g", Commands.Group);
 			CommandDictionary.Add("/group", Commands.Group);
-			DescriptionDictionary.Add(Commands.Group, "Used for specifying sizes of groups.\nExample: /g 1 2 3");
+			DescriptionDictionary.Add(Commands.Group, "Used for specifying sizes of groups.\nExample: /g 1 2 3 /c 5");
 			CommandDictionary.Add("/load", Commands.Load);
 			DescriptionDictionary.Add(Commands.Load, "Loads commands from a file and executed them.\nExample: /load C:\\Users\\Korisnik\file.txt");
 			CommandDictionary.Add("/save", Commands.Save);
-			DescriptionDictionary.Add(Commands.Save, "Saves commands that are being executed to a specified file.\nC:\\Users\\Korisnik\\file.txt");
+			DescriptionDictionary.Add(Commands.Save, "Saves commands that are being executed to a specified file.\nExample: /g 1 2 /c 5 /save C:\\Users\\Korisnik\\file.txt");
 			CommandDictionary.Add("/s", Commands.Student);
 			CommandDictionary.Add("/student", Commands.Student);
-			DescriptionDictionary.Add(Commands.Student, "Used for specifying student names/lables.\nExample: \"A\" \"B\" \"C\"");
+			DescriptionDictionary.Add(Commands.Student, "Used for specifying student names/lables.\nExample: /g 3 /s \"A\" \"B\" \"C\" /c 5");
 			CommandDictionary.Add("/sd", Commands.StartDate);
 			CommandDictionary.Add("/startdate", Commands.StartDate);
-			DescriptionDictionary.Add(Commands.StartDate, "Used for specifying a start date.\nExample: /sd 11.4.2020.");
+			DescriptionDictionary.Add(Commands.StartDate, "Used for specifying a start date.\nExample: /g 2 2 /c 5 /sd 11.4.2020. /f 1");
 			CommandDictionary.Add("/f", Commands.Frequency);
 			CommandDictionary.Add("/frequency", Commands.Frequency);
-			DescriptionDictionary.Add(Commands.Frequency, "Used for specifying frequency of the laboratory exercises (in weeks).\nExample: /f 5");
+			DescriptionDictionary.Add(Commands.Frequency, "Used for specifying frequency of the laboratory exercises (in days).\nExample: /g 1 2 /c 5 /sd 20.1.1990. /f 5");
 			CommandDictionary.Add("/c", Commands.LvCount);
 			CommandDictionary.Add("/count", Commands.LvCount);
-			DescriptionDictionary.Add(Commands.LvCount, "Used for specifying the ammount of laboratory exercises.\nExample: /c 10");
+			DescriptionDictionary.Add(Commands.LvCount, "Used for specifying the ammount of laboratory exercises.\nExample: /g 1 2 /c 10");
 			CommandDictionary.Add("/?", Commands.Help);
 			CommandDictionary.Add("/h", Commands.Help);
 			CommandDictionary.Add("/help", Commands.Help);
@@ -66,12 +66,12 @@ namespace UcenikShuffle.ConsoleApp
 					//If user chose to print help
 					if(currentCommand == Commands.Help)
 					{
-						if(i != 0)
+						if(i != 0 || args.Count() > 1)
 						{
 							throw new InvalidCommandUsageException(CommandToParameter((Commands)currentCommand), "This command should be the only parameter!");
 						}
 						Print.PrintHelp();
-						Environment.Exit(0);
+						return null;
 					}
 				}
 				//If the current parameter is a command parameter
