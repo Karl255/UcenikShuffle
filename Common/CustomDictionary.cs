@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UcenikShuffle.ConsoleApp.Common
+namespace UcenikShuffle.Common
 {
 	public class CustomDictionary<T1> : Dictionary<T1, int>
 	{
@@ -17,14 +17,14 @@ namespace UcenikShuffle.ConsoleApp.Common
 			}
 			set
 			{
-				if (this.ContainsKey(index) == false)
+				if (ContainsKey(index) == false)
 				{
-					this.Add(index, value);
+					Add(index, value);
 				}
 				else
 				{
-					this.Remove(index);
-					this.Add(index, value);
+					Remove(index);
+					Add(index, value);
 				}
 			}
 		}

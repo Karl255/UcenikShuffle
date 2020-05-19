@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using UcenikShuffle.Common.Exceptions;
-using System.Linq;
-using UcenikShuffle.ConsoleApp.Common;
-using System.IO;
 using System.Diagnostics;
+using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
+using UcenikShuffle.Common;
+using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.ConsoleApp
 {
@@ -64,13 +64,13 @@ namespace UcenikShuffle.ConsoleApp
 					currentCommand = ParameterToCommand(args[i]);
 
 					//If user chose to print help
-					if(currentCommand == Commands.Help)
+					if (currentCommand == Commands.Help)
 					{
-						if(i != 0 || args.Count() > 1)
+						if (i != 0 || args.Count() > 1)
 						{
 							throw new InvalidCommandUsageException(CommandToParameter((Commands)currentCommand), "This command should be the only parameter!");
 						}
-						Print.PrintHelp();
+						Printer.PrintHelp();
 						return null;
 					}
 				}
@@ -83,7 +83,7 @@ namespace UcenikShuffle.ConsoleApp
 				//If the next parameter is a command or if this is the last parameter
 				if (i == args.Length - 1 || args[i + 1][0] == '/')
 				{
-					if(currentCommand == null)
+					if (currentCommand == null)
 					{
 						throw new UnknownCommandException(args[0]);
 					}
@@ -179,7 +179,7 @@ namespace UcenikShuffle.ConsoleApp
 					throw new RequiredParameterNotUsedException(CommandToParameter(Commands.Group));
 				}
 			}
-			else if(commandCount != 1)
+			else if (commandCount != 1)
 			{
 				throw new InvalidCommandUsageException(CommandToParameter(Commands.Load), "This command should be the only command that is being executed (no other commands are allowed if this command is being used)!");
 			}
@@ -218,41 +218,46 @@ namespace UcenikShuffle.ConsoleApp
 
 		public static void Execute(ParseResult parseResult, string[] args)
 		{
-			//Loading the commands from the file, executing them and exiting the function if the load command has been used
-			if(parseResult.LoadFilePath != null)
+			//Loading the commands from the file, executing them and exiting the method if the load command has been used
+			if (parseResult.LoadFilePath != null)
 			{
 				var text = File.ReadAllText(parseResult.LoadFilePath);
-				Process cmd = new Process();
-				cmd.StartInfo = new ProcessStartInfo() { Arguments = text, CreateNoWindow = false, FileName = Path.GetFileName(Assembly.GetExecutingAssembly().CodeBase).Replace(".dll", ".exe") };
-				cmd.Start();
-				cmd.WaitForExit();
+				var cmdProcess = new Process
+				{
+					StartInfo = new ProcessStartInfo() { Arguments = text, CreateNoWindow = false, FileName = Path.GetFileName(Assembly.GetExecutingAssembly().CodeBase).Replace(".dll", ".exe") }
+				};
+				cmdProcess.Start();
+				cmdProcess.WaitForExit();
 				return;
 			}
+
+			var shuffler = new Shuffler();
+			var printer = new Printer(shuffler);
 
 			//Creating the groups
 			foreach (var size in parseResult.GroupSizes)
 			{
-				Group.Groups.Add(new Group(size));
+				shuffler.Groups.Add(new Group(size));
 			}
 
 			//Creating students
 			//Students which have a label will be first in the list
 			foreach (var label in parseResult.StudentLabels.OrderBy(l => l))
 			{
-				Student.Students.Add(new Student() { Label = label });
+				shuffler.Students.Add(new Student() { Label = label });
 			}
 			//Students which don't have a label will be last in the list
-			for(int i = parseResult.StudentLabels.Count(); i < parseResult.GroupSizes.Sum(); i++)
+			for (int i = parseResult.StudentLabels.Count(); i < parseResult.GroupSizes.Sum(); i++)
 			{
-				Student.Students.Add(new Student());
+				shuffler.Students.Add(new Student());
 			}
 
 			//Calculating the result and printing it
-			Group.CreateGroupsForLvs((int)parseResult.LvCount);
-			Print.PrintResult(parseResult.DetailedOutput, parseResult.StartDate, parseResult.Frequency);
+			shuffler.CreateGroupsForLvs((int)parseResult.LvCount);
+			printer.PrintResult(parseResult.DetailedOutput, parseResult.StartDate, parseResult.Frequency);
 
 			//Saving the executed commands if the save command has been chosen
-			if(parseResult.SaveFilePath != null)
+			if (parseResult.SaveFilePath != null)
 			{
 				File.WriteAllText(parseResult.SaveFilePath, ParametersToString(args));
 			}
