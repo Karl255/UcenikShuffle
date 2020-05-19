@@ -12,12 +12,23 @@ namespace UcenikShuffle.ConsoleApp
 				Console.WriteLine((e.ExceptionObject as UnknownCommandException).Message);
 				Environment.Exit(0);
 			};
-			var parseResult = Parameter.ParseParameters(args);
-			if (parseResult == null)
+
+			var argParser = new Parameter(args);
+			var shuffler = argParser.ParseArgs();
+
+			//if user chose to print help
+			if (shuffler is null)
 			{
+				Printer.PrintHelp();
 				return;
 			}
-			Parameter.Execute(parseResult, args);
+
+			shuffler.Shuffle();
+
+			var printer = new Printer(shuffler);
+			printer.PrintResult(argParser.ParseResults.DetailedOutput, argParser.ParseResults.StartDate, argParser.ParseResults.Frequency);
+
+
 		}
 	}
 }

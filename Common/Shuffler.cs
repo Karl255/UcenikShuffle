@@ -6,12 +6,15 @@ namespace UcenikShuffle.Common
 {
 	public class Shuffler
 	{
+		private int LvCount;
 		//All groups on laboratory exercises (should be changed if calculations are needed for another situation)
 		public List<Group> Groups = new List<Group>();
 		public ObservableCollection<Student> Students = new ObservableCollection<Student>();
 
-		public Shuffler()
+		public Shuffler(int lvCount)
 		{
+			LvCount = lvCount;
+
 			Students.CollectionChanged += (o, e) =>
 			{
 				//Ordering student Ids by their label
@@ -32,10 +35,10 @@ namespace UcenikShuffle.Common
 		/// <summary>
 		/// This method creates the groups for the LV based on the <see cref="Group.Groups"/> and <see cref="Students"/> variables
 		/// </summary>
-		public void CreateGroupsForLvs(int lvCount)
+		private void CreateGroupsForLvs()
 		{
 			//Going trough each laboratory exercise (lv)
-			for (int lv = 0; lv < lvCount; lv++)
+			for (int lv = 0; lv < LvCount; lv++)
 			{
 				var studentPool = new List<Student>(Students);
 				for (int i = 0; i < Groups.Count; i++)
@@ -45,5 +48,9 @@ namespace UcenikShuffle.Common
 			}
 		}
 
+		public void Shuffle()
+		{
+			CreateGroupsForLvs();
+		}
 	}
 }

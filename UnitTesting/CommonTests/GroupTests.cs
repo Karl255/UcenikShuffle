@@ -45,7 +45,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 
 		static Shuffler InsertTestData()
 		{
-			var shuffler = new Shuffler();
+			var shuffler = new Shuffler(1);
 
 			for (int i = 0; i < 3; i++)
 			{
