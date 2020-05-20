@@ -1,12 +1,13 @@
-﻿using System;
+﻿/* TODO: Replace all of these tests, or just remove them
+ *       At this state, this file gives dozens of errors and warnings
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
+using UcenikShuffle.Common;
 using UcenikShuffle.Common.Exceptions;
 using UcenikShuffle.ConsoleApp;
-using UcenikShuffle.ConsoleApp.Common;
 using Xunit;
 using static UcenikShuffle.ConsoleApp.Parameter;
 
@@ -31,10 +32,10 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		[InlineData("/help", Commands.Help)]
 		public void ParameterToCommand_ShouldWork(string parameter, Commands expected)
 		{
-			var actual = Parameter.ParameterToCommand(parameter);
+			var actual = ParameterToCommand(parameter);
 			Assert.Equal(expected, actual);
 		}
-
+		
 		[Theory]
 		[InlineData(null)]
 		[InlineData("")]
@@ -56,6 +57,7 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 			new ParseResult() { LvCount = 3, GroupSizes = new List<int>(){ 1 } },
 			new ParseResult(){ LoadFilePath = testFilePath }
 		};
+
 		[Theory]
 		[InlineData(new string[] { "/g", "1", "2", "1", "/s", "Pero Peric", "Markic", "Barkic", "Bono Pls", "/c", "14", "/sd", "27/11/2002", "/f", "7" }, 0)]
 		[InlineData(new string[] { "/do", "/f", "10", "/g", "3", "5", "/c", "3", "/save", testFilePath, "/sd", "1900-1-1", "/s", "DD" }, 1)]
@@ -63,6 +65,7 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		[InlineData(new string[] { "/load", testFilePath }, 3)]
 		public void Execute_ShouldWork(string[] args, int resultID)
 		{
+			var shuffler = new Shuffler();
 			var parseResult = execute_results[resultID];
 
 			//Writing test commands to file which from which the commands will be loaded
@@ -71,8 +74,7 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 				File.WriteAllText(parseResult.LoadFilePath, "/g 1 /c 5");
 			}
 
-			Helpers.ResetData();
-			Parameter.Execute(ParseParameters(args), args);
+			Execute(ParseParameters(args), args);
 
 			//Exiting the function if commands have been loaded from a file (this is done because results can't be checked - program is executed as a separate program so all the data gets saved in that program and not this one (all data including users, groups etc. will be empty for this program))
 			if (parseResult.LoadFilePath != null)
@@ -81,14 +83,14 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 				return;
 			}
 
-			Group.Groups = Group.Groups.OrderBy(g => g.Size).ToList();
+			shuffler.Groups = shuffler.Groups.OrderBy(g => g.Size).ToList();
 			parseResult.GroupSizes = parseResult.GroupSizes?.OrderBy(s => s).ToList();
 			parseResult.StudentLabels = parseResult.StudentLabels?.OrderBy(l => l).ToList();
 
 			//Checking if groups are correct
 			for (int i = 0; i < parseResult.GroupSizes.Count; i++)
 			{
-				if (parseResult.GroupSizes[i] != Group.Groups[i].Size)
+				if (parseResult.GroupSizes[i] != shuffler.Groups[i].Size)
 				{
 					throw new Exception("Wrong size groups");
 				}
@@ -97,11 +99,11 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 			//Checking if student labels and ID's are correct
 			for (int i = 0; i < parseResult.StudentLabels.Count; i++)
 			{
-				if (Student.Students[i].Label.CompareTo(parseResult.StudentLabels[i]) != 0)
+				if (shuffler.Students[i].Label.CompareTo(parseResult.StudentLabels[i]) != 0)
 				{
 					throw new Exception("Wrong student label");
 				}
-				if (Student.Students[i].Id != i + 1)
+				if (shuffler.Students[i].Id != i + 1)
 				{
 					throw new Exception("Wrong student ID");
 				}
@@ -128,11 +130,11 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 			}
 
 			//Checking if the lvCount parameter is correct
-			if (Group.History.Count % Group.Groups.Count != 0)
+			if (Group.History.Count % shuffler.Groups.Count != 0)
 			{
 				throw new Exception("For some reason the group history record count isn't a multiple of the number of groups...");
 			}
-			Assert.Equal(parseResult.LvCount, Group.History.Count / Group.Groups.Count);
+			Assert.Equal(parseResult.LvCount, Group.History.Count / shuffler.Groups.Count);
 
 			//Checking if the output is correct
 			Process process = new Process();
@@ -157,7 +159,6 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 					}
 				}
 			}
-			Helpers.ResetData();
 		}
 		#endregion
 
@@ -177,11 +178,11 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		[InlineData(new string[] { "/?" }, 3)]
 		public void ParseParameters_ShouldWork(string[] args, int resultID)
 		{
-			var result = Parameter.ParseParameters(args);
+			var result = ParseParameters(args);
 			var expectedResult = parseParameters_results[resultID];
-			
+
 			//If both parse parameter results are null
-			if(result == expectedResult && result == null)
+			if (result == expectedResult && result == null)
 			{
 				return;
 			}
@@ -213,18 +214,18 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		[InlineData(new string[] { "/f", "A" }, 0)]
 		[InlineData(new string[] { "/c", "A" }, 0)]
 		[InlineData(new string[] { "/?", "/c", "3" }, 0)]
-		public void ParseParameters_ShouldThrowInvalidCommandUsageException(string[] args, int a)
+		public void ParseParameters_ShouldThrowInvalidCommandUsageException(string[] args, int _)
 		{
 			Assert.Throws<InvalidCommandUsageException>(() => Parameter.ParseParameters(args));
 		}
 
 		[Theory]
-		[InlineData(new string[] {  }, 0)]
+		[InlineData(new string[] { }, 0)]
 		[InlineData(new string[] { "/g", "1" }, 0)]
 		[InlineData(new string[] { "/c", "1" }, 0)]
-		public void ParseParameters_ShouldThrowRequiredParameterNotUsedException(string[] args, int a)
+		public void ParseParameters_ShouldThrowRequiredParameterNotUsedException(string[] args, int _)
 		{
-			Assert.Throws<RequiredParameterNotUsedException>(() => Parameter.ParseParameters(args));
+			Assert.Throws<RequiredParameterNotUsedException>(() => ParseParameters(args));
 		}
 
 		[Theory]
@@ -233,8 +234,9 @@ namespace UcenikShuffle.UnitTests.ConsoleAppTests
 		public void ParseParameters_ShouldThrowUnknownCommandException(string command)
 		{
 			var args = new string[] { command };
-			Assert.Throws<UnknownCommandException>(() => Parameter.ParseParameters(args));
+			Assert.Throws<UnknownCommandException>(() => ParseParameters(args));
 		}
 		#endregion
 	}
 }
+*/

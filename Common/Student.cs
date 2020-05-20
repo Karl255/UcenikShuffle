@@ -1,52 +1,23 @@
 ﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace UcenikShuffle.ConsoleApp.Common
+namespace UcenikShuffle.Common
 {
 	public class Student
 	{
 		public int Id;
-		string label;
-		public string Label 
+		private string _label;
+		public string Label
 		{
-			get => label== null ? Id.ToString() : label;
-			set
-			{
-				if(label != value)
-				{
-					label = value;
-				}
-			}
+			get => _label ?? Id.ToString();
+			set => _label = value;
 		}
+
 		public CustomDictionary<Student> StudentSittingHistory = new CustomDictionary<Student>();
 		public CustomDictionary<Group> GroupSittingHistory = new CustomDictionary<Group>();
-		public static ObservableCollection<Student> Students = new ObservableCollection<Student>();
-
-		static Student()
-		{
-			Students.CollectionChanged += (o, e) => {
-				//Ordering student Id's by their label
-				var students = Students.Where(s => string.IsNullOrEmpty(s.Label) == false).ToList();
-				int i;
-				for (i = 0; i < students.Count; i++)
-				{
-					students[i].Id = i + 1;
-				}
-				students = Students.Where(s => string.IsNullOrEmpty(s.Label) == true).ToList();
-				for (int j = 0; j < students.Count; j++)
-				{
-					students[j].Id = i + 1 + j;
-				}
-			};
-		}
-
-		public Student()
-		{
-		}
 
 		/// <summary>
-		/// This function searches for a student with the specified ID and returns his index
+		/// This method searches for a student with the specified ID and returns his index
 		/// </summary>
 		/// <param name="students">List of students to be searched</param>
 		/// <param name="id">ID of the student whose index will be returned</param>

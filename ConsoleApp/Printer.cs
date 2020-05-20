@@ -2,33 +2,40 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using UcenikShuffle.ConsoleApp.Common;
+using UcenikShuffle.Common;
 
 namespace UcenikShuffle.ConsoleApp
 {
-	class Print
+	public class Printer
 	{
-		public static void PrintResult(bool detailedOutput, DateTime? startDate, int? frequency)
+		private Shuffler _shuffler;
+
+		public Printer(Shuffler shuffler)
 		{
-			int lvCount = Group.History.Count / Group.Groups.Count;
-			var maxLabelLength = (from s in Student.Students
+			_shuffler = shuffler;
+		}
+
+		public void PrintResult(bool detailedOutput, DateTime? startDate, int? frequency)
+		{
+			int lvCount = Group.History.Count / _shuffler.Groups.Count;
+			var maxLabelLength = (from s in _shuffler.Students
 								  select s.Label.Length).Max();
-			var maxGroupSize = (from g in Group.Groups
+			var maxGroupSize = (from g in _shuffler.Groups
 								select g.Size).Max();
 
 			//table header
 			Console.Write("  LV  ");
-			if(startDate != null)
+			if (startDate != null)
 			{
-				for(int i = 0; i < 11; i++)
+				for (int i = 0; i < 11; i++)
 				{
 					Console.Write(" ");
 				}
 			}
-			for (int i = 0; i < Group.Groups.Count; i++)
+			for (int i = 0; i < _shuffler.Groups.Count; i++)
 			{
 				var groupLabel = "| Group " + (i + 1).ToString();
-				PrintMessage(groupLabel, (maxLabelLength + 1) * Group.Groups[i].Size + 3);
+				PrintMessage(groupLabel, (maxLabelLength + 1) * _shuffler.Groups[i].Size + 3);
 			}
 			Console.WriteLine();
 
@@ -41,9 +48,9 @@ namespace UcenikShuffle.ConsoleApp
 					Console.Write("─");
 				}
 			}
-			for (int i = 0; i < Group.Groups.Count; i++)
+			for (int i = 0; i < _shuffler.Groups.Count; i++)
 			{
-				PrintMessage("┼", (maxLabelLength + 1) * Group.Groups[i].Size + 3, '─');
+				PrintMessage("┼", (maxLabelLength + 1) * _shuffler.Groups[i].Size + 3, '─');
 			}
 			Console.WriteLine();
 
@@ -56,9 +63,9 @@ namespace UcenikShuffle.ConsoleApp
 					dateString = ((DateTime)startDate).AddDays(frequency == null ? 0 : (int)frequency * i).ToString("dd.MM.yyyy.");
 				}
 				Console.Write($"{i + 1,4} {dateString} │ ");
-				int beginningJ = i * Group.Groups.Count;
+				int beginningJ = i * _shuffler.Groups.Count;
 
-				for (int j = beginningJ; j < beginningJ + Group.Groups.Count; j++)
+				for (int j = beginningJ; j < beginningJ + _shuffler.Groups.Count; j++)
 				{
 					if (j != beginningJ)
 					{
@@ -73,25 +80,25 @@ namespace UcenikShuffle.ConsoleApp
 			}
 
 			///No additional info will be printed if <param name="detailedOutput"/> is set to false
-			if(detailedOutput == false)
+			if (detailedOutput == false)
 			{
 				return;
 			}
 
 			//Printing out how many times students sat with each other
 			Console.WriteLine();
-			for (int i = 0; i < Student.Students.Count; i++)
+			for (int i = 0; i < _shuffler.Students.Count; i++)
 			{
-				Console.WriteLine(Student.Students[i].Label);
+				Console.WriteLine(_shuffler.Students[i].Label);
 				PrintMessage("Label", maxLabelLength);
 				Console.WriteLine(" Sat with ammount");
 
-				var satWith = Student.Students[i].StudentSittingHistory.OrderBy(x => x.Key.Id);
+				var satWith = _shuffler.Students[i].StudentSittingHistory.OrderBy(x => x.Key.Id);
 
 				foreach (var otherStudent in satWith)
 				{
 					PrintMessage(otherStudent.Key.Label, maxLabelLength);
-					Console.WriteLine($" { (int)otherStudent.Value }");
+					Console.WriteLine($" { otherStudent.Value }");
 				}
 				Console.WriteLine();
 			}
@@ -112,7 +119,7 @@ namespace UcenikShuffle.ConsoleApp
 				repeatingGroupsDictionary.Add(currentGroup, repeatCount);
 			}
 			repeatingGroupsDictionary = new Dictionary<HashSet<Student>, int>(repeatingGroupsDictionary.OrderByDescending(g => g.Value));
-			foreach(var repeatingGroup in repeatingGroupsDictionary)
+			foreach (var repeatingGroup in repeatingGroupsDictionary)
 			{
 				StringBuilder message = new StringBuilder(128);
 				var lastStudent = repeatingGroup.Key.Last();
@@ -127,15 +134,15 @@ namespace UcenikShuffle.ConsoleApp
 		}
 
 		/// <summary>
-		/// This function prints out the wanted message to the console screen 
+		/// This method prints out the wanted message to the console screen 
 		/// </summary>
 		/// <param name="message">Message to be printed</param>
 		/// <param name="minSize">Minimum message size</param>
 		/// <param name="fillCharacter">Character that will be printed until the message is long enough</param>
-		static void PrintMessage(string message, int minSize, char fillCharacter = ' ')
+		private void PrintMessage(string message, int minSize, char fillCharacter = ' ')
 		{
 			Console.Write(message);
-			for(int i = message.Length; i < minSize; i++)
+			for (int i = message.Length; i < minSize; i++)
 			{
 				Console.Write(fillCharacter);
 			}
@@ -147,13 +154,13 @@ namespace UcenikShuffle.ConsoleApp
 		public static void PrintHelp()
 		{
 			var commandGroups = (from command in Parameter.CommandDictionary
-			 group command by command.Value into g
-							select g);
+								 group command by command.Value into g
+								 select g);
 			StringBuilder commandsString = new StringBuilder(128);
 			foreach (var commands in commandGroups)
 			{
 				commandsString.Clear();
-				foreach(var command in commands)
+				foreach (var command in commands)
 				{
 					commandsString.Append(command.Key);
 					commandsString.Append(", ");

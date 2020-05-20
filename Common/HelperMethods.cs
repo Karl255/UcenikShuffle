@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace UcenikShuffle.ConsoleApp.Common
+namespace UcenikShuffle.Common
 {
-	public class HelperFunctions
+	public class HelperMethods
 	{
 		public static IEnumerable<List<int>> GetAllNumberCombinations(int groupSize, int numberCount)
 		{

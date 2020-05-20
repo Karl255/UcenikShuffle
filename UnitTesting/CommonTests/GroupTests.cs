@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using UcenikShuffle.ConsoleApp.Common;
+using UcenikShuffle.Common;
 using Xunit;
 
 namespace UcenikShuffle.UnitTests.CommonTests
@@ -12,18 +10,17 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[Fact]
 		public void SearchGroupHistory_ShouldWork()
 		{
-			InsertTestData();
-			var students = Student.Students;
-			var history = Group.History;
+			var shuffler = InsertTestData();
+			var students = shuffler.Students;
 
 			//Searching for groups of students in history
-			List<HashSet<Student>> groups = new List<HashSet<Student>>() { 
-				new HashSet<Student>() { students[0], students[1] }, 
-				new HashSet<Student>() { students[0], students[2] }, 
-				new HashSet<Student>() { students[1], students[2] } 
+			List<HashSet<Student>> groups = new List<HashSet<Student>>() {
+				new HashSet<Student>() { students[0], students[1] },
+				new HashSet<Student>() { students[0], students[2] },
+				new HashSet<Student>() { students[1], students[2] }
 			};
-			var results = new int[] { 2,1,0 };
-			for(int i = 0; i < groups.Count; i++)
+			var results = new int[] { 2, 1, 0 };
+			for (int i = 0; i < groups.Count; i++)
 			{
 				var result = Group.SearchGroupHistory(groups[i]);
 				Assert.Equal(results[i], result.Count());
@@ -33,8 +30,8 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[Fact]
 		public void CompareGroupHistoryRecords_ShouldWork()
 		{
-			InsertTestData();
-			var students = Student.Students;
+			var shuffler = InsertTestData();
+			var students = shuffler.Students;
 			students.Add(new Student());
 			students.Add(new Student());
 			students.Add(new Student());
@@ -46,17 +43,21 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			Assert.False(Group.CompareGroupHistoryRecords(null, null));
 		}
 
-		static void InsertTestData()
+		static Shuffler InsertTestData()
 		{
-			Helpers.ResetData();
+			var shuffler = new Shuffler(1);
+
 			for (int i = 0; i < 3; i++)
 			{
-				Student.Students.Add(new Student());
+				shuffler.Students.Add(new Student());
 			}
-			var students = Student.Students;
+
+			var students = shuffler.Students;
 			Group.History.Add(new HashSet<Student>() { students[0], students[1] });
 			Group.History.Add(new HashSet<Student>() { students[0], students[1] });
 			Group.History.Add(new HashSet<Student>() { students[0], students[2] });
+
+			return shuffler;
 		}
 	}
 }

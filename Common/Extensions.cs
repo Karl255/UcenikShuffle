@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UcenikShuffle.ConsoleApp.Common
+namespace UcenikShuffle.Common
 {
 	public static class Extensions
 	{
