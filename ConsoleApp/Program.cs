@@ -57,7 +57,7 @@ namespace UcenikShuffle.ConsoleApp
 
 			var printer = new Printer(shuffler);
 			printer.PrintResult(argParser.ParseResults.DetailedOutput, argParser.ParseResults.StartDate, argParser.ParseResults.Frequency);
-			
+
 		}
 	}
 }
