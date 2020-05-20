@@ -223,7 +223,7 @@ namespace UcenikShuffle.ConsoleApp
 			return result.Key;
 		}
 
-		public Shuffler ParseArgs()
+		public ParseResult ParseArgs()
 		{
 			ParseParameters();
 
@@ -234,42 +234,10 @@ namespace UcenikShuffle.ConsoleApp
 				ParseParameters();
 			}
 
-			if (ParseResults is null)
-			{
-				return null;
-			}
-
-			var shuffler = new Shuffler((int)ParseResults.LvCount);
-
-			//Creating the groups
-			foreach (var size in ParseResults.GroupSizes)
-			{
-				shuffler.Groups.Add(new Group(size));
-			}
-
-			//Creating students
-			//Students with have a label will be first in the list
-			foreach (var label in ParseResults.StudentLabels.OrderBy(l => l))
-			{
-				shuffler.Students.Add(new Student() { Label = label });
-			}
-
-			//Students which don't have a label will be last in the list
-			for (int i = ParseResults.StudentLabels.Count(); i < ParseResults.GroupSizes.Sum(); i++)
-			{
-				shuffler.Students.Add(new Student());
-			}
-
-			//Saving the executed commands if the save command has been chosen
-			if (ParseResults.SaveFilePath != null)
-			{
-				File.WriteAllText(ParseResults.SaveFilePath, ParametersToString());
-			}
-
-			return shuffler;
+			return ParseResults;
 		}
 
-		private string ParametersToString()
+		public string ParametersToString()
 		{
 			StringBuilder result = new StringBuilder();
 			foreach (var a in Args)
