@@ -5,20 +5,33 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:UcenikShuffle.Gui"
 		mc:Ignorable="d"
-		Title="Ucenik Shuffle" Height="450" Width="600">
+		Title="Ucenik Shuffle" MinWidth="700" SizeToContent="WidthAndHeight">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
 			<RowDefinition Height="auto" />
 			<RowDefinition Height="auto" />
 		</Grid.RowDefinitions>
-		
-		<DataGrid x:Name="OutputView" Grid.Row="0">
-			
-		</DataGrid>
-		
+
+		<!--
+		the hack of the century:
+		I needed to add gridlines, but usually there would be a complex way of achieving that for a Grid
+		so I made the Grid background black and all the element's background white
+		I'm a geniuos
+		-->
+		<Grid x:Name="OutputGrid" Grid.Row="0" Background="Gray">
+			<Grid.Resources>
+				<Style TargetType="TextBlock">
+					<Setter Property="Background" Value="White" />
+					<Setter Property="Margin" Value="0.5" />
+					<Setter Property="Padding" Value="2" />
+					<Setter Property="TextAlignment" Value="Center" />
+				</Style>
+			</Grid.Resources>
+		</Grid>
+
 		<GridSplitter Grid.Row="1" />
-		
+
 		<!-- grid with input controls -->
 		<Grid Grid.Row="2" Margin="2">
 			<Grid.Resources>
@@ -29,7 +42,7 @@
 				<Style BasedOn="{StaticResource commonStyle}" TargetType="TextBox" />
 				<Style BasedOn="{StaticResource commonStyle}" TargetType="Button" />
 			</Grid.Resources>
-			
+
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="auto" />
 				<ColumnDefinition Width="*" />
@@ -48,7 +61,7 @@
 			<TextBox x:Name="LvCountInput" Grid.Column="1" Grid.Row="1"
 					 Text="14" />
 
-			<Button Content="Kreiraj Raspored" Padding="10"
+			<Button Content="Kreiraj Raspored" Padding="10" Click="Button_Shuffle"
 					Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" />
 		</Grid>
 	</Grid>
