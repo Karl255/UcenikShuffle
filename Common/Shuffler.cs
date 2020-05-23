@@ -9,17 +9,15 @@ namespace UcenikShuffle.Common
 		public readonly int LvCount;
 		//All groups on laboratory exercises (should be changed if calculations are needed for another situation)
 		public readonly List<Group> Groups = new List<Group>();
-		public ObservableCollection<Student> Students { get; private set; }
+		public List<Student> Students { get; private set; }
 
-		public Shuffler(string lvCountInput, string groupSizesInput)
+		public Shuffler(int lvCount, IEnumerable<int> groupSizes)
 		{
 			//Configuring the list of students
-			Students = new ObservableCollection<Student>();
+			Students = new List<Student>();
 
 			//Parsing lv count and group sizes input
-			//TODO: add input validation
-			LvCount = int.Parse(lvCountInput);
-			var groupSizes = groupSizesInput.Replace(" ", null).Split(',').Select(int.Parse).ToArray();
+			LvCount = lvCount;
 
 			foreach (var size in groupSizes)
 			{
@@ -51,9 +49,9 @@ namespace UcenikShuffle.Common
 			for (int lv = 0; lv < LvCount; lv++)
 			{
 				var studentPool = new List<Student>(Students);
-				for (int i = 0; i < Groups.Count; i++)
+				foreach(var group in Groups)
 				{
-					studentPool = Groups[i].AddStudents(studentPool);
+					studentPool = group.AddStudents(studentPool);
 				}
 			}
 		}

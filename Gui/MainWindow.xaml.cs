@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -62,7 +64,34 @@ namespace UcenikShuffle.Gui
 
 		private void Button_Shuffle(object sender, RoutedEventArgs e)
 		{
-			var shuffler = new Shuffler(LvCountInput.Text, GroupSizesInput.Text);
+			//Parsing lv count input
+			if (int.TryParse(LvCountInput.Text, out var lvCount) == false)
+			{
+				var message = "Broj laboratorijskih vježbi mora biti pozitivni cijeli broj!";
+				MessageBox.Show(message, "Neispravno polje", MessageBoxButton.OK, MessageBoxImage.Warning);
+				return;
+			}
+			
+			//Parsing group sizes input
+			char[] delimiters = { ' ', ',', ';' };
+			var groupSizesText = GroupSizesInput.Text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
+			var groupSizes = new List<int>();
+			foreach (var groupSize in groupSizesText)
+			{
+				//If group size input was in correct format
+				if (int.TryParse(groupSize, out var size))
+				{
+					groupSizes.Add(size);
+					continue;
+				}
+				
+				//If group size input was in invalid format
+				var message = "Veličine grupa moraju biti cijeli brojevi odvojeni zarezom ili razmakom\n\nPrimjeri:\n1,2,3\n1 2 3\n1, 2, 3";
+				MessageBox.Show(message, "Neispravno polje", MessageBoxButton.OK, MessageBoxImage.Warning);
+				return;
+			}
+			
+			var shuffler = new Shuffler(lvCount, groupSizes);
 			shuffler.Shuffle();
 			ResetOutputGrid(shuffler);
 

@@ -5,7 +5,7 @@ namespace UcenikShuffle.Gui
 {
 	static class Extensions
 	{
-		public static void AddElementAt(this Grid @this, UIElement element, int column, int row, int colspan = 1, int rowspan = 1)
+		private static void AddElementAt(this Grid @this, UIElement element, int column, int row, int colspan = 1, int rowspan = 1)
 		{
 			@this.Children.Add(element);
 			Grid.SetColumn(element, column);
@@ -19,7 +19,5 @@ namespace UcenikShuffle.Gui
 			var tb = new TextBlock { Text = text };
 			@this.AddElementAt(tb, column, row, colspan, rowspan);
 		}
-
-
 	}
 }
