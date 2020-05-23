@@ -6,27 +6,47 @@ namespace UcenikShuffle.Common
 {
 	public class Shuffler
 	{
-		private int LvCount;
+		public readonly int LvCount;
 		//All groups on laboratory exercises (should be changed if calculations are needed for another situation)
-		public List<Group> Groups = new List<Group>();
-		public ObservableCollection<Student> Students = new ObservableCollection<Student>();
+		public readonly List<Group> Groups = new List<Group>();
+		public ObservableCollection<Student> Students { get; private set; }
 
-		public Shuffler(int lvCount)
+		public Shuffler(string lvCountInput, string groupSizesInput)
 		{
-			LvCount = lvCount;
+			//Configuring the list of students
+			Students = new ObservableCollection<Student>();
 
-			Students.CollectionChanged += (o, e) =>
+			//Parsing lv count and group sizes input
+			//TODO: add input validation
+			LvCount = int.Parse(lvCountInput);
+			var groupSizes = groupSizesInput.Replace(" ", null).Split(',').Select(int.Parse).ToArray();
+
+			foreach (var size in groupSizes)
 			{
-				Students = new ObservableCollection<Student>(Students.OrderBy(s => s.Label));
-			};
+				Groups.Add(new Group(size));
+			}
+			
+			//Configuring student list based on the group sizes
+			var studentCount = groupSizes.Sum();
+			for (int i = 0; i < studentCount; i++)
+			{
+				Students.Add(new Student { Id = i + 1 });
+			}
 		}
 
+		public void Shuffle()
+		{
+			CreateGroupsForLvs();
+		}
+		
 		/// <summary>
-		/// This method creates the groups for the LV based on the <see cref="Group.Groups"/> and <see cref="Students"/> variables
+		/// This method creates the groups for the LV based on the <see cref="Groups"/> and <see cref="Students"/> variables
 		/// </summary>
 		private void CreateGroupsForLvs()
 		{
+			//Resetting group history after each shuffle
 			Group.History = new List<HashSet<Student>>();
+			
 			//Going trough each laboratory exercise (lv)
 			for (int lv = 0; lv < LvCount; lv++)
 			{
@@ -36,11 +56,6 @@ namespace UcenikShuffle.Common
 					studentPool = Groups[i].AddStudents(studentPool);
 				}
 			}
-		}
-
-		public void Shuffle()
-		{
-			CreateGroupsForLvs();
 		}
 	}
 }

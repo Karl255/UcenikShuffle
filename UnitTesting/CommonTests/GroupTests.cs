@@ -45,12 +45,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 
 		static Shuffler InsertTestData()
 		{
-			var shuffler = new Shuffler(1);
-
-			for (int i = 0; i < 3; i++)
-			{
-				shuffler.Students.Add(new Student());
-			}
+			var shuffler = new Shuffler("1", "3");
 
 			var students = shuffler.Students;
 			Group.History.Add(new HashSet<Student>() { students[0], students[1] });

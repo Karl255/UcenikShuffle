@@ -7,11 +7,11 @@ namespace UcenikShuffle.Common
 	{
 
 		public static List<HashSet<Student>> History;
-		private readonly int size;
+		public readonly int Size;
 		
 		public Group(int size)
 		{
-			this.size = size;
+			Size = size;
 		}
 
 		/// <summary>
@@ -25,7 +25,7 @@ namespace UcenikShuffle.Common
 			studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[this]).ToList();
 
 			//Getting all combinations for a group and ordering them from the best combination to worst
-			var combinations = HelperMethods.GetAllNumberCombinations(size, studentPool.Count).ToList();
+			var combinations = HelperMethods.GetAllNumberCombinations(Size, studentPool.Count).ToList();
 			combinations = (from combination in combinations
 								//Ordering by ammount of times the current student sat with other students
 							orderby (from index in combination
@@ -56,7 +56,7 @@ namespace UcenikShuffle.Common
 			//If all groups have been tried out
 			if (newEntry == null)
 			{
-				newEntry = History.Where(h => h.Count == size && h.Except(studentPool).Count() == 0).OrderBy(h => SearchGroupHistory(h).Count()).First();
+				newEntry = History.Where(h => h.Count == Size && h.Except(studentPool).Count() == 0).OrderBy(h => SearchGroupHistory(h).Count()).First();
 			}
 
 			//Updating histories of individual students

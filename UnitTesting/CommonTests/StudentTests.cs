@@ -9,7 +9,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[Fact]
 		public void GetIndexOfId_ShouldWork()
 		{
-			var shuffler = new Shuffler(0);
+			var shuffler = new Shuffler("0", "2");
 
 			shuffler.Students.Add(new Student());
 			shuffler.Students.Add(new Student());
