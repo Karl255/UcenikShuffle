@@ -88,6 +88,7 @@ namespace UcenikShuffle.Gui
 			shuffler.Shuffle();
 
 			ResetOutputGrid(groupSizes, lvCount);
+
 			{
 				int x = 1;
 				for (int i = 0; i < Group.History.Count; i++)
