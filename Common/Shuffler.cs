@@ -17,18 +17,7 @@ namespace UcenikShuffle.Common
 
 			Students.CollectionChanged += (o, e) =>
 			{
-				//Ordering student Ids by their label
-				var students = Students.Where(s => string.IsNullOrEmpty(s.Label) == false).ToList();
-				int i;
-				for (i = 0; i < students.Count; i++)
-				{
-					students[i].Id = i + 1;
-				}
-				students = Students.Where(s => string.IsNullOrEmpty(s.Label) == true).ToList();
-				for (int j = 0; j < students.Count; j++)
-				{
-					students[j].Id = i + 1 + j;
-				}
+				Students = new ObservableCollection<Student>(Students.OrderBy(s => s.Label));
 			};
 		}
 
@@ -37,6 +26,7 @@ namespace UcenikShuffle.Common
 		/// </summary>
 		private void CreateGroupsForLvs()
 		{
+			Group.History = new List<HashSet<Student>>();
 			//Going trough each laboratory exercise (lv)
 			for (int lv = 0; lv < LvCount; lv++)
 			{
