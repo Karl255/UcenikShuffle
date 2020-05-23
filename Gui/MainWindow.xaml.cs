@@ -62,7 +62,9 @@ namespace UcenikShuffle.Gui
 			}
 		}
 
-		private void Button_Shuffle(object sender, RoutedEventArgs e)
+		private void Button_Shuffle(object sender, RoutedEventArgs e) => Shuffle();
+		
+		private void Shuffle()	
 		{
 			//TODO: add input validation
 			int lvCount = int.Parse(LvCountInput.Text);
