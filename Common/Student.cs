@@ -13,8 +13,8 @@ namespace UcenikShuffle.Common
 			set => _label = value;
 		}
 
-		public CustomDictionary<Student> StudentSittingHistory = new CustomDictionary<Student>();
-		public CustomDictionary<Group> GroupSittingHistory = new CustomDictionary<Group>();
+		public readonly CustomDictionary<Student> StudentSittingHistory = new CustomDictionary<Student>();
+		public readonly CustomDictionary<Group> GroupSittingHistory = new CustomDictionary<Group>();
 
 		/// <summary>
 		/// This method searches for a student with the specified ID and returns his index
@@ -24,8 +24,12 @@ namespace UcenikShuffle.Common
 		/// <returns></returns>
 		public static int GetIndexOfId(List<Student> students, int id)
 		{
-			int? index = students.IndexOf(students.Where(s => s.Id == id).FirstOrDefault());
-			return (index == null) ? -1 : (int)index;
+			var student = students.FirstOrDefault(s => s.Id == id);
+			if (student == null)
+			{
+				return -1;
+			}
+			return students.IndexOf(student);
 		}
 	}
 }

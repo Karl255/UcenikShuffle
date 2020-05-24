@@ -46,6 +46,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			var shuffler = new Shuffler(1, new[]{3});
 
 			var students = shuffler.Students;
+			Group.History = new List<HashSet<Student>>();
 			Group.History.Add(new HashSet<Student>() { students[0], students[1] });
 			Group.History.Add(new HashSet<Student>() { students[0], students[1] });
 			Group.History.Add(new HashSet<Student>() { students[0], students[2] });

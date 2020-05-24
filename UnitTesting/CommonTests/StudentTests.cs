@@ -18,6 +18,9 @@ namespace UcenikShuffle.UnitTests.CommonTests
             expected = 1;
             actual = Student.GetIndexOfId(shuffler.Students, 2);
             Assert.Equal(expected, actual);
+            expected = -1;
+            actual = Student.GetIndexOfId(shuffler.Students, 3);
+            Assert.Equal(expected, actual);
         }
     }
 }
