@@ -62,7 +62,9 @@ namespace UcenikShuffle.Gui
 			}
 		}
 
-		private void Button_Shuffle(object sender, RoutedEventArgs e)
+		private void Button_Shuffle(object sender, RoutedEventArgs e) => Shuffle();
+		
+		private void Shuffle()	
 		{
 			//Parsing lv count input
 			if (int.TryParse(LvCountInput.Text, out var lvCount) == false)
