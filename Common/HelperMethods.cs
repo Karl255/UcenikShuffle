@@ -2,13 +2,19 @@
 
 namespace UcenikShuffle.Common
 {
-	public class HelperMethods
+	public static class HelperMethods
 	{
+		/// <summary>
+		/// This method returns all possible number combinations for a certain group size
+		/// </summary>
+		/// <param name="groupSize">Size of the group (for example, if there are 5 numbers and group size is 3, only 3 of those numbers would be able to fit in a certain group combination)</param>
+		/// <param name="numberCount">Number of numbers for which all group combinations will be made (so if this parameter is 2 then every group combination can contain a maximum of one number 1 and one number 2 - no duplicates, no other numbers)</param>
+		/// <returns></returns>
 		public static IEnumerable<List<int>> GetAllNumberCombinations(int groupSize, int numberCount)
 		{
-			List<int> group = new List<int>();
+			var group = new List<int>();
 
-			//Setting up the inital group
+			//Setting up the initial group
 			for (int i = 0; i < groupSize; i++)
 			{
 				group.Add(i);
@@ -26,7 +32,7 @@ namespace UcenikShuffle.Common
 					group[groupSize - counter]++;
 
 					//If current number is at it's maximum position, the previous number in the group will also be shifted
-					if (group[groupSize - counter] == numberCount + 1 - counter)
+					if (group[groupSize - counter] >= numberCount + 1 - counter)
 					{
 						counter++;
 

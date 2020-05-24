@@ -17,19 +17,19 @@ namespace UcenikShuffle.Common
 		/// <summary>
 		/// This method tries to find the best possible combination of students to put in the same group for a laboratory work
 		/// </summary>
-		/// <param name="studentPool">List of all avaliable students (the ones that are in other groups for the current laborarory work should be excluded)</param>
-		/// <returns>List of all avaliable students (after removing those who were chosen for the current group)</returns>
+		/// <param name="studentPool">List of all available students (the ones that are in other groups for the current laboratory work should be excluded)</param>
+		/// <returns>List of all available students (after removing those who were chosen for the current group)</returns>
 		public List<Student> AddStudents(List<Student> studentPool)
 		{
-			//Getting the student that sat the least ammount of times in the current group
+			//Getting the student that sat the least amount of times in the current group
 			studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[this]).ToList();
 
 			//Getting all combinations for a group and ordering them from the best combination to worst
 			var combinations = HelperMethods.GetAllNumberCombinations(Size, studentPool.Count).ToList();
 			combinations = (from combination in combinations
-								//Ordering by ammount of times the current student sat with other students
+								//Ordering by amount of times the current student sat with other students
 							orderby (from index in combination
-										 //Getting the ammount of times students in a group sat with each other
+										 //Getting the amount of times students in a group sat with each other
 									 select (from history in studentPool[index].StudentSittingHistory
 											 where combination.Contains(Student.GetIndexOfId(studentPool, history.Key.Id))
 											 select history.Value).Sum()).Sum(),
@@ -45,7 +45,7 @@ namespace UcenikShuffle.Common
 				newEntry = new HashSet<Student>(combination.Select(x => studentPool[x]));
 
 				//Checking if current group combination is unique (exiting the loop if that's the case)
-				if (SearchGroupHistory(newEntry).Count() == 0)
+				if (!SearchGroupHistory(newEntry).Any())
 				{
 					break;
 				}
@@ -56,7 +56,7 @@ namespace UcenikShuffle.Common
 			//If all groups have been tried out
 			if (newEntry == null)
 			{
-				newEntry = History.Where(h => h.Count == Size && h.Except(studentPool).Count() == 0).OrderBy(h => SearchGroupHistory(h).Count()).First();
+				newEntry = History.Where(h => h.Count == Size && !h.Except(studentPool).Any()).OrderBy(h => SearchGroupHistory(h).Count()).First();
 			}
 
 			//Updating histories of individual students
@@ -65,7 +65,9 @@ namespace UcenikShuffle.Common
 				foreach (var stud2 in newEntry)
 				{
 					if (stud1 == stud2)
+					{
 						continue;
+					}
 					stud1.StudentSittingHistory[stud2] = stud1.StudentSittingHistory[stud2] + 1;
 				}
 				stud1.GroupSittingHistory[this] = stud1.GroupSittingHistory[this] + 1;
