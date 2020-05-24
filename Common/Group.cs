@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace UcenikShuffle.Common
 {
@@ -19,14 +20,15 @@ namespace UcenikShuffle.Common
 		/// </summary>
 		/// <param name="studentPool">List of all available students (the ones that are in other groups for the current laboratory work should be excluded)</param>
 		/// <returns>List of all available students (after removing those who were chosen for the current group)</returns>
-		public List<Student> AddStudents(List<Student> studentPool)
+		public List<Student> AddStudents(List<Student> studentPool, CancellationTokenSource cancellationSource)
 		{
+			cancellationSource.Token.ThrowIfCancellationRequested();
+			
 			//Getting the student that sat the least amount of times in the current group
 			studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[this]).ToList();
-
+			
 			//Getting all combinations for a group and ordering them from the best combination to worst
-			var combinations = HelperMethods.GetAllNumberCombinations(Size, studentPool.Count).ToList();
-			combinations = (from combination in combinations
+			var combinations = (from combination in HelperMethods.GetAllNumberCombinations(Size, studentPool.Count).AsParallel().WithCancellation(cancellationSource.Token)
 								//Ordering by amount of times the current student sat with other students
 							orderby (from index in combination
 										 //Getting the amount of times students in a group sat with each other
@@ -34,9 +36,9 @@ namespace UcenikShuffle.Common
 											 where combination.Contains(Student.GetIndexOfId(studentPool, history.Key.Id))
 											 select history.Value).Sum()).Sum(),
 											 //Ordering by group sitting history
-											 (from index in combination
-											  select index).Sum()
-							select combination).ToList();
+											 (from index in combination 
+												 select index).Sum()
+							select combination);
 
 			//Going trough all group combinations
 			HashSet<Student> newEntry = null;

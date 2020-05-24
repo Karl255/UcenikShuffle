@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Threading;
 
 namespace UcenikShuffle.Common
 {
@@ -10,9 +12,12 @@ namespace UcenikShuffle.Common
 		//All groups on laboratory exercises (should be changed if calculations are needed for another situation)
 		public readonly List<Group> Groups = new List<Group>();
 		public List<Student> Students { get; private set; }
+		private readonly CancellationTokenSource _cancellationSource;
 
-		public Shuffler(int lvCount, IEnumerable<int> groupSizes)
+		public Shuffler(int lvCount, IEnumerable<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
+			_cancellationSource = cancellationSource;
+			
 			//Configuring the list of students
 			Students = new List<Student>();
 
@@ -51,7 +56,7 @@ namespace UcenikShuffle.Common
 				var studentPool = new List<Student>(Students);
 				foreach(var group in Groups)
 				{
-					studentPool = group.AddStudents(studentPool);
+					studentPool = group.AddStudents(studentPool, _cancellationSource);
 				}
 			}
 		}

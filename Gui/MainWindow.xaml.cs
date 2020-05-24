@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -15,6 +17,9 @@ namespace UcenikShuffle.Gui
 	/// </summary>
 	public partial class MainWindow : Window
 	{
+		private Task _currentShuffleTask = null;
+		private CancellationTokenSource _cancellationSource;
+		
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -62,10 +67,17 @@ namespace UcenikShuffle.Gui
 			}
 		}
 
-		private void Button_Shuffle(object sender, RoutedEventArgs e) => Shuffle();
-		
-		private void Shuffle()	
+		private async void Button_Shuffle(object sender, RoutedEventArgs e) => await Shuffle();
+
+		private async Task Shuffle()
 		{
+			//Cancelling currently running task
+			if (_currentShuffleTask != null)
+			{
+				_cancellationSource.Cancel();
+			}
+			_cancellationSource = new CancellationTokenSource();
+			
 			//Parsing lv count input
 			if (int.TryParse(LvCountInput.Text, out var lvCount) == false)
 			{
@@ -93,8 +105,21 @@ namespace UcenikShuffle.Gui
 				return;
 			}
 			
-			var shuffler = new Shuffler(lvCount, groupSizes);
-			shuffler.Shuffle();
+			//Shuffling
+			var shuffler = new Shuffler(lvCount, groupSizes, _cancellationSource);
+			_currentShuffleTask = Task.Factory.StartNew(() => shuffler.Shuffle());
+			try
+			{
+				await _currentShuffleTask;
+			}
+			catch
+			{
+				//Returning if the shuffle has been canceled
+				return;
+			}
+			_currentShuffleTask = null;
+			
+			//Refreshing UI
 			ResetOutputGrid(shuffler);
 
 			{
