@@ -30,6 +30,31 @@
 			</Grid.Resources>
 		</Grid>
 
+		<!-- This grid is a loading screen which is used when shuffling is in progress -->
+		<Grid x:Name="LoadingScreenGrid" Row="0" Background="Gray" Opacity="0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"></RowDefinition>
+				<RowDefinition Height="*"></RowDefinition>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"></ColumnDefinition>
+			</Grid.ColumnDefinitions>
+			<TextBlock FontSize="36"
+			           Text="Raspored se stvara..." 
+			           TextAlignment="Center" 
+			           HorizontalAlignment="Center"
+			           VerticalAlignment="Bottom">
+			</TextBlock>
+			<ProgressBar x:Name="ShuffleProgressBar" 
+			             Grid.Row="1" 
+			             HorizontalAlignment="Center" 
+			             VerticalAlignment="Top"
+			             Height="30"
+			             Width="75"
+			             Margin="0,10,0,0">
+			</ProgressBar>
+		</Grid>
+		
 		<GridSplitter Grid.Row="1" />
 
 		<!-- grid with input controls -->

@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using UcenikShuffle.Common;
 
 namespace UcenikShuffle.Gui
@@ -65,6 +62,9 @@ namespace UcenikShuffle.Gui
 					columnIndex += shuffler.Groups[i].Size;
 				}
 			}
+
+			LoadingScreenGrid.Opacity = 0;
+			OutputGrid.Opacity = 1;
 		}
 
 		private async void Button_Shuffle(object sender, RoutedEventArgs e) => await Shuffle();
@@ -105,9 +105,18 @@ namespace UcenikShuffle.Gui
 				return;
 			}
 			
+			//Hiding results and showing loading screen while shuffling is in progress
+			OutputGrid.Opacity = 0;
+			LoadingScreenGrid.Opacity = 1;
+			var progress = new Progress<float>();
+			progress.ProgressChanged += (o, e) =>
+			{
+				ShuffleProgressBar.Value = e * 100;
+			};
+
 			//Shuffling
 			var shuffler = new Shuffler(lvCount, groupSizes, _cancellationSource);
-			_currentShuffleTask = Task.Factory.StartNew(() => shuffler.Shuffle());
+			_currentShuffleTask = Task.Factory.StartNew(() => shuffler.Shuffle(progress));
 			try
 			{
 				await _currentShuffleTask;
@@ -118,7 +127,7 @@ namespace UcenikShuffle.Gui
 				return;
 			}
 			_currentShuffleTask = null;
-			
+
 			//Refreshing UI
 			ResetOutputGrid(shuffler);
 

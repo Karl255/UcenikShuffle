@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using UcenikShuffle.Common;
 using Xunit;
 
@@ -43,7 +44,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 
 		private static Shuffler InsertTestData()
 		{
-			var shuffler = new Shuffler(1, new[]{3});
+			var shuffler = new Shuffler(1, new[]{3}, new CancellationTokenSource());
 
 			var students = shuffler.Students;
 			Group.History = new List<HashSet<Student>>();

@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading;
 using UcenikShuffle.Common;
 using Xunit;
 
@@ -9,7 +10,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
         [Fact]
         public void GetIndexOfId_ShouldWork()
         {
-            var shuffler = new Shuffler(0, new[]{2});
+            var shuffler = new Shuffler(0, new[]{2}, new CancellationTokenSource());
             
             //Checking if Id's for created students are correct 
             var expected = 0;

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -13,6 +14,7 @@ namespace UcenikShuffle.Common
 		public readonly List<Group> Groups = new List<Group>();
 		public List<Student> Students { get; private set; }
 		private readonly CancellationTokenSource _cancellationSource;
+		private IProgress<float> _progress;
 
 		public Shuffler(int lvCount, IEnumerable<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
@@ -37,8 +39,9 @@ namespace UcenikShuffle.Common
 			}
 		}
 
-		public void Shuffle()
+		public void Shuffle(Progress<float> progress = null)
 		{
+			_progress = progress;
 			CreateGroupsForLvs();
 		}
 		
@@ -51,6 +54,7 @@ namespace UcenikShuffle.Common
 			Group.History = new List<HashSet<Student>>();
 			
 			//Going trough each laboratory exercise (lv)
+			_progress?.Report(0);
 			for (int lv = 0; lv < LvCount; lv++)
 			{
 				var studentPool = new List<Student>(Students);
@@ -58,6 +62,7 @@ namespace UcenikShuffle.Common
 				{
 					studentPool = group.AddStudents(studentPool, _cancellationSource);
 				}
+				_progress?.Report((float) (lv + 1) / LvCount);
 			}
 		}
 	}
