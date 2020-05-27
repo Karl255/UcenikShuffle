@@ -64,7 +64,6 @@ namespace UcenikShuffle.Gui
 			}
 
 			LoadingScreenGrid.Visibility = Visibility.Hidden;
-			OutputGrid.Opacity = 1;
 		}
 
 		private async void Button_Shuffle(object sender, RoutedEventArgs e) => await Shuffle();
@@ -105,9 +104,9 @@ namespace UcenikShuffle.Gui
 				return;
 			}
 			
-			//Hiding results and showing loading screen while shuffling is in progress
-			OutputGrid.Opacity = 0;
+			//showing loading screen while shuffling is in progress
 			LoadingScreenGrid.Visibility = Visibility.Visible;
+
 			var progress = new Progress<float>();
 			progress.ProgressChanged += (o, e) =>
 			{
