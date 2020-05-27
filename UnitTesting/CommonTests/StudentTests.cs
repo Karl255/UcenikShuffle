@@ -1,25 +1,27 @@
 ﻿using System.Linq;
+using System.Threading;
 using UcenikShuffle.Common;
 using Xunit;
 
 namespace UcenikShuffle.UnitTests.CommonTests
 {
-	public class StudentTests
-	{
-		[Fact]
-		public void GetIndexOfId_ShouldWork()
-		{
-			var shuffler = new Shuffler(0);
-
-			shuffler.Students.Add(new Student());
-			shuffler.Students.Add(new Student());
-			var students = (from s in shuffler.Students select s).ToList();
-			var expected = 0;
-			int actual = Student.GetIndexOfId(students, 1);
-			Assert.Equal(expected, actual);
-			expected = 1;
-			actual = Student.GetIndexOfId(students, 2);
-			Assert.Equal(expected, actual);
-		}
-	}
+    public class StudentTests
+    {
+        [Fact]
+        public void GetIndexOfId_ShouldWork()
+        {
+            var shuffler = new Shuffler(0, new[]{2}, new CancellationTokenSource());
+            
+            //Checking if Id's for created students are correct 
+            var expected = 0;
+            var actual = Student.GetIndexOfId(shuffler.Students, 1);
+            Assert.Equal(expected, actual);
+            expected = 1;
+            actual = Student.GetIndexOfId(shuffler.Students, 2);
+            Assert.Equal(expected, actual);
+            expected = -1;
+            actual = Student.GetIndexOfId(shuffler.Students, 3);
+            Assert.Equal(expected, actual);
+        }
+    }
 }

@@ -1,56 +1,54 @@
-﻿using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 
 namespace UcenikShuffle.Common
 {
 	public class Shuffler
 	{
-		private int LvCount;
-		//All groups on laboratory exercises (should be changed if calculations are needed for another situation)
-		public List<Group> Groups = new List<Group>();
-		public ObservableCollection<Student> Students = new ObservableCollection<Student>();
+		public int LvCount { get; private set; }
+		public List<Group> Groups { get; private set; }
+		public List<Student> Students { get; private set; }
 
-		public Shuffler(int lvCount)
+		private readonly CancellationTokenSource _cancellationSource;
+		private IProgress<double> _progress;
+
+		public Shuffler(int lvCount, IEnumerable<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
+			_cancellationSource = cancellationSource;
+
 			LvCount = lvCount;
+			Groups = new List<Group>(groupSizes.Select(x => new Group(x)));
 
-			Students.CollectionChanged += (o, e) =>
-			{
-				//Ordering student Ids by their label
-				var students = Students.Where(s => string.IsNullOrEmpty(s.Label) == false).ToList();
-				int i;
-				for (i = 0; i < students.Count; i++)
-				{
-					students[i].Id = i + 1;
-				}
-				students = Students.Where(s => string.IsNullOrEmpty(s.Label) == true).ToList();
-				for (int j = 0; j < students.Count; j++)
-				{
-					students[j].Id = i + 1 + j;
-				}
-			};
-		}
+			//initializing Students
+			int studentCount = groupSizes.Sum();
+			Students = new List<Student>();
 
-		/// <summary>
-		/// This method creates the groups for the LV based on the <see cref="Group.Groups"/> and <see cref="Students"/> variables
-		/// </summary>
-		private void CreateGroupsForLvs()
-		{
-			//Going trough each laboratory exercise (lv)
-			for (int lv = 0; lv < LvCount; lv++)
+			for (int i = 0; i < studentCount; i++)
 			{
-				var studentPool = new List<Student>(Students);
-				for (int i = 0; i < Groups.Count; i++)
-				{
-					studentPool = Groups[i].AddStudents(studentPool);
-				}
+				Students.Add(new Student { Id = i + 1 });
 			}
 		}
 
-		public void Shuffle()
+		public void Shuffle(Progress<double> progress = null)
 		{
-			CreateGroupsForLvs();
+			_progress = progress;
+
+			//Resetting group history after each shuffle
+			Group.History = new List<HashSet<Student>>();
+
+			//Going trough each LV
+			_progress?.Report(0);
+			for (int lv = 0; lv < LvCount; lv++)
+			{
+				var studentPool = new List<Student>(Students);
+				foreach (var group in Groups)
+				{
+					studentPool = group.AddStudents(studentPool, _cancellationSource);
+				}
+				_progress?.Report((float)(lv + 1) / LvCount);
+			}
 		}
 	}
 }

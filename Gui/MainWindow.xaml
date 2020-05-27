@@ -1,0 +1,92 @@
+﻿<Window x:Class="UcenikShuffle.Gui.MainWindow"
+		xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+		xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+		xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+		xmlns:local="clr-namespace:UcenikShuffle.Gui"
+		mc:Ignorable="d"
+		Title="Ucenik Shuffle" MinWidth="700" SizeToContent="WidthAndHeight"
+		Closing="Window_Closing">
+	<Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*" />
+			<RowDefinition Height="auto" />
+		</Grid.RowDefinitions>
+
+		<!--
+		the hack of the century:
+		I needed to add gridlines, but usually there would be a complex way of achieving that for a Grid
+		so I made the Grid background black and all the element's background white
+		I'm a geniuos
+		-->
+		<Grid x:Name="OutputGrid" Grid.Row="0" Background="Gray">
+			<Grid.Resources>
+				<Style TargetType="TextBlock">
+					<Setter Property="Background" Value="White" />
+					<Setter Property="Margin" Value="0.5" />
+					<Setter Property="Padding" Value="2" />
+					<Setter Property="TextAlignment" Value="Center" />
+				</Style>
+			</Grid.Resources>
+		</Grid>
+
+		<!-- This grid is a loading screen which is used when shuffling is in progress -->
+		<UniformGrid x:Name="LoadingScreen" Grid.Row="0"
+					 Columns="1" Rows="2"
+					 Background="LightGray" Visibility="Collapsed">
+			<TextBlock FontSize="28"
+			           Text="Raspored se stvara..." 
+			           TextAlignment="Center" 
+			           HorizontalAlignment="Center"
+			           VerticalAlignment="Bottom" />
+
+			<!-- ProgressBar and TextBlock in the same exact spot -->
+			<Grid Grid.Row="1" Margin="10"
+				  HorizontalAlignment="Center"
+				  VerticalAlignment="Top">
+				
+				<ProgressBar x:Name="ProgressBar"
+							 Height="30" Width="500"
+							 Minimum="0" Maximum="1"/>
+
+				<TextBlock x:Name="ProgressText" FontSize="20"
+						   Text="50%" TextAlignment="Center" />
+
+			</Grid>
+		</UniformGrid>
+
+		<!-- grid with input controls -->
+		<Grid Grid.Row="1" Margin="2">
+			<!-- these styles give all grid elements a Margin of 2 -->
+			<Grid.Resources>
+				<Style x:Key="commonStyle" TargetType="FrameworkElement">
+					<Setter Property="Margin" Value="2" />
+				</Style>
+				<Style BasedOn="{StaticResource commonStyle}" TargetType="TextBlock" />
+				<Style BasedOn="{StaticResource commonStyle}" TargetType="TextBox" />
+				<Style BasedOn="{StaticResource commonStyle}" TargetType="Button" />
+			</Grid.Resources>
+
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="auto" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="auto" />
+			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="auto" />
+				<RowDefinition Height="auto" />
+			</Grid.RowDefinitions>
+
+			<TextBlock Text="Veličina grupa" Grid.Column="0" Grid.Row="0" />
+			<TextBox x:Name="GroupSizesInput" Grid.Column="1" Grid.Row="0"
+					 Text="1, 3, 3, 3, 3" />
+
+			<TextBlock Text="Količina LV-a" Grid.Column="0" Grid.Row="1" />
+			<TextBox x:Name="LvCountInput" Grid.Column="1" Grid.Row="1"
+					 Text="14" />
+
+			<Button x:Name="UniButton" Content="Kreiraj Raspored" Padding="10" Click="Button_Shuffle"
+					Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" />
+		</Grid>
+	</Grid>
+</Window>

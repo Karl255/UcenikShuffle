@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "ConsoleApp": {
-      "commandName": "Project",
-      "commandLineArgs": "/g 1 2 /s \"Dominik Dejanović\" \"Karlo Bistrički\" \"Bajro Kahrić\" /c 10 /do /sd 22.4.2020. /f 7"
-    }
-  }
-}
