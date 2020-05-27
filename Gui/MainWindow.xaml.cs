@@ -61,10 +61,25 @@ namespace UcenikShuffle.Gui
 				}
 			}
 
-			LoadingScreen.Visibility = Visibility.Collapsed;
 		}
 
-		private async void Button_Shuffle(object sender, RoutedEventArgs e) => await Shuffle();
+		private async void Button_Shuffle(object sender, RoutedEventArgs e)
+		{
+			if (_currentShuffleTask is null)
+			{
+				//if it's not running
+				UniButton.Content = "Prekini";
+				await Shuffle();
+			}
+			else
+			{
+				_currentShuffleTask = null;
+				_cancellationToken?.Cancel();
+				UniButton.Content = "Kreiraj raspored";
+				LoadingScreen.Visibility = Visibility.Collapsed;
+			}
+
+		}
 
 		private async Task Shuffle()
 		{
@@ -104,6 +119,7 @@ namespace UcenikShuffle.Gui
 				return;
 			}
 
+			//if the numbers are too large, ask user for confirmation
 			if ((groupSizes.Average() >= 6 && groupSizes.Length >= 4) || lvCount >= 20)
 			{
 				var choice = MessageBox.Show(
@@ -113,9 +129,12 @@ namespace UcenikShuffle.Gui
 					MessageBoxImage.Warning
 				);
 
-				if (choice != MessageBoxResult.Yes) return;
+				//if anything but the Yes button was clicked
+				if (choice != MessageBoxResult.Yes)
+					return;
 			}
 
+			// ---start of shuffling procedure---
 
 			//showing loading screen while shuffling is in progress
 			LoadingScreen.Visibility = Visibility.Visible;
@@ -140,9 +159,13 @@ namespace UcenikShuffle.Gui
 				return;
 			}
 
+			// ---end of shuffling---
+
 			_currentShuffleTask = null;
+			UniButton.Content = "Kreiraj raspored";
 
 			ResetOutputGrid(shuffler);
+			LoadingScreen.Visibility = Visibility.Collapsed;
 
 			//filling up the OutputGrid
 			{

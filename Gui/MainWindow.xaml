@@ -85,7 +85,7 @@
 			<TextBox x:Name="LvCountInput" Grid.Column="1" Grid.Row="1"
 					 Text="14" />
 
-			<Button Content="Kreiraj Raspored" Padding="10" Click="Button_Shuffle"
+			<Button x:Name="UniButton" Content="Kreiraj Raspored" Padding="10" Click="Button_Shuffle"
 					Grid.Column="2" Grid.Row="0" Grid.RowSpan="2" />
 		</Grid>
 	</Grid>
