@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -108,7 +107,11 @@ namespace UcenikShuffle.Gui
 			//showing loading screen while shuffling is in progress
 			LoadingScreen.Visibility = Visibility.Visible;
 
-			var progress = new Progress<double>(x => ShuffleProgressBar.Value = x * 100);
+			var progress = new Progress<double>(x =>
+			{
+				ProgressBar.Value = x;
+				ProgressText.Text = $"{ Math.Round(x * 100, 2) }%";
+			});
 
 			//Shuffling
 			var shuffler = new Shuffler(lvCount, groupSizes, _cancellationToken);
