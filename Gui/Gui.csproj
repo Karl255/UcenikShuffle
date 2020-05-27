@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>UcenikShuffle.Gui</RootNamespace>
     <LangVersion>8.0</LangVersion>
+    <AssemblyName>Ucenik Shuffle</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
