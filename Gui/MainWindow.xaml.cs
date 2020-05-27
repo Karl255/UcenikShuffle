@@ -15,12 +15,11 @@ namespace UcenikShuffle.Gui
 	public partial class MainWindow : Window
 	{
 		private Task _currentShuffleTask = null;
-		private CancellationTokenSource _cancellationSource;
+		private CancellationTokenSource _cancellationToken;
 
-		public MainWindow()
-		{
-			InitializeComponent();
-		}
+		public MainWindow() => InitializeComponent();
+
+		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => _cancellationToken?.Cancel();
 
 		private void ResetOutputGrid(Shuffler shuffler)
 		{
@@ -52,7 +51,7 @@ namespace UcenikShuffle.Gui
 				OutputGrid.AddTextAt(i.ToString(), 0, i);
 			}
 
-			// groups
+			// group headers
 			{
 				int columnIndex = 1;
 
@@ -63,7 +62,7 @@ namespace UcenikShuffle.Gui
 				}
 			}
 
-			LoadingScreenGrid.Visibility = Visibility.Hidden;
+			LoadingScreen.Visibility = Visibility.Collapsed;
 		}
 
 		private async void Button_Shuffle(object sender, RoutedEventArgs e) => await Shuffle();
@@ -73,9 +72,9 @@ namespace UcenikShuffle.Gui
 			//Cancelling currently running task
 			if (_currentShuffleTask != null)
 			{
-				_cancellationSource.Cancel();
+				_cancellationToken.Cancel();
 			}
-			_cancellationSource = new CancellationTokenSource();
+			_cancellationToken = new CancellationTokenSource();
 
 			//Parsing lv count input
 			if (int.TryParse(LvCountInput.Text, out var lvCount) == false)
@@ -107,17 +106,14 @@ namespace UcenikShuffle.Gui
 			}
 
 			//showing loading screen while shuffling is in progress
-			LoadingScreenGrid.Visibility = Visibility.Visible;
+			LoadingScreen.Visibility = Visibility.Visible;
 
-			var progress = new Progress<float>();
-			progress.ProgressChanged += (o, e) =>
-			{
-				ShuffleProgressBar.Value = e * 100;
-			};
+			var progress = new Progress<double>(x => ShuffleProgressBar.Value = x * 100);
 
 			//Shuffling
-			var shuffler = new Shuffler(lvCount, groupSizes, _cancellationSource);
+			var shuffler = new Shuffler(lvCount, groupSizes, _cancellationToken);
 			_currentShuffleTask = Task.Factory.StartNew(() => shuffler.Shuffle(progress));
+
 			try
 			{
 				await _currentShuffleTask;
@@ -127,11 +123,12 @@ namespace UcenikShuffle.Gui
 				//Returning if the shuffle has been canceled
 				return;
 			}
+
 			_currentShuffleTask = null;
 
-			//Refreshing UI
 			ResetOutputGrid(shuffler);
 
+			//filling up the OutputGrid
 			{
 				int x = 1;
 				for (int i = 0; i < Group.History.Count; i++)

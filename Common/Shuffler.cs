@@ -14,7 +14,7 @@ namespace UcenikShuffle.Common
 		public readonly List<Group> Groups = new List<Group>();
 		public List<Student> Students { get; private set; }
 		private readonly CancellationTokenSource _cancellationSource;
-		private IProgress<float> _progress;
+		private IProgress<double> _progress;
 
 		public Shuffler(int lvCount, IEnumerable<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
@@ -39,7 +39,7 @@ namespace UcenikShuffle.Common
 			}
 		}
 
-		public void Shuffle(Progress<float> progress = null)
+		public void Shuffle(Progress<double> progress = null)
 		{
 			_progress = progress;
 			CreateGroupsForLvs();

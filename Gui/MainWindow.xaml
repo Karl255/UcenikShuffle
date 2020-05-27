@@ -5,7 +5,8 @@
 		xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 		xmlns:local="clr-namespace:UcenikShuffle.Gui"
 		mc:Ignorable="d"
-		Title="Ucenik Shuffle" MinWidth="700" SizeToContent="WidthAndHeight">
+		Title="Ucenik Shuffle" MinWidth="700" SizeToContent="WidthAndHeight"
+		Closing="Window_Closing">
 	<Grid>
 		<Grid.RowDefinitions>
 			<RowDefinition Height="*" />
@@ -31,10 +32,10 @@
 		</Grid>
 
 		<!-- This grid is a loading screen which is used when shuffling is in progress -->
-		<UniformGrid x:Name="LoadingScreenGrid" Grid.Row="0"
+		<UniformGrid x:Name="LoadingScreen" Grid.Row="0"
 					 Columns="1" Rows="2"
-					 Background="Gray" Visibility="Hidden">
-			<TextBlock FontSize="36"
+					 Background="LightGray" Visibility="Collapsed">
+			<TextBlock FontSize="28"
 			           Text="Raspored se stvara..." 
 			           TextAlignment="Center" 
 			           HorizontalAlignment="Center"
