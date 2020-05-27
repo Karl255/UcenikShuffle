@@ -9,36 +9,42 @@ namespace UcenikShuffle.Common
 
 		public static List<HashSet<Student>> History;
 		public readonly int Size;
-		
+
 		public Group(int size)
 		{
 			Size = size;
 		}
 
 		/// <summary>
-		/// This method tries to find the best possible combination of students to put in the same group for a laboratory work
+		/// This method tries to find the best possible combination of students to put in the same group for a LV
 		/// </summary>
-		/// <param name="studentPool">List of all available students (the ones that are in other groups for the current laboratory work should be excluded)</param>
+		/// <param name="studentPool">List of all available students (the ones that are in other groups for the current LV should be excluded)</param>
 		/// <returns>List of all available students (after removing those who were chosen for the current group)</returns>
 		public List<Student> AddStudents(List<Student> studentPool, CancellationTokenSource cancellationSource)
 		{
 			cancellationSource.Token.ThrowIfCancellationRequested();
-			
+
 			//Getting the student that sat the least amount of times in the current group
 			studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[this]).ToList();
-			
+
 			//Getting all combinations for a group and ordering them from the best combination to worst
-			var combinations = (from combination in HelperMethods.GetAllNumberCombinations(Size, studentPool.Count).AsParallel().WithCancellation(cancellationSource.Token)
-								//Ordering by amount of times the current student sat with other students
-							orderby (from index in combination
-										 //Getting the amount of times students in a group sat with each other
-									 select (from history in studentPool[index].StudentSittingHistory
-											 where combination.Contains(Student.GetIndexOfId(studentPool, history.Key.Id))
-											 select history.Value).Sum()).Sum(),
-											 //Ordering by group sitting history
-											 (from index in combination 
-												 select index).Sum()
-							select combination);
+			var combinations =
+				from combination in
+					HelperMethods
+					.GetAllNumberCombinations(Size, studentPool.Count)
+					.AsParallel()
+					.WithCancellation(cancellationSource.Token)
+					//Ordering by amount of times the current student sat with other students
+				orderby
+					(from index in combination
+						 //Getting the amount of times students in a group sat with each other
+					 select (from history in studentPool[index].StudentSittingHistory
+							 where combination.Contains(Student.GetIndexOfId(studentPool, history.Key.Id))
+							 select history.Value).Sum()).Sum(),
+								//Ordering by group sitting history
+								(from index in combination
+								 select index).Sum()
+				select combination;
 
 			//Going trough all group combinations
 			HashSet<Student> newEntry = null;
