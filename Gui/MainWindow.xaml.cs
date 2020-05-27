@@ -16,7 +16,7 @@ namespace UcenikShuffle.Gui
 	{
 		private Task _currentShuffleTask = null;
 		private CancellationTokenSource _cancellationSource;
-		
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -76,7 +76,7 @@ namespace UcenikShuffle.Gui
 				_cancellationSource.Cancel();
 			}
 			_cancellationSource = new CancellationTokenSource();
-			
+
 			//Parsing lv count input
 			if (int.TryParse(LvCountInput.Text, out var lvCount) == false)
 			{
@@ -84,26 +84,28 @@ namespace UcenikShuffle.Gui
 				MessageBox.Show(message, "Neispravno polje", MessageBoxButton.OK, MessageBoxImage.Warning);
 				return;
 			}
-			
+
 			//Parsing group sizes input
-			char[] delimiters = { ' ', ',', ';' };
-			var groupSizesText = GroupSizesInput.Text.Split(delimiters, StringSplitOptions.RemoveEmptyEntries);
-			var groupSizes = new List<int>();
-			foreach (var groupSize in groupSizesText)
+			int[] groupSizes;
+			try
 			{
-				//If group size input was in correct format
-				if (int.TryParse(groupSize, out var size))
-				{
-					groupSizes.Add(size);
-					continue;
-				}
-				
-				//If group size input was in invalid format
-				var message = "Veličine grupa moraju biti cijeli brojevi odvojeni zarezom ili razmakom\n\nPrimjeri:\n1,2,3\n1 2 3\n1, 2, 3";
-				MessageBox.Show(message, "Neispravno polje", MessageBoxButton.OK, MessageBoxImage.Warning);
+				groupSizes =
+					GroupSizesInput.Text
+					.Replace(" ", null) // remove spaces
+					.Split(',', StringSplitOptions.RemoveEmptyEntries) //split by ','
+					.Select(int.Parse) //convert each to int
+					.ToArray();
+			}
+			catch
+			{
+				MessageBox.Show(
+					"Veličine grupa moraju biti cijeli brojevi odvojeni zarezom\nPrimjeri:\n1,2,3,4,5\n1, 2, 3",
+					"Neispravno polje",
+					MessageBoxButton.OK,
+					MessageBoxImage.Warning);
 				return;
 			}
-			
+
 			//showing loading screen while shuffling is in progress
 			LoadingScreenGrid.Visibility = Visibility.Visible;
 
