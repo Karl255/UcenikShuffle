@@ -31,14 +31,9 @@
 		</Grid>
 
 		<!-- This grid is a loading screen which is used when shuffling is in progress -->
-		<Grid x:Name="LoadingScreenGrid" Row="0" Background="Gray" Opacity="0">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="*"></RowDefinition>
-				<RowDefinition Height="*"></RowDefinition>
-			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"></ColumnDefinition>
-			</Grid.ColumnDefinitions>
+		<UniformGrid x:Name="LoadingScreenGrid" Grid.Row="0"
+					 Columns="1" Rows="2"
+					 Background="Gray" Opacity="0">
 			<TextBlock FontSize="36"
 			           Text="Raspored se stvara..." 
 			           TextAlignment="Center" 
@@ -53,7 +48,7 @@
 			             Width="75"
 			             Margin="0,10,0,0">
 			</ProgressBar>
-		</Grid>
+		</UniformGrid>
 		
 		<GridSplitter Grid.Row="1" />
 
