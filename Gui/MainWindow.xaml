@@ -33,7 +33,7 @@
 		<!-- This grid is a loading screen which is used when shuffling is in progress -->
 		<UniformGrid x:Name="LoadingScreenGrid" Grid.Row="0"
 					 Columns="1" Rows="2"
-					 Background="Gray" Opacity="0">
+					 Background="Gray" Visibility="Hidden">
 			<TextBlock FontSize="36"
 			           Text="Raspored se stvara..." 
 			           TextAlignment="Center" 
@@ -54,6 +54,7 @@
 
 		<!-- grid with input controls -->
 		<Grid Grid.Row="2" Margin="2">
+			<!-- these styles give all grid elements a Margin of 2 -->
 			<Grid.Resources>
 				<Style x:Key="commonStyle" TargetType="FrameworkElement">
 					<Setter Property="Margin" Value="2" />

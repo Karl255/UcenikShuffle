@@ -63,7 +63,7 @@ namespace UcenikShuffle.Gui
 				}
 			}
 
-			LoadingScreenGrid.Opacity = 0;
+			LoadingScreenGrid.Visibility = Visibility.Hidden;
 			OutputGrid.Opacity = 1;
 		}
 
@@ -107,7 +107,7 @@ namespace UcenikShuffle.Gui
 			
 			//Hiding results and showing loading screen while shuffling is in progress
 			OutputGrid.Opacity = 0;
-			LoadingScreenGrid.Opacity = 1;
+			LoadingScreenGrid.Visibility = Visibility.Visible;
 			var progress = new Progress<float>();
 			progress.ProgressChanged += (o, e) =>
 			{
