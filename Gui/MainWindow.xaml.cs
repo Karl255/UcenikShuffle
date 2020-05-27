@@ -104,6 +104,19 @@ namespace UcenikShuffle.Gui
 				return;
 			}
 
+			if ((groupSizes.Average() >= 6 && groupSizes.Length >= 4) || lvCount >= 20)
+			{
+				var choice = MessageBox.Show(
+					"S velikim brojevima proces može potrajati dosta dugo. Želite li nastaviti?",
+					"Upozorenje",
+					MessageBoxButton.YesNo,
+					MessageBoxImage.Warning
+				);
+
+				if (choice != MessageBoxResult.Yes) return;
+			}
+
+
 			//showing loading screen while shuffling is in progress
 			LoadingScreen.Visibility = Visibility.Visible;
 
