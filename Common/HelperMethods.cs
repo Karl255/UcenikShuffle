@@ -12,15 +12,24 @@ namespace UcenikShuffle.Common
 		/// <param name="groupSize">Size of the group (for example, if there are 5 numbers and group size is 3, only 3 of those numbers would be able to fit in a certain group combination)</param>
 		/// <param name="numberCount">Number of numbers for which all group combinations will be made (so if this parameter is 2 then every group combination can contain a maximum of one number 1 and one number 2 - no duplicates, no other numbers)</param>
 		/// <returns></returns>
-		public static IEnumerable<List<int>> GetAllNumberCombinations(int groupSize, int numberCount)
+		public static IEnumerable<IEnumerable<int>> GetAllNumberCombinations(int groupSize, int numberCount)
 		{
 			var combination = new List<int>();
 			
-			//Initial combination
-			for (int i = 0; i < groupSize - 1; i++)
+			//Checking if passed parameters are valid
+			if (groupSize <= 0 || numberCount <= 0)
 			{
-				combination.Add(i);
+				throw new ArgumentException("Group size and number count parameters must be positive integers!");
 			}
+			
+			//If group size is bigger than the number of available numbers
+			if (groupSize > numberCount)
+			{
+				yield return Enumerable.Range(0, numberCount);
+			}
+			
+			//Initial combination
+			combination.AddRange(Enumerable.Range(0, groupSize - 1));
             
 			for(int startNumber = 0; startNumber + groupSize <= numberCount; startNumber++)
 			{

@@ -10,6 +10,17 @@ namespace UcenikShuffle.UnitTests.CommonTests
 {
 	public class HelperMethodsTests
 	{
+		public static IEnumerable<object[]> Data = new List<object[]>()
+		{
+			//Normal tests
+			new object[]{ 2,2, new int[][] { new[]{0,1} } },
+			new object[]{ 2,3, new int[][] { new[]{0,1}, new[]{0,2}, new[]{1,2} } },
+			new object[]{ 1,1, new int[][] { new[]{0} } },
+			//Unexpected data tests
+			//(higher group size than number count)
+			new object[]{ 5,2, new int[][] { new[]{0,1} } }
+		};
+		
 		[Theory]
 		[MemberData(nameof(Data))]
 		private static void GetAllNumberCombinations_ShouldWork(int groupSize, int numberCount, IEnumerable<IEnumerable<int>> expected)
@@ -31,18 +42,15 @@ namespace UcenikShuffle.UnitTests.CommonTests
 				}
 			}
 		}
-        
-		public static IEnumerable<object[]> Data = new List<object[]>()
+
+		[Theory]
+		[InlineData(0, 1)]
+		[InlineData(1, 0)]
+		[InlineData(-1, 1)]
+		[InlineData(1, -1)]
+		private static void GetAllNumberCombinations_ShouldThrowArgumentException(int groupSize, int numberCount)
 		{
-			//Normal tests
-			new object[]{ 2,2, new int[][] { new[]{0,1} } },
-			new object[]{ 2,3, new int[][] { new[]{0,1}, new[]{0,2}, new[]{1,2} } },
-			new object[]{ 1,1, new int[][] { new[]{0} } },
-			//Unexpected data tests
-			//(0 group size)
-			new object[]{ 0,5, new int[][] {  } },
-			//(higher group size than number count)
-			new object[]{ 5,2, new int[][] { new[]{0,1} } }
-		};
+			Assert.Throws<ArgumentException>(() => HelperMethods.GetAllNumberCombinations(groupSize, numberCount).ToList());
+		}
 	}
 }
