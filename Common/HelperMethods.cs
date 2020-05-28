@@ -22,38 +22,37 @@ namespace UcenikShuffle.Common
             {
                 combination.Add(i);
             }
-            while (true)
+
+			//TODO: convert this into a for loop
+            while (startNumber + groupSize <= numberCount)
             {
-                //If all combinations were returned
-                if (startNumber + groupSize > numberCount)
-                {
-                    break;
-                }
-				
                 //Changing the last number until it hits max number
                 for (int i = startNumber + groupSize - 1; i < numberCount; i++)
                 {
                     combination.Add(i);
                     //Note: new list must be created otherwise collection modified exception might thrown
+					//TODO: use the clone/copy method
                     yield return new List<int>(combination);
                     combination.Remove(i);
                 }
 				
                 //Popping the first number and adding another number to the base combination instead of the popped number
-                if (combination.Any())
+                //TODO: switch to using Length instead of Linq's slower Any() method
+				if (combination.Any())
                 {
                     combination.RemoveAt(0);
-                    combination.Add(startNumber + groupSize - 1);
+					combination.Add(startNumber + groupSize - 1);
                 }
+
                 startNumber++;
             }
         }
 
         /// <summary>
-        /// This function calculates the complexity of a shuffle operation
+        /// This method calculates the complexity of a shuffle operation
         /// </summary>
         /// <param name="groupSizes">Sizes of student groups</param>
-        /// <param name="lvCount">Amount of laboratory exercises</param>
+        /// <param name="lvCount">Amount of LVs</param>
         /// <returns></returns>
         public static int GetShuffleComplexity(IEnumerable<int> groupSizes, int lvCount)
         {
@@ -64,6 +63,8 @@ namespace UcenikShuffle.Common
             foreach (var size in groupSizes)
             {
                 //Calculating number of group combinations
+				//TODO: reverse loop to go in the *normal* direction
+				//      it's much easier to understand the loop that way
                 int combinations = 0;
                 for (int i = studentCount - size + 1; i > 0; i--)
                 {
@@ -80,8 +81,7 @@ namespace UcenikShuffle.Common
             
             //Adding number of laboratory exercises into consideration when calculating complexity
             //(this value isn't as important as number of combinations or group size - this was found out during testing)
-            points = (int)(points * Math.Pow(lvCount, 0.25));
-            return points;
+            return (int)(points * Math.Pow(lvCount, 0.25));
         }
     }
 }
