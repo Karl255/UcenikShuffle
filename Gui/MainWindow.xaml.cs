@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -118,9 +119,10 @@ namespace UcenikShuffle.Gui
 					MessageBoxImage.Warning);
 				return;
 			}
-
+			
 			//if the numbers are too large, ask user for confirmation
-			if ((groupSizes.Average() >= 6 && groupSizes.Length >= 4) || lvCount >= 20)
+			int complexity = HelperMethods.GetShuffleComplexity(groupSizes, lvCount);
+			if (complexity > 10000 || lvCount > 200)
 			{
 				var choice = MessageBox.Show(
 					"S velikim brojevima proces može potrajati dosta dugo. Želite li nastaviti?",
