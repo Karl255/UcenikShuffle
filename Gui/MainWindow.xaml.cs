@@ -155,19 +155,35 @@ namespace UcenikShuffle.Gui
 			{
 				await _currentShuffleTask;
 			}
-			catch
+			catch(OperationCanceledException)
 			{
 				//Returning if the shuffle has been canceled
 				return;
 			}
+			
+			CleanupShuffle(shuffler);
+		}
 
-			// ---end of shuffling---
-
+		/// <summary>
+		/// This method stops the currently running shuffle operation and cleans up after that
+		/// </summary>
+		public void StopShuffle()
+		{
+			_cancellationToken.Cancel();
+			CleanupShuffle(null);
+		}
+		
+		/// <summary>
+		/// This method performs needed operations after the shuffle operation
+		/// </summary>
+		/// <param name="shuffler"></param>
+		private void CleanupShuffle(Shuffler shuffler)
+		{
 			_currentShuffleTask = null;
 			UniButton.Content = "Kreiraj raspored";
-
-			ResetOutputGrid(shuffler);
 			LoadingScreen.Visibility = Visibility.Collapsed;
+			if (shuffler == null) return;
+			ResetOutputGrid(shuffler);
 
 			//filling up the OutputGrid
 			{

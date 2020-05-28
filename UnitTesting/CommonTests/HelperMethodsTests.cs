@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using UcenikShuffle.Common;
+using UcenikShuffle.Common.Exceptions;
 using Xunit;
 
 namespace UcenikShuffle.UnitTests.CommonTests
@@ -44,13 +45,19 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		}
 
 		[Theory]
-		[InlineData(0, 1)]
 		[InlineData(1, 0)]
-		[InlineData(-1, 1)]
 		[InlineData(1, -1)]
 		private static void GetAllNumberCombinations_ShouldThrowArgumentException(int groupSize, int numberCount)
 		{
 			Assert.Throws<ArgumentException>(() => HelperMethods.GetAllNumberCombinations(groupSize, numberCount).ToList());
+		}
+
+		[Theory]
+		[InlineData(0, 1)]
+		[InlineData(-1, 1)]
+		private static void GetAllNumberCombinations_ShouldThrowGroupSizeParameterException(int groupSize, int numberCount)
+		{
+			Assert.Throws<GroupSizeParameterException>(() => HelperMethods.GetAllNumberCombinations(groupSize, numberCount).ToList());
 		}
 	}
 }

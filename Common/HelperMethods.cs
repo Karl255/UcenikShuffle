@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.Common
 {
@@ -17,9 +18,13 @@ namespace UcenikShuffle.Common
 			var combination = new List<int>();
 			
 			//Checking if passed parameters are valid
-			if (groupSize <= 0 || numberCount <= 0)
+			if (groupSize <= 0)
 			{
-				throw new ArgumentException("Group size and number count parameters must be positive integers!");
+				throw new GroupSizeParameterException();
+			} 
+			if (numberCount <= 0)
+			{
+				throw new ArgumentException("Broj učenika mora biti pozitivni cijeli broj!"); 
 			}
 			
 			//If group size is bigger than the number of available numbers
