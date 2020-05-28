@@ -1,24 +1,48 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Runtime.InteropServices;
 using UcenikShuffle.Common;
 using Xunit;
 
 namespace UcenikShuffle.UnitTests.CommonTests
 {
-    public class HelperMethodsTests
-    {
-        [Fact]
-        private static void HelperMethods_GetAllNumberCombinations()
-        {
-            //TODO: right now this entire function is used just to see how the method works (testing isn't built in yet)
-            var combinations = HelperMethods.GetAllNumberCombinations(10, 3);
-            foreach (var combination in combinations)
-            {
-                foreach (var number in combination)
-                {
-                    Debug.Write(number + " ");
-                }
-                Debug.WriteLine("");
-            }
-        }
-    }
+	public class HelperMethodsTests
+	{
+		[Theory]
+		[MemberData(nameof(Data))]
+		private static void GetAllNumberCombinations_ShouldWork(int groupSize, int numberCount, IEnumerable<IEnumerable<int>> expected)
+		{
+			var actual = HelperMethods.GetAllNumberCombinations(groupSize, numberCount).ToList();
+			expected = expected.ToList();
+			Assert.Equal(expected.Count(), actual.Count());
+            
+			//Checking if the lists match
+			foreach (var combination in expected)
+			{
+				var throwException = 
+					(from c in actual
+						where combination.Except(c).Any() == false && c.Count() == combination.Count()
+						select c).FirstOrDefault() == null;
+				if (throwException)
+				{
+					throw new Exception();
+				}
+			}
+		}
+        
+		public static IEnumerable<object[]> Data = new List<object[]>()
+		{
+			//Normal tests
+			new object[]{ 2,2, new int[][] { new[]{0,1} } },
+			new object[]{ 2,3, new int[][] { new[]{0,1}, new[]{0,2}, new[]{1,2} } },
+			new object[]{ 1,1, new int[][] { new[]{0} } },
+			//Unexpected data tests
+			//(0 group size)
+			new object[]{ 0,5, new int[][] {  } },
+			//(higher group size than number count)
+			new object[]{ 5,2, new int[][] { new[]{0,1} } }
+		};
+	}
 }
