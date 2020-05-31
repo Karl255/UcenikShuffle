@@ -92,7 +92,12 @@ namespace UcenikShuffle.Gui
 			_cancellationToken = new CancellationTokenSource();
 
 			//Parsing lv count input
-			if (int.TryParse(LvCountInput.Text, out var lvCount) == false)
+			int lvCount;
+			try
+			{
+				lvCount = Parsers.StringToLvCount(LvCountInput.Text);
+			}
+			catch
 			{
 				var message = "Broj laboratorijskih vježbi mora biti pozitivni cijeli broj!";
 				MessageBox.Show(message, "Neispravno polje", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -103,12 +108,7 @@ namespace UcenikShuffle.Gui
 			int[] groupSizes;
 			try
 			{
-				groupSizes =
-					GroupSizesInput.Text
-					.Replace(" ", null) // remove spaces
-					.Split(',', StringSplitOptions.RemoveEmptyEntries) //split by ','
-					.Select(int.Parse) //convert each to int
-					.ToArray();
+				groupSizes = Parsers.StringToGroupSizes(GroupSizesInput.Text).ToArray();
 			}
 			catch
 			{
