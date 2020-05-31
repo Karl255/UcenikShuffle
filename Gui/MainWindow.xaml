@@ -19,16 +19,18 @@
 		so I made the Grid background black and all the element's background white
 		I'm a geniuos
 		-->
-		<Grid x:Name="OutputGrid" Grid.Row="0" Background="Gray">
-			<Grid.Resources>
-				<Style TargetType="TextBlock">
-					<Setter Property="Background" Value="White" />
-					<Setter Property="Margin" Value="0.5" />
-					<Setter Property="Padding" Value="2" />
-					<Setter Property="TextAlignment" Value="Center" />
-				</Style>
-			</Grid.Resources>
-		</Grid>
+		<ScrollViewer Grid.Row="0">
+			<Grid x:Name="OutputGrid" Background="Gray">
+				<Grid.Resources>
+					<Style TargetType="TextBlock">
+						<Setter Property="Background" Value="White" />
+						<Setter Property="Margin" Value="0.5" />
+						<Setter Property="Padding" Value="2" />
+						<Setter Property="TextAlignment" Value="Center" />
+					</Style>
+				</Grid.Resources>
+			</Grid>
+		</ScrollViewer>
 
 		<!-- This grid is a loading screen which is used when shuffling is in progress -->
 		<UniformGrid x:Name="LoadingScreen" Grid.Row="0"
