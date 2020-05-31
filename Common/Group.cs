@@ -9,7 +9,7 @@ namespace UcenikShuffle.Common
 	public class Group
 	{
 
-		private static List<HashSet<Student>> _history;
+		public static List<HashSet<Student>> History;
 		public readonly int Size;
 
 		public Group(int size)
@@ -23,11 +23,10 @@ namespace UcenikShuffle.Common
 		/// <param name="studentPool">List of all available students (the ones that are in other groups for the current LV should be excluded)</param>
 		/// <param name="cancellationSource">Cancellation source for shuffle canceling</param>
 		/// <returns>List of all available students (after removing those who were chosen for the current group)</returns>
-		public void AddStudents(List<Student> studentPool, CancellationTokenSource cancellationSource, out List<Student> availableStudents, out List<Student> addedStudents)
+		public void AddStudents(List<Student> studentPool, CancellationTokenSource cancellationSource, out List<Student> availableStudents, out List<Student> addedStudents, out bool clearHistorySuggested)
 		{
+			clearHistorySuggested = false;
 			cancellationSource.Token.ThrowIfCancellationRequested();
-
-			//Getting the student that sat the least amount of times in the current group
 			studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[this]).ToList();
 
 			//-------- ALGORITHM BEGINNING --------//
@@ -52,9 +51,17 @@ namespace UcenikShuffle.Common
 				int sum = 0;
 				foreach (var student in combination)
 				{
-					sum += (from history in student.StudentSittingHistory
+					//Minimum sitting amount is used so that bigger differences can be amplified
+					int min = 0;
+					if (student.StudentSittingHistory.Count > 0)
+					{
+						min = (from s in student.StudentSittingHistory select s.Value).Min();
+					}
+					var sittingValues = 
+						from history in student.StudentSittingHistory
 						where combination.Contains(history.Key)
-						select history.Value).Sum();
+						select history.Value - min;
+					sum += sittingValues.Sum();
 				}
 				return sum;
 			}).ToList();
@@ -76,13 +83,8 @@ namespace UcenikShuffle.Common
 			//If all groups have been tried out
 			if (newEntry == null)
 			{
-				newEntry = _history.Where(h => h.Count == Size && !h.Except(studentPool).Any()).OrderBy(h => SearchGroupHistory(h).Count()).First();
-				
-				//Removing unnecessary combinations
-				foreach (var combination in studentCombinations)
-				{
-					_history.RemoveAll(h => h.Count == combination.Count() && !h.Except(combination).Any());
-				}
+				newEntry = History.Where(h => h.Count == Size && !h.Except(studentPool).Any()).OrderBy(h => SearchGroupHistory(h).Count()).First();
+				clearHistorySuggested = true;
 			}
 
 			//Updating histories of individual students
@@ -101,7 +103,7 @@ namespace UcenikShuffle.Common
 
 			//Updating history for the current group
 			addedStudents = new List<Student>(newEntry);
-			_history.Add(new HashSet<Student>(addedStudents));
+			History.Add(new HashSet<Student>(addedStudents));
 
 			//Removing students in the chosen group from the result
 			foreach (var student in newEntry)
@@ -118,7 +120,7 @@ namespace UcenikShuffle.Common
 		public static IEnumerable<IEnumerable<Student>> SearchGroupHistory(IEnumerable<Student> students)
 		{
 			//Going trough all groups that match the size
-			foreach (var history in _history.Where(h => h.Count == students.Count()))
+			foreach (var history in History.Where(h => h.Count == students.Count()))
 			{
 				///Returning the history information if it matches parameter <param name="students"/>
 				if (history.Except(students).Count() == 0)
@@ -134,10 +136,5 @@ namespace UcenikShuffle.Common
 			&& group2 != null
 			&& group1.Count() == group2.Count()
 			&& group1.Except(group2).Count() == 0;
-
-		public static void ResetHistory()
-		{
-			_history = new List<HashSet<Student>>();
-		}
 	}
 }
