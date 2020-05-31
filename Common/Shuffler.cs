@@ -13,11 +13,13 @@ namespace UcenikShuffle.Common
 
 		private readonly CancellationTokenSource _cancellationSource;
 		private IProgress<double> _progress;
+		public List<List<Student>> ShuffleResult { get; private set; }
 
 		public Shuffler(int lvCount, IEnumerable<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
 			_cancellationSource = cancellationSource;
 
+			ShuffleResult = new List<List<Student>>();
 			LvCount = lvCount;
 			Groups = new List<Group>(groupSizes.Select(x => new Group(x)));
 
@@ -31,12 +33,12 @@ namespace UcenikShuffle.Common
 			}
 		}
 
-		public void Shuffle(Progress<double> progress = null)
+		public List<List<Student>> Shuffle(Progress<double> progress = null)
 		{
 			_progress = progress;
 
 			//Resetting group history after each shuffle
-			Group.History = new List<HashSet<Student>>();
+			Group.ResetHistory();
 
 			//Going trough each LV
 			_progress?.Report(0);
@@ -45,10 +47,12 @@ namespace UcenikShuffle.Common
 				var studentPool = new List<Student>(Students);
 				foreach (var group in Groups)
 				{
-					studentPool = group.AddStudents(studentPool, _cancellationSource);
+					group.AddStudents(studentPool, _cancellationSource,out studentPool, out var addedStudents);
+					ShuffleResult.Add(addedStudents);
 				}
 				_progress?.Report((float)(lv + 1) / LvCount);
 			}
+			return ShuffleResult;
 		}
 	}
 }
