@@ -19,8 +19,7 @@
 		so I made the Grid background black and all the element's background white
 		I'm a geniuos
 		-->
-		<ScrollViewer Grid.Row="0" MaxHeight="500" MaxWidth="1000"
-					  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+		<ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
 			<Grid x:Name="OutputGrid" Background="Gray">
 				<Grid.Resources>
 					<Style TargetType="TextBlock">
