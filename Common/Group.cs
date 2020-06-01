@@ -91,7 +91,7 @@ namespace UcenikShuffle.Common
 					sum += sittingValues.Sum();
 				}
 				return sum;
-			}).ToList();
+			});
 			var newEntry = orderedCombinations.First();
 
 			//-------- ALGORITHM ENDING --------//
