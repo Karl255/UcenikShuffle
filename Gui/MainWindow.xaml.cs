@@ -189,14 +189,17 @@ namespace UcenikShuffle.Gui
 
 			//filling up the OutputGrid
 			{
-				int x = 1;
+				int x = 0;
+				
+				//Outputting each student combination to the output grid
 				for (int i = 0; i < shuffler.ShuffleResult.Count; i++)
 				{
-
 					var set = shuffler.ShuffleResult[i].OrderBy(x => x.Id).ToArray();
 					for (int j = 0; j < set.Length; j++)
 					{
-						OutputGrid.AddTextAt(set[j].Label, x % shuffler.Students.Count + j, x / shuffler.Students.Count + 1);
+						int row = x / shuffler.Students.Count + 1; 
+						int column = x % shuffler.Students.Count + j + 1;
+						OutputGrid.AddTextAt(set[j].Label, column, row);
 					}
 					x += set.Length;
 				}
