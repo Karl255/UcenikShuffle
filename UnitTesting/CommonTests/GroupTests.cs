@@ -25,8 +25,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			for (var i = 0; i < groups.Count; i++)
 			{
 				var result = Group.SearchGroupHistory(groups[i]);
-				var actual = result.Count();
-				Assert.Equal(results[i], actual);
+				Assert.Equal(results[i], result.Count());
 			}
 		}
 
@@ -46,10 +45,12 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		private static Shuffler InsertTestData()
 		{
 			var shuffler = new Shuffler(1, new[]{3}, new CancellationTokenSource());
+
 			var students = shuffler.Students;
-			shuffler.ShuffleResult.Add(new List<Student>() { students[0], students[1] });
-			shuffler.ShuffleResult.Add(new List<Student>() { students[0], students[1] });
-			shuffler.ShuffleResult.Add(new List<Student>() { students[0], students[2] });
+			Group.History = new List<HashSet<Student>>();
+			Group.History.Add(new HashSet<Student>() { students[0], students[1] });
+			Group.History.Add(new HashSet<Student>() { students[0], students[1] });
+			Group.History.Add(new HashSet<Student>() { students[0], students[2] });
 
 			return shuffler;
 		}

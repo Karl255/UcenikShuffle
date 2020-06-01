@@ -188,10 +188,10 @@ namespace UcenikShuffle.Gui
 			//filling up the OutputGrid
 			{
 				int x = 1;
-				for (int i = 0; i < shuffler.ShuffleResult.Count; i++)
+				for (int i = 0; i < Group.History.Count; i++)
 				{
 
-					var set = shuffler.ShuffleResult[i].OrderBy(x => x.Id).ToArray();
+					var set = Group.History[i].OrderBy(x => x.Id).ToArray();
 					for (int j = 0; j < set.Length; j++)
 					{
 						OutputGrid.AddTextAt(set[j].Label, x % shuffler.Students.Count + j, x / shuffler.Students.Count + 1);
