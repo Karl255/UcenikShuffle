@@ -103,19 +103,7 @@ namespace UcenikShuffle.Gui
 
 			//Parsing group sizes input
 			int[] groupSizes;
-			try
-			{
-				groupSizes = Parsers.StringToGroupSizes(GroupSizesInput.Text).ToArray();
-			}
-			catch
-			{
-				MessageBox.Show(
-					"Veličine grupa moraju biti cijeli brojevi odvojeni zarezom\nPrimjeri:\n1,2,3,4,5\n1, 2, 3",
-					"Neispravno polje",
-					MessageBoxButton.OK,
-					MessageBoxImage.Warning);
-				return;
-			}
+			groupSizes = Parsers.StringToGroupSizes(GroupSizesInput.Text).ToArray();
 
 			//if the numbers are too large, ask user for confirmation
 			int complexity = HelperMethods.GetShuffleComplexity(groupSizes, lvCount);

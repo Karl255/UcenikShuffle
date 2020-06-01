@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.Common
 {
@@ -29,11 +30,11 @@ namespace UcenikShuffle.Common
 				//Checking if group size if a positive integer
 				if (int.TryParse(s, out int size) == false)
 				{
-					throw new ArgumentException();
+					throw new GroupSizeParameterException();
 				}
 				if (size <= 0)
 				{
-					throw new ArgumentException();
+					throw new GroupSizeParameterException();
 				}
 
 				yield return size;

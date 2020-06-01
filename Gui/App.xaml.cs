@@ -27,7 +27,7 @@ namespace UcenikShuffle.Gui
 			switch (exceptionTypeString)
 			{
 				case nameof(GroupSizeParameterException):
-					message = "Veličine grupa moraju biti pozitivni cijeli brojevi!";
+					message = "Veličine grupa moraju biti pozitivni cijeli brojevi odvojeni zarezom\nPrimjeri:\n1,2,3,4,5\n1, 2, 3";
 					image = MessageBoxImage.Warning;
 					break;
 				case nameof(ArgumentException):
