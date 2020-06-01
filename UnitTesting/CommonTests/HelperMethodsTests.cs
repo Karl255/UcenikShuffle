@@ -19,7 +19,9 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			new object[]{ 1,1, new int[][] { new[]{0} } },
 			//Unexpected data tests
 			//(higher group size than number count)
-			new object[]{ 5,2, new int[][] { new[]{0,1} } }
+			new object[]{ 5,2, new int[][] { new[]{0,1} } },
+			//small group size
+			new object[]{1,5, new int[][]{ new[]{0}, new[]{1}, new[]{2}, new[]{3}, new[]{4},  }}
 		};
 		
 		[Theory]

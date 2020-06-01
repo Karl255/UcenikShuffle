@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Threading;
+using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.Common
 {
@@ -23,14 +27,32 @@ namespace UcenikShuffle.Common
 		public void AddStudents(List<Student> studentPool, out List<Student> availableStudents, out List<Student> addedStudents, out bool clearHistorySuggested)
 		{
 			clearHistorySuggested = false;
-			studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[this]).ToList();
+			
+			//Ordering by difference in maximum and minimum amount of times student sat with other students
+			//This is done so that students that were previously neglected get the best possible schedule
+			studentPool = studentPool
+				.OrderByDescending(x =>
+				{
+					if (x.StudentSittingHistory.Count > 0)
+					{
+						var studentSittingHistoryValues = x.StudentSittingHistory.Select(h => h.Value).ToList();
+						var difference = studentSittingHistoryValues.Max() - studentSittingHistoryValues.Min();
+						return difference;
+					}
+					return 0;
+				})
+				//Ordering by amount of times students sat in this groups
+				.ThenBy(x => x.GroupSittingHistory[this])
+				//Ordering by student ID
+				.ThenBy(x => x.Id)
+				.ToList();
 
 			//-------- ALGORITHM BEGINNING --------//
-
+			
 			//Getting all combinations for a group
 			var numberCombinations = HelperMethods
 				.GetAllNumberCombinations(Size, studentPool.Count);
-
+			
 			//Converting number combinations to student combinations
 			var studentCombinations = new List<List<Student>>();
 			foreach (var combination in numberCombinations)
@@ -38,30 +60,24 @@ namespace UcenikShuffle.Common
 				var studentCombination = from c in combination select studentPool[c];
 				studentCombinations.Add(studentCombination.ToList());
 			}
-
+			
 			//Ordering student combinations by amount of times each student sat with other students in the group
 			studentCombinations = studentCombinations.OrderBy(combination =>
 			{
 				int sum = 0;
 				foreach (var student in combination)
 				{
-					//Minimum sitting amount is used so that bigger differences can be amplified
-					int min = 0;
-					if (student.StudentSittingHistory.Count > 0)
-					{
-						min = (from s in student.StudentSittingHistory select s.Value).Min();
-					}
 					var sittingValues =
 						from history in student.StudentSittingHistory
 						where combination.Contains(history.Key)
-						select history.Value - min;
+						select history.Value;
 					sum += sittingValues.Sum();
 				}
 				return sum;
 			}).ToList();
 
 			//-------- ALGORITHM ENDING --------//
-
+			
 			//Going trough all group combinations
 			HashSet<Student> newEntry = null;
 			foreach (var combination in studentCombinations)
