@@ -22,12 +22,13 @@ namespace UcenikShuffle.Common
 		/// This method tries to find the best possible combination of students to put in the same group for a LV
 		/// </summary>
 		/// <param name="studentPool">List of all available students (the ones that are in other groups for the current LV should be excluded)</param>
-		/// <param name="cancellationSource">Cancellation source for shuffle canceling</param>
+		/// <param name="availableStudents">Students that can be used for other groups</param>
+		/// <param name="addedStudents">Students that have been chosen for the current group</param>
 		/// <returns>List of all available students (after removing those who were chosen for the current group)</returns>
 		public void AddStudents(List<Student> studentPool, out List<Student> availableStudents, out List<Student> addedStudents)
 		{
 			studentPool = studentPool
-				//Ordering by amount of times a student sat in this group	
+				//Ordering by amount of times a student sat in this group (unless all groups are the same size)	
 				.OrderBy(x => x.GroupSittingHistory[this])
 				//Ordering by difference in maximum and minimum amount of times student sat with other students
 				//This is done so that students that were previously neglected get the best possible schedule
@@ -48,8 +49,7 @@ namespace UcenikShuffle.Common
 			//-------- ALGORITHM BEGINNING --------//
 			
 			//Getting all combinations for a group
-			var numberCombinations = HelperMethods
-				.GetAllNumberCombinations(Size, studentPool.Count);
+			var numberCombinations = HelperMethods.GetAllNumberCombinations(Size, studentPool.Count);
 			
 			//Converting number combinations to student combinations
 			var studentCombinations = new List<List<Student>>();
@@ -59,17 +59,27 @@ namespace UcenikShuffle.Common
 				studentCombinations.Add(studentCombination.ToList());
 			}
 			
-			//Ordering student combinations by amount of times each student sat with other students in the group
+			//Getting minimum amount of times a student sat with other students
+			//(this is done to mitigate the effect high numbers have on the shuffle algorithm)
 			int min = 0;
+			bool firstValue = true;
 			foreach (var student in studentPool)
 			{
-				if (student.StudentSittingHistory.Count > 0)
+				if (student.StudentSittingHistory.Count >= studentPool.Count - 1)
 				{
 					int temp = student.StudentSittingHistory.Select(h => h.Value).Min();
-					min = (temp < min) ? temp : min;
+					min = (temp < min || firstValue) ? temp : min;
 				}
+				else
+				{
+					min = 0;
+					break;
+				}
+				firstValue = false;
 			}
-			var newEntry = studentCombinations.OrderBy(combination =>
+			
+			//Getting the best possible combination of students
+			var orderedCombinations = studentCombinations.OrderBy(combination =>
 			{
 				int sum = 0;
 				foreach (var student in combination)
@@ -81,7 +91,8 @@ namespace UcenikShuffle.Common
 					sum += sittingValues.Sum();
 				}
 				return sum;
-			}).First();
+			});
+			var newEntry = orderedCombinations.First();
 
 			//-------- ALGORITHM ENDING --------//
 

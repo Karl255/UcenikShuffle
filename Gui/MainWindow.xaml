@@ -53,7 +53,7 @@
 							 Minimum="0" Maximum="1"/>
 
 				<TextBlock x:Name="ProgressText" FontSize="20"
-						   Text="50%" TextAlignment="Center" />
+						   Text="0%" TextAlignment="Center" />
 
 			</Grid>
 		</UniformGrid>
