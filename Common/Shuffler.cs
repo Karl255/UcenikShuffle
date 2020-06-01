@@ -42,12 +42,12 @@ namespace UcenikShuffle.Common
 
 			//Resetting group history after each shuffle
 			Group.History = new List<HashSet<Student>>();
+			Groups = Groups.OrderByDescending(g => g.Size).ToList();
 
 			//Going trough each LV
 			_progress?.Report(0);
 			for (int lv = 0; lv < LvCount; lv++)
 			{
-				var historyCopy = Group.History.ToList();
 				var studentPool = new List<Student>(Students);
 				for(int i = 0; i < Groups.Count; i++)
 				{
