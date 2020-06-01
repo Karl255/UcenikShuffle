@@ -23,19 +23,16 @@ namespace UcenikShuffle.Common
 		/// <param name="studentPool">List of all available students (the ones that are in other groups for the current LV should be excluded)</param>
 		/// <param name="cancellationSource">Cancellation source for shuffle canceling</param>
 		/// <returns>List of all available students (after removing those who were chosen for the current group)</returns>
-		public void AddStudents(List<Student> studentPool, CancellationTokenSource cancellationSource, out List<Student> availableStudents, out List<Student> addedStudents, out bool clearHistorySuggested)
+		public void AddStudents(List<Student> studentPool, out List<Student> availableStudents, out List<Student> addedStudents, out bool clearHistorySuggested)
 		{
 			clearHistorySuggested = false;
-			cancellationSource.Token.ThrowIfCancellationRequested();
 			studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[this]).ToList();
 
 			//-------- ALGORITHM BEGINNING --------//
 			
 			//Getting all combinations for a group
 			var numberCombinations = HelperMethods
-				.GetAllNumberCombinations(Size, studentPool.Count)
-				.AsParallel()
-				.WithCancellation(cancellationSource.Token);
+				.GetAllNumberCombinations(Size, studentPool.Count);
 			
 			//Converting number combinations to student combinations
 			var studentCombinations = new List<List<Student>>();

@@ -51,7 +51,8 @@ namespace UcenikShuffle.Common
 				var studentPool = new List<Student>(Students);
 				for(int i = 0; i < Groups.Count; i++)
 				{
-					Groups[i].AddStudents(studentPool, _cancellationSource,out studentPool, out var addedStudents, out bool historyClearSuggested);
+					_cancellationSource.Token.ThrowIfCancellationRequested();
+					Groups[i].AddStudents(studentPool,out studentPool, out var addedStudents, out bool historyClearSuggested);
 					ShuffleResult.Add(addedStudents);
 					if (historyClearSuggested)
 					{
