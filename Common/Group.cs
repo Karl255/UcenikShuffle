@@ -37,7 +37,9 @@ namespace UcenikShuffle.Common
 					if (x.StudentSittingHistory.Count > 0)
 					{
 						var studentSittingHistoryValues = x.StudentSittingHistory.Select(h => h.Value).ToList();
-						var difference = studentSittingHistoryValues.Max() - studentSittingHistoryValues.Min();
+						int max = studentSittingHistoryValues.Max();
+						int min = x.StudentSittingHistory.Count < (studentPool.Count - 1) ? 0 : studentSittingHistoryValues.Min();
+						var difference = max - min;
 						return difference;
 					}
 					return 0;
