@@ -59,16 +59,16 @@ namespace UcenikShuffle.Common
 				_progress?.Report((float)(lv + 1) / LvCount);
 			}
 			
-			//DEBUGGING OUTPUT: used for testing purposes
-			foreach (var student in Students)
-			{
-				Debug.WriteLine($"Student {student.Id}");
-				foreach (var h in student.StudentSittingHistory.OrderBy(h => h.Key.Id))
-				{
-					Debug.WriteLine($"{h.Key.Id}: {h.Value}");
-				}
-				Debug.WriteLine("");
-			}
+			// //DEBUGGING OUTPUT: used for testing purposes
+			// foreach (var student in Students)
+			// {
+			// 	Debug.WriteLine($"Student {student.Id}");
+			// 	foreach (var h in student.StudentSittingHistory.OrderBy(h => h.Key.Id))
+			// 	{
+			// 		Debug.WriteLine($"{h.Key.Id}: {h.Value}");
+			// 	}
+			// 	Debug.WriteLine("");
+			// }
 
 			return ShuffleResult;
 		}
