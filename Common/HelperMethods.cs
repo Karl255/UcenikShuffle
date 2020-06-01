@@ -16,27 +16,27 @@ namespace UcenikShuffle.Common
 		public static IEnumerable<IEnumerable<int>> GetAllNumberCombinations(int groupSize, int numberCount)
 		{
 			var combination = new List<int>();
-			
+
 			//Checking if passed parameters are valid
 			if (groupSize <= 0)
 			{
 				throw new GroupSizeParameterException();
-			} 
+			}
 			if (numberCount <= 0)
 			{
-				throw new ArgumentException("Broj učenika mora biti pozitivni cijeli broj!"); 
+				throw new ArgumentException("Broj učenika mora biti pozitivni cijeli broj!");
 			}
-			
+
 			//If group size is bigger than the number of available numbers
 			if (groupSize > numberCount)
 			{
 				yield return Enumerable.Range(0, numberCount);
 			}
-			
+
 			//Initial combination
 			combination.AddRange(Enumerable.Range(0, groupSize - 1));
-            
-			for(int startNumber = 0; startNumber + groupSize <= numberCount; startNumber++)
+
+			for (int startNumber = 0; startNumber + groupSize <= numberCount; startNumber++)
 			{
 				//Changing the last number until it hits max number
 				for (int lastNumber = startNumber + groupSize - 1; lastNumber < numberCount; lastNumber++)
@@ -47,7 +47,7 @@ namespace UcenikShuffle.Common
 					yield return new List<int>(combination);
 					combination.Remove(lastNumber);
 				}
-				
+
 				//Popping the first number and adding another number to the base combination instead of the popped number
 				if (combination.Count > 0)
 				{
@@ -67,7 +67,7 @@ namespace UcenikShuffle.Common
 		{
 			int studentCount = groupSizes.Sum();
 			int points = 0;
-            
+
 			//Adding up complexity of each group
 			foreach (var size in groupSizes)
 			{
@@ -77,15 +77,15 @@ namespace UcenikShuffle.Common
 				{
 					combinations += i;
 				}
-                
+
 				//Points are an arbitrary value used to measure shuffle complexity
 				//Points heavily depend on the size of the group since it is the value which affects the complexity the most 
 				points += combinations * size;
-                
+
 				//Removing number of students from the list of available students
 				studentCount -= size;
 			}
-            
+
 			//Adding number of laboratory exercises into consideration when calculating complexity
 			//(this value isn't as important as number of combinations or group size - this was found out during testing)
 			return (int)(points * Math.Pow(lvCount, 0.25));
