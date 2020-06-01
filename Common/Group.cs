@@ -24,14 +24,14 @@ namespace UcenikShuffle.Common
 		/// <param name="studentPool">List of all available students (the ones that are in other groups for the current LV should be excluded)</param>
 		/// <param name="cancellationSource">Cancellation source for shuffle canceling</param>
 		/// <returns>List of all available students (after removing those who were chosen for the current group)</returns>
-		public void AddStudents(List<Student> studentPool, out List<Student> availableStudents, out List<Student> addedStudents, out bool clearHistorySuggested)
+		public void AddStudents(List<Student> studentPool, out List<Student> availableStudents, out List<Student> addedStudents)
 		{
-			clearHistorySuggested = false;
-			
-			//Ordering by difference in maximum and minimum amount of times student sat with other students
-			//This is done so that students that were previously neglected get the best possible schedule
 			studentPool = studentPool
-				.OrderByDescending(x =>
+				//Ordering by amount of times a student sat in this group	
+				.OrderBy(x => x.GroupSittingHistory[this])
+				//Ordering by difference in maximum and minimum amount of times student sat with other students
+				//This is done so that students that were previously neglected get the best possible schedule
+				.ThenByDescending(x =>
 				{
 					if (x.StudentSittingHistory.Count > 0)
 					{
@@ -41,8 +41,6 @@ namespace UcenikShuffle.Common
 					}
 					return 0;
 				})
-				//Ordering by amount of times students sat in this groups
-				.ThenBy(x => x.GroupSittingHistory[this])
 				//Ordering by student ID
 				.ThenBy(x => x.Id)
 				.ToList();
@@ -62,7 +60,16 @@ namespace UcenikShuffle.Common
 			}
 			
 			//Ordering student combinations by amount of times each student sat with other students in the group
-			studentCombinations = studentCombinations.OrderBy(combination =>
+			int min = 0;
+			foreach (var student in studentPool)
+			{
+				if (student.StudentSittingHistory.Count > 0)
+				{
+					int temp = student.StudentSittingHistory.Select(h => h.Value).Min();
+					min = (temp < min) ? temp : min;
+				}
+			}
+			var newEntry = studentCombinations.OrderBy(combination =>
 			{
 				int sum = 0;
 				foreach (var student in combination)
@@ -70,32 +77,13 @@ namespace UcenikShuffle.Common
 					var sittingValues =
 						from history in student.StudentSittingHistory
 						where combination.Contains(history.Key)
-						select history.Value;
+						select history.Value - min;
 					sum += sittingValues.Sum();
 				}
 				return sum;
-			}).ToList();
+			}).First();
 
 			//-------- ALGORITHM ENDING --------//
-			
-			//Going trough all group combinations
-			HashSet<Student> newEntry = null;
-			foreach (var combination in studentCombinations)
-			{
-				//Checking if current group combination is unique (exiting the loop if that's the case)
-				if (!SearchGroupHistory(combination).Any())
-				{
-					newEntry = new HashSet<Student>(combination);
-					break;
-				}
-			}
-
-			//If all groups have been tried out
-			if (newEntry == null)
-			{
-				newEntry = History.Where(h => h.Count == Size && !h.Except(studentPool).Any()).OrderBy(h => SearchGroupHistory(h).Count()).First();
-				clearHistorySuggested = true;
-			}
 
 			//Updating histories of individual students
 			foreach (var stud1 in newEntry)

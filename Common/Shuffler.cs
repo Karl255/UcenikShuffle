@@ -48,55 +48,14 @@ namespace UcenikShuffle.Common
 			for (int lv = 0; lv < LvCount; lv++)
 			{
 				var historyCopy = Group.History.ToList();
-				var historyClearCheck = false;
 				var studentPool = new List<Student>(Students);
 				for(int i = 0; i < Groups.Count; i++)
 				{
 					_cancellationSource.Token.ThrowIfCancellationRequested();
-					Groups[i].AddStudents(studentPool,out studentPool, out var addedStudents, out bool historyClearSuggested);
+					Groups[i].AddStudents(studentPool,out studentPool, out var addedStudents);
 					ShuffleResult.Add(addedStudents);
-					if (historyClearSuggested)
-					{
-						historyClearCheck = true;
-					}
 				}
-				
-				//Checking if history needs to cleared
-				if (historyClearCheck)
-				{
-					var sizes = Groups.Select(g => g.Size).OrderBy(s => s).Distinct();
-					
-					//Going trough each group size
-					foreach (var size in sizes)
-					{
-						bool clearHistory = true;
-						var filteredHistory = Group.History.Where(h => h.Count == size).ToList();
-						
-						//Checking if history for this group size needs to be cleared
-						var numberCombinations = HelperMethods.GetAllNumberCombinations(size, Students.Count);
-						foreach (var numberCombination in numberCombinations)
-						{
-							var studentCombination = new List<Student>(
-								from index in numberCombination
-								select Students[index]);
-							if (filteredHistory.Where(h => !h.Except(studentCombination).Any()).Any() == false)
-							{
-								clearHistory = false;
-								break;
-							}
-						}
-						
-						//If history for this group size needs to be cleared
-						if (clearHistory)
-						{
-							var extraHistory = Group.History.Except(historyCopy).ToList();
-							historyCopy.RemoveAll(h => h.Count == size);
-							Group.History = new List<HashSet<Student>>(historyCopy);
-							Group.History.AddRange(extraHistory);
-						}
-					}
-				}
-				
+
 				_progress?.Report((float)(lv + 1) / LvCount);
 			}
 			
