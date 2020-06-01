@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
-using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.Common
 {
@@ -49,30 +48,30 @@ namespace UcenikShuffle.Common
 				var historyCopy = Group.History.ToList();
 				var historyClearCheck = false;
 				var studentPool = new List<Student>(Students);
-				for(int i = 0; i < Groups.Count; i++)
+				for (int i = 0; i < Groups.Count; i++)
 				{
 					_cancellationSource.Token.ThrowIfCancellationRequested();
-					Groups[i].AddStudents(studentPool,out studentPool, out var addedStudents, out bool historyClearSuggested);
+					Groups[i].AddStudents(studentPool, out studentPool, out var addedStudents, out bool historyClearSuggested);
 					ShuffleResult.Add(addedStudents);
 					if (historyClearSuggested)
 					{
 						historyClearCheck = true;
 					}
 				}
-				
+
 				//Checking if history needs to cleared
 				if (historyClearCheck)
 				{
-					var sizes = 
-						(from g in Groups 
-						select g.Size).OrderBy(s => s).Distinct();
-					
+					var sizes =
+						(from g in Groups
+						 select g.Size).OrderBy(s => s).Distinct();
+
 					//Going trough each group size
 					foreach (var size in sizes)
 					{
 						bool clearHistory = true;
 						var filteredHistory = Group.History.Where(h => h.Count == size).ToList();
-						
+
 						//Checking if history for this group size needs to be cleared
 						var numberCombinations = HelperMethods.GetAllNumberCombinations(size, Students.Count);
 						foreach (var numberCombination in numberCombinations)
@@ -86,7 +85,7 @@ namespace UcenikShuffle.Common
 								break;
 							}
 						}
-						
+
 						//If history for this group size needs to be cleared
 						if (clearHistory)
 						{
@@ -97,14 +96,15 @@ namespace UcenikShuffle.Common
 						}
 					}
 				}
-				
+
 				_progress?.Report((float)(lv + 1) / LvCount);
 			}
 
-			var tempResult = 
-				(from resultRow in ShuffleResult select 
-					(from student in resultRow 
-					select student.Id).ToList()).ToList();
+			var tempResult =
+				(from resultRow in ShuffleResult
+				 select
+(from student in resultRow
+ select student.Id).ToList()).ToList();
 			//int err = 0;
 			for (int i = 0; i < Students.Count; i++)
 			{
@@ -115,10 +115,10 @@ namespace UcenikShuffle.Common
 					{
 						continue;
 					}
-					var count = 
+					var count =
 						(from r in tempResult
-						where r.Contains(i + 1) && r.Contains(j + 1)
-						select r).Count();
+						 where r.Contains(i + 1) && r.Contains(j + 1)
+						 select r).Count();
 					Debug.WriteLine(count);
 					// if (count < 140 || count > 160)
 					// {
@@ -129,7 +129,7 @@ namespace UcenikShuffle.Common
 				Debug.WriteLine("");
 			}
 			//Debug.WriteLine(err);
-			
+
 			return ShuffleResult;
 		}
 	}

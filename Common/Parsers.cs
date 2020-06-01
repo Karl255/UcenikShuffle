@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace UcenikShuffle.Common
 {
@@ -19,11 +18,11 @@ namespace UcenikShuffle.Common
 			{
 				throw new ArgumentException();
 			}
-			
+
 			//Splitting group sizes
 			var groupSizes = value.Replace(" ", null) // remove spaces
 				.Split(',', StringSplitOptions.RemoveEmptyEntries); //split by ','
-			
+
 			//Returning group sizes one by one
 			foreach (var s in groupSizes)
 			{
@@ -36,7 +35,7 @@ namespace UcenikShuffle.Common
 				{
 					throw new ArgumentException();
 				}
-				
+
 				yield return size;
 			}
 		}
@@ -66,6 +65,6 @@ namespace UcenikShuffle.Common
 			}
 
 			return lvCount;
-		} 
+		}
 	}
 }

@@ -1,8 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Threading;
-using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.Common
 {
@@ -29,11 +26,11 @@ namespace UcenikShuffle.Common
 			studentPool = studentPool.OrderBy(x => x.GroupSittingHistory[this]).ToList();
 
 			//-------- ALGORITHM BEGINNING --------//
-			
+
 			//Getting all combinations for a group
 			var numberCombinations = HelperMethods
 				.GetAllNumberCombinations(Size, studentPool.Count);
-			
+
 			//Converting number combinations to student combinations
 			var studentCombinations = new List<List<Student>>();
 			foreach (var combination in numberCombinations)
@@ -41,7 +38,7 @@ namespace UcenikShuffle.Common
 				var studentCombination = from c in combination select studentPool[c];
 				studentCombinations.Add(studentCombination.ToList());
 			}
-			
+
 			//Ordering student combinations by amount of times each student sat with other students in the group
 			studentCombinations = studentCombinations.OrderBy(combination =>
 			{
@@ -54,7 +51,7 @@ namespace UcenikShuffle.Common
 					{
 						min = (from s in student.StudentSittingHistory select s.Value).Min();
 					}
-					var sittingValues = 
+					var sittingValues =
 						from history in student.StudentSittingHistory
 						where combination.Contains(history.Key)
 						select history.Value - min;
@@ -64,7 +61,7 @@ namespace UcenikShuffle.Common
 			}).ToList();
 
 			//-------- ALGORITHM ENDING --------//
-			
+
 			//Going trough all group combinations
 			HashSet<Student> newEntry = null;
 			foreach (var combination in studentCombinations)

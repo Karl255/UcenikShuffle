@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -117,7 +116,7 @@ namespace UcenikShuffle.Gui
 					MessageBoxImage.Warning);
 				return;
 			}
-			
+
 			//if the numbers are too large, ask user for confirmation
 			int complexity = HelperMethods.GetShuffleComplexity(groupSizes, lvCount);
 			if (complexity > 10000 || lvCount > 200)
@@ -154,7 +153,7 @@ namespace UcenikShuffle.Gui
 			{
 				await _currentShuffleTask;
 			}
-			catch(OperationCanceledException)
+			catch (OperationCanceledException)
 			{
 				//if the shuffle has been canceled
 				UniButton.Content = "Kreiraj raspored";
@@ -173,7 +172,7 @@ namespace UcenikShuffle.Gui
 			_cancellationToken.Cancel();
 			CleanupShuffle(null);
 		}
-		
+
 		/// <summary>
 		/// This method performs needed operations after the shuffle operation
 		/// </summary>
@@ -183,20 +182,21 @@ namespace UcenikShuffle.Gui
 			_currentShuffleTask = null;
 			UniButton.Content = "Kreiraj raspored";
 			LoadingScreen.Visibility = Visibility.Collapsed;
-			if (shuffler == null) return;
+			if (shuffler == null)
+				return;
 			ResetOutputGrid(shuffler);
 
 			//filling up the OutputGrid
 			{
 				int x = 0;
-				
+
 				//Outputting each student combination to the output grid
 				for (int i = 0; i < shuffler.ShuffleResult.Count; i++)
 				{
 					var set = shuffler.ShuffleResult[i].OrderBy(x => x.Id).ToArray();
 					for (int j = 0; j < set.Length; j++)
 					{
-						int row = x / shuffler.Students.Count + 1; 
+						int row = x / shuffler.Students.Count + 1;
 						int column = x % shuffler.Students.Count + j + 1;
 						OutputGrid.AddTextAt(set[j].Label, column, row);
 					}
