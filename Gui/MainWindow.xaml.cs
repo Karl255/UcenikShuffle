@@ -69,14 +69,12 @@ namespace UcenikShuffle.Gui
 			if (_currentShuffleTask is null)
 			{
 				//if it's not running
-				UniButton.Content = "Prekini";
 				await Shuffle();
 			}
-			if(_currentShuffleTask != null || _cancellationToken.Token.IsCancellationRequested)
+			else
 			{
 				_currentShuffleTask = null;
 				_cancellationToken?.Cancel();
-				UniButton.Content = "Kreiraj raspored";
 				LoadingScreen.Visibility = Visibility.Collapsed;
 			}
 
@@ -133,15 +131,14 @@ namespace UcenikShuffle.Gui
 
 				//if anything but the Yes button was clicked
 				if (choice != MessageBoxResult.Yes)
-				{
-					_cancellationToken.Cancel();
-				}
+					return;
 			}
 
 			// ---start of shuffling procedure---
 
-			//showing loading screen while shuffling is in progress
+			//showing loading screen and cancel button while shuffling is in progress
 			LoadingScreen.Visibility = Visibility.Visible;
+			UniButton.Content = "Prekini";
 
 			var progress = new Progress<double>(x =>
 			{
@@ -159,10 +156,12 @@ namespace UcenikShuffle.Gui
 			}
 			catch(OperationCanceledException)
 			{
-				//Returning if the shuffle has been canceled
+				//if the shuffle has been canceled
+				UniButton.Content = "Kreiraj raspored";
 				return;
 			}
-			
+
+			UniButton.Content = "Kreiraj raspored";
 			CleanupShuffle(shuffler);
 		}
 
