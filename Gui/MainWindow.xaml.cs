@@ -72,7 +72,7 @@ namespace UcenikShuffle.Gui
 				UniButton.Content = "Prekini";
 				await Shuffle();
 			}
-			else
+			if(_currentShuffleTask != null || _cancellationToken.Token.IsCancellationRequested)
 			{
 				_currentShuffleTask = null;
 				_cancellationToken?.Cancel();
@@ -133,7 +133,9 @@ namespace UcenikShuffle.Gui
 
 				//if anything but the Yes button was clicked
 				if (choice != MessageBoxResult.Yes)
-					return;
+				{
+					_cancellationToken.Cancel();
+				}
 			}
 
 			// ---start of shuffling procedure---
