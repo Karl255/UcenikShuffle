@@ -73,7 +73,8 @@ namespace UcenikShuffle.Common
 						var filteredHistory = Group.History.Where(h => h.Count == size).ToList();
 						
 						//Checking if history for this group size needs to be cleared
-						foreach (var numberCombination in HelperMethods.GetAllNumberCombinations(size, Students.Count))
+						var numberCombinations = HelperMethods.GetAllNumberCombinations(size, Students.Count);
+						foreach (var numberCombination in numberCombinations)
 						{
 							var studentCombination = new List<Student>(
 								from index in numberCombination
@@ -88,10 +89,10 @@ namespace UcenikShuffle.Common
 						//If history for this group size needs to be cleared
 						if (clearHistory)
 						{
-							// var extraHistory = Group.History.Except(historyCopy);
-							// historyCopy.RemoveAll(h => h.Count == size);
-							// Group.History = new List<HashSet<Student>>(historyCopy);
-							// Group.History.AddRange(extraHistory);
+							var extraHistory = Group.History.Except(historyCopy).ToList();
+							historyCopy.RemoveAll(h => h.Count == size);
+							Group.History = new List<HashSet<Student>>(historyCopy);
+							Group.History.AddRange(extraHistory);
 						}
 					}
 				}
