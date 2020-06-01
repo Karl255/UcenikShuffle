@@ -65,7 +65,7 @@ namespace UcenikShuffle.Common
 			bool firstValue = true;
 			foreach (var student in studentPool)
 			{
-				if (student.StudentSittingHistory.Count >= studentPool.Count - 1)
+				if (student.StudentSittingHistory.Count >= studentPool.Count - 1 && student.StudentSittingHistory.Count > 0)
 				{
 					int temp = student.StudentSittingHistory.Select(h => h.Value).Min();
 					min = (temp < min || firstValue) ? temp : min;
@@ -91,7 +91,7 @@ namespace UcenikShuffle.Common
 					sum += sittingValues.Sum();
 				}
 				return sum;
-			});
+			}).ToList();
 			var newEntry = orderedCombinations.First();
 
 			//-------- ALGORITHM ENDING --------//

@@ -35,7 +35,7 @@ namespace UcenikShuffle.Gui
 					image = MessageBoxImage.Error;
 					break;
 				default:
-					message = "Došlo je do neočekivane greške!";
+					message = "Došlo je do neočekivane greške!\n" + e.Exception.Message;
 					image = MessageBoxImage.Error;
 					break;
 			}
