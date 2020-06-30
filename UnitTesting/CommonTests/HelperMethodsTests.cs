@@ -28,7 +28,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[MemberData(nameof(Data))]
 		private static void GetAllNumberCombinations_ShouldWork(int groupSize, int numberCount, IEnumerable<IEnumerable<int>> expected)
 		{
-			var actual = HelperMethods.GetAllNumberCombinations(groupSize, numberCount).ToList();
+			var actual = HelperMethods.GetAllStudentCombinations(groupSize, numberCount).ToList();
 			expected = expected.ToList();
 			Assert.Equal(expected.Count(), actual.Count());
             
@@ -51,7 +51,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[InlineData(1, -1)]
 		private static void GetAllNumberCombinations_ShouldThrowArgumentException(int groupSize, int numberCount)
 		{
-			Assert.Throws<ArgumentException>(() => HelperMethods.GetAllNumberCombinations(groupSize, numberCount).ToList());
+			Assert.Throws<ArgumentException>(() => HelperMethods.GetAllStudentCombinations(groupSize, numberCount).ToList());
 		}
 
 		[Theory]
@@ -59,7 +59,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[InlineData(-1, 1)]
 		private static void GetAllNumberCombinations_ShouldThrowGroupSizeParameterException(int groupSize, int numberCount)
 		{
-			Assert.Throws<GroupSizeParameterException>(() => HelperMethods.GetAllNumberCombinations(groupSize, numberCount).ToList());
+			Assert.Throws<GroupSizeParameterException>(() => HelperMethods.GetAllStudentCombinations(groupSize, numberCount).ToList());
 		}
 	}
 }
