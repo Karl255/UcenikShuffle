@@ -119,28 +119,38 @@ namespace UcenikShuffle.Common
 			}
 			
 			//Initial combination
-			for(int i = 0; i < groupSize - 1; i++)
+			for(int i = 0; i < groupSize; i++)
             {
 				combination.Add(students[i]);
             }
-            
-			for(int startIndex = 0; startIndex + groupSize <= students.Count; startIndex++)
+			yield return new List<Student>(combination);
+
+			//Getting all combinations
+			while (true)
 			{
-				//Changing the last number until it hits max number
-				for (int lastIndex = startIndex + groupSize - 1; lastIndex < students.Count; lastIndex++)
+				bool noMoreCombinations = true;
+				for (int i = groupSize - 1; i >= 0; i--)
 				{
-					combination.Add(students[lastIndex]);
-					//Note: new list must be created otherwise collection modified exception might thrown
-					//TODO: use the clone/copy method
-					yield return new List<Student>(combination);
-					combination.Remove(students[lastIndex]);
+					//lastStudent is the last possible student for this spot in the combination
+					var lastStudent = students[i + students.Count - groupSize];
+					if (combination[i] != lastStudent)
+					{
+						noMoreCombinations = false;
+						var newIndex = students.IndexOf(combination[i]) + 1;
+						combination[i] = students[newIndex];
+						for (int j = 1; j < groupSize - i; j++)
+						{
+							combination[i + j] = students[newIndex + j];
+						}
+						yield return new List<Student>(combination);
+						break;
+					}
 				}
-				
-				//Popping the first number and adding another number to the base combination instead of the popped number
-				if (combination.Count > 0)
+
+				//If all combinations have been tried out
+				if (noMoreCombinations)
 				{
-					combination.RemoveAt(0);
-					combination.Add(students[startIndex + groupSize - 1]);
+					yield break;
 				}
 			}
 		}
