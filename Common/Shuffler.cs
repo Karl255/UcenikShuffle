@@ -2,12 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net.WebSockets;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.Common
 {
@@ -117,7 +112,7 @@ namespace UcenikShuffle.Common
 						bool skipCombination = false;
 						foreach(var record in ShuffleResult)
 						{
-							if(CompareShuffleRecords(record, combinationList) == true)
+							if(HelperMethods.CompareShuffleRecords(record, combinationList) == true)
 							{
 								skipCombination = true;
 							}
@@ -250,30 +245,6 @@ namespace UcenikShuffle.Common
 					yield return 0;
 				}
 			}
-		}
-
-		//This method compares 2 shuffle records
-		private bool CompareShuffleRecords(List<List<Student>> r1, List<List<Student>> r2)
-		{
-			if(r1.Count != r2.Count)
-			{
-				return false;
-			}
-			for (int i = 0; i < r1.Count; i++)
-			{
-				if (r1[i].Count != r2[i].Count)
-				{
-					return false;
-				}
-				for (int j = 0; j < r1[i].Count; j++)
-				{
-					if(r1[i][j] != r2[i][j])
-					{
-						return false;
-					}
-				}
-			}
-			return true;
 		}
 	}
 }

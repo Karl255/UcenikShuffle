@@ -19,6 +19,19 @@ namespace UcenikShuffle.Common
 			var studentsCopy = new List<Student>(students);
 			studentsCopy = studentsCopy.OrderBy(s => s.Id).ToList();
 
+			//Checking if passed parameters are valid
+			foreach (var group in groups)
+			{
+				if (group.Size <= 0)
+				{
+					throw new GroupSizeException();
+				}
+			}
+			if (students == null || students.Count <= 0)
+			{
+				throw new ArgumentException("Broj učenika mora biti pozitivni cijeli broj!");
+			}
+
 			//Getting combinations for the current group
 			//If group size is 1
 			if (groups[0].Size == 1)
@@ -90,16 +103,6 @@ namespace UcenikShuffle.Common
 		private static IEnumerable<IEnumerable<Student>> GetAllStudentCombinationsForGroup(int groupSize, List<Student> students)
 		{
 			var combination = new List<Student>();
-			
-			//Checking if passed parameters are valid
-			if (groupSize <= 0)
-			{
-				throw new GroupSizeParameterException();
-			} 
-			if (students == null || students.Count <= 0)
-			{
-				throw new ArgumentException("Broj učenika mora biti pozitivni cijeli broj!"); 
-			}
 			
 			//If group size is bigger than the number of available numbers or if group size is 1
 			if (groupSize >= students.Count)
@@ -187,6 +190,35 @@ namespace UcenikShuffle.Common
 			//Adding number of laboratory exercises into consideration when calculating complexity
 			//(this value isn't as important as number of combinations or group size - this was found out during testing)
 			return (int)(points * Math.Pow(lvCount, 0.25));
+		}
+
+		/// <summary>
+		/// This method compares 2 shuffle records
+		/// </summary>
+		/// <param name="r1">First record which is compared with the second one</param>
+		/// <param name="r2">Second record which is compared with the first one</param>
+		/// <returns>True if records are the same, false otherwise</returns>
+		public static bool CompareShuffleRecords(List<List<Student>> r1, List<List<Student>> r2)
+		{
+			if (r1.Count != r2.Count)
+			{
+				return false;
+			}
+			for (int i = 0; i < r1.Count; i++)
+			{
+				if (r1[i].Count != r2[i].Count)
+				{
+					return false;
+				}
+				for (int j = 0; j < r1[i].Count; j++)
+				{
+					if (r1[i][j] != r2[i][j])
+					{
+						return false;
+					}
+				}
+			}
+			return true;
 		}
 	}
 }

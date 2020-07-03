@@ -1,6 +1,4 @@
 ﻿using System;
-using System.CodeDom;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
 using UcenikShuffle.Common.Exceptions;
@@ -26,7 +24,7 @@ namespace UcenikShuffle.Gui
 			MessageBoxImage image;
 			switch (exceptionTypeString)
 			{
-				case nameof(GroupSizeParameterException):
+				case nameof(GroupSizeException):
 					message = "Veličine grupa moraju biti pozitivni cijeli brojevi odvojeni zarezom\nPrimjeri:\n1,2,3,4,5\n1, 2, 3";
 					image = MessageBoxImage.Warning;
 					break;

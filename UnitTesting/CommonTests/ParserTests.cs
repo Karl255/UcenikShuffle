@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using UcenikShuffle.Common;
+using UcenikShuffle.Common.Exceptions;
 using Xunit;
 
 namespace UcenikShuffle.UnitTests.CommonTests
@@ -59,9 +60,9 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[InlineData("1;;4")]
 		//Decimal group size
 		[InlineData("1.5,4")]
-		public void StringToGroupSizes_ShouldThrowArgumentException(string value)
+		public void StringToGroupSizes_ShouldThrowGroupSizeException(string value)
 		{
-			Assert.Throws<ArgumentException>(() => Parsers.StringToGroupSizes(value).ToList());
+			Assert.Throws<GroupSizeException>(() => Parsers.StringToGroupSizes(value).ToList());
 		}
 	}
 }

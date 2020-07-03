@@ -11,13 +11,13 @@ namespace UcenikShuffle.Common
 		/// </summary>
 		/// <param name="value">String to be converted</param>
 		/// <returns>Group sizes</returns>
-		/// <exception cref="ArgumentException">Thrown if input is empty or if it is in incorrect format</exception>
+		/// <exception cref="GroupSizeException">Thrown if groups size not a positive integer</exception>
 		public static IEnumerable<int> StringToGroupSizes(string value)
 		{
 			//If input value is empty
 			if (string.IsNullOrEmpty(value))
 			{
-				throw new ArgumentException();
+				throw new GroupSizeException();
 			}
 
 			//Splitting group sizes
@@ -30,11 +30,11 @@ namespace UcenikShuffle.Common
 				//Checking if group size if a positive integer
 				if (int.TryParse(s, out int size) == false)
 				{
-					throw new GroupSizeParameterException();
+					throw new GroupSizeException();
 				}
 				if (size <= 0)
 				{
-					throw new GroupSizeParameterException();
+					throw new GroupSizeException();
 				}
 
 				yield return size;
