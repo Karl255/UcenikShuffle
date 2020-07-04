@@ -15,13 +15,13 @@ namespace UcenikShuffle.Common
 		private IProgress<double> _progress;
 		public List<List<List<Student>>> ShuffleResult { get; private set; }
 
-		public Shuffler(int lvCount, IEnumerable<int> groupSizes, CancellationTokenSource cancellationSource)
+		public Shuffler(int lvCount, List<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
 			_cancellationSource = cancellationSource;
 
 			ShuffleResult = new List<List<List<Student>>>();
 			LvCount = lvCount;
-			Groups = new List<Group>(groupSizes.Select(x => new Group(x)));
+			Groups = new List<Group>(groupSizes.OrderBy(s => s).Select(x => new Group(x)));
 
 			//initializing Students
 			int studentCount = groupSizes.Sum();
@@ -34,15 +34,13 @@ namespace UcenikShuffle.Common
 		}
 		public List<List<List<Student>>> Shuffle(Progress<double> progress = null)
 		{
+			var combinations = HelperMethods.GetAllStudentCombinations(Groups, Students);
 			_progress = progress;
 
 			//Going trough each LV
 			_progress?.Report(0);
 			for (int lv = 0; lv < LvCount; lv++)
 			{
-				//Getting the best student sitting combinations for this LV
-				var combinations = HelperMethods.GetAllStudentCombinations(Groups, Students);
-
 				//Getting best student sitting combination for current lv
 				//student sitting diff is max - min difference in student sitting count (student sitting count is the amount of times a student sat with other students)
 				List<List<Student>> bestCombination = null;
@@ -55,19 +53,16 @@ namespace UcenikShuffle.Common
 				int combinationsCount = 0;
 				foreach (var combination in combinations)
 				{
-					int maxSittingCount = 0;
-					int minSittingCountCount = 0;
-					int studentSittingDiff = 0;
-					int minMaxSum = 0;
 					bool isBestCombination = false;
 					
 					_cancellationSource.Token.ThrowIfCancellationRequested();
 					UpdateStudentHistory(combination, true);
 
+					var studentSittingHistoryValues = GetStudentSittingHistoryValues().ToList();
 					if (firstCombination == false)
 					{
 						//If max sitting count is lower or equal to the the lowest sitting count
-						maxSittingCount = GetStudentSittingHistoryValues().Max();
+						int maxSittingCount = studentSittingHistoryValues.Max();
 						if (maxSittingCount < minMaxSittingCount)
 						{
 							isBestCombination = true;
@@ -75,7 +70,7 @@ namespace UcenikShuffle.Common
 						else if (maxSittingCount == minMaxSittingCount)
 						{
 							//If current student sitting diff is lower or equal to the lowest one
-							studentSittingDiff = GetStudentSittingDiff(combination);
+							int studentSittingDiff = GetStudentSittingDiff(combination);
 							if (studentSittingDiff < minStudentSittingDiff)
 							{
 								isBestCombination = true;
@@ -83,9 +78,8 @@ namespace UcenikShuffle.Common
 							else if (studentSittingDiff == minStudentSittingDiff)
 							{
 								//If min sitting count count is lower or equal to the lowest min sitting count count or if min sitting count is higher than the highest min sitting count
-								var values = GetStudentSittingHistoryValues();
-								int minSittingCount = values.Min();
-								minSittingCountCount = values.Count(v => v == maxMinSittingCount);
+								int minSittingCount = studentSittingHistoryValues.Min();
+								int minSittingCountCount = studentSittingHistoryValues.Count(v => v == maxMinSittingCount);
 								if (minSittingCount > maxMinSittingCount || (minSittingCount == maxMinSittingCount && minSittingCountCount < minMinSittingCountCount))
 								{
 									isBestCombination = true;
@@ -93,7 +87,7 @@ namespace UcenikShuffle.Common
 								else if (minSittingCountCount == minMinSittingCountCount)
 								{
 									//Checking if minMaxDiff ((most times a student sat with other students - least times a student sat with other students)) sum for all students is better (lower) than the best (lowest) minMaxDiff sum for all students if current student sitting diff is the same as the best student sitting diff
-									minMaxSum = GetMinMaxValues(combination).Sum();
+									int minMaxSum = GetMinMaxValues(combination).Sum();
 									if (minMaxSum < minMinMaxSum)
 									{
 										isBestCombination = true;
@@ -112,7 +106,7 @@ namespace UcenikShuffle.Common
 						bool skipCombination = false;
 						foreach(var record in ShuffleResult)
 						{
-							if(HelperMethods.CompareShuffleRecords(record, combinationList) == true)
+							if(HelperMethods.CompareShuffleRecords(record, combinationList))
 							{
 								skipCombination = true;
 							}
@@ -121,10 +115,8 @@ namespace UcenikShuffle.Common
 						//Variables are being populated using new data since some of the variables in this foreach loop might not have been updated (since that depends on what criteria the best combination was selected)
 						if (skipCombination == false)
 						{
-							var studentSittingHistoryValues = GetStudentSittingHistoryValues().ToList();
-							var tempMinSittingCount = studentSittingHistoryValues.Min();
 							minMaxSittingCount = studentSittingHistoryValues.Max();
-							minMinSittingCountCount = studentSittingHistoryValues.Where(v => v == tempMinSittingCount).Count();
+							minMinSittingCountCount = studentSittingHistoryValues.Count(v => v == studentSittingHistoryValues.Min());
 							minStudentSittingDiff = GetStudentSittingDiff(combination);
 							minMinMaxSum = GetMinMaxValues(combination).Sum();
 							maxMinSittingCount = studentSittingHistoryValues.Min();
@@ -140,17 +132,13 @@ namespace UcenikShuffle.Common
 				//Updating shuffle result and progress
 				UpdateStudentHistory(bestCombination, true);
 				ShuffleResult.Add(bestCombination);
-				_progress?.Report((float)(lv + 1) / LvCount);
-
-				Stopwatch watch = new Stopwatch();
-				watch.Start();
+				_progress?.Report((float) (lv + 1) / LvCount);
+				
 				//If number of combinations is the same as number of lv's, there is no need to do further calculations since all of the students should have sat the same amount of times with one another
 				if(combinationsCount == ShuffleResult.Count)
 				{
 					break;
 				}
-				watch.Stop();
-				Debug.WriteLine(watch.Elapsed.TotalMilliseconds);
 			}
 
 			//DEBUGGING OUTPUT: used for testing purposes
@@ -169,14 +157,18 @@ namespace UcenikShuffle.Common
 			return ShuffleResult;
 		}
 
-		private void UpdateStudentHistory(IEnumerable<IEnumerable<Student>> students, bool increment)
+		private static void UpdateStudentHistory(IEnumerable<List<Student>> students, bool increment)
 		{
 			foreach (var groupCombination in students)
 			{
 				foreach (var student in groupCombination)
 				{
-					foreach (var student2 in groupCombination.Where(s => s != student))
+					foreach (var student2 in groupCombination)
 					{
+						if (student == student2)
+						{
+							continue;
+						}
 						if (student.StudentSittingHistory.ContainsKey(student2) == false)
 						{
 							student.StudentSittingHistory.Add(student2, 0);
@@ -186,7 +178,7 @@ namespace UcenikShuffle.Common
 				}
 			}
 		}
-		private int GetStudentSittingDiff(IEnumerable<IEnumerable<Student>> combination)
+		private static int GetStudentSittingDiff(IEnumerable<IEnumerable<Student>> combination)
 		{
 			int minCount = 0;
 			int maxCount = 0;

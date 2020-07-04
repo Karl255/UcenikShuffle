@@ -102,8 +102,7 @@ namespace UcenikShuffle.Gui
 			}
 
 			//Parsing group sizes input
-			int[] groupSizes;
-			groupSizes = Parsers.StringToGroupSizes(GroupSizesInput.Text).ToArray();
+			var groupSizes = Parsers.StringToGroupSizes(GroupSizesInput.Text).ToList();
 
 			//if the numbers are too large, ask user for confirmation
 			int complexity = HelperMethods.GetShuffleComplexity(groupSizes, lvCount);

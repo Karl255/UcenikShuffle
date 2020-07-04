@@ -13,11 +13,9 @@ namespace UcenikShuffle.Common
 		/// <param name="groups">Groups in lv</param>
 		/// <param name="students">Students</param>
 		/// <returns></returns>
-		public static IEnumerable<IEnumerable<IEnumerable<Student>>> GetAllStudentCombinations(List<Group> groups, List<Student> students)
+		public static IEnumerable<List<List<Student>>> GetAllStudentCombinations(IList<Group> groups, IList<Student> students)
 		{
 			var combinations = new List<List<Student>>();
-			var studentsCopy = new List<Student>(students);
-			studentsCopy = studentsCopy.OrderBy(s => s.Id).ToList();
 
 			//Checking if passed parameters are valid
 			foreach (var group in groups)
@@ -36,7 +34,7 @@ namespace UcenikShuffle.Common
 			//If group size is 1
 			if (groups[0].Size == 1)
 			{
-				foreach (var student in studentsCopy)
+				foreach (var student in students)
 				{
 					combinations.Add(new List<Student>() { student });
 				}
@@ -44,12 +42,13 @@ namespace UcenikShuffle.Common
 			//If group size isn't 1
 			else
 			{
-				var pivot = studentsCopy[0];
+				var pivot = students[0];
 				List<List<Student>> tempCombinations;
 
 				//Pivot is a student which is present in each combination for this group and is used only if a group after this one has the same size
 				if (groups.Count > 1 && groups[0].Size == groups[1].Size)
 				{
+					var studentsCopy = new List<Student>(students);
 					studentsCopy.Remove(pivot);
 					tempCombinations = GetAllStudentCombinationsForGroup(groups[0].Size - 1, studentsCopy).Select(c => c.ToList()).ToList();
 					for (int i = 0; i < tempCombinations.Count; i++)
@@ -60,7 +59,7 @@ namespace UcenikShuffle.Common
 				//Pivot isn't used if this is the last groups or if there aren't any groups of this size in the group list
 				else
 				{
-					tempCombinations = GetAllStudentCombinationsForGroup(groups[0].Size, studentsCopy).Select(c => c.ToList()).ToList();
+					tempCombinations = GetAllStudentCombinationsForGroup(groups[0].Size, students).Select(c => c.ToList()).ToList();
 				}
 				combinations.AddRange(tempCombinations);
 			}
@@ -70,7 +69,7 @@ namespace UcenikShuffle.Common
 			{
 				var tempGroups = new List<Group>(groups);
 				tempGroups.Remove(groups[0]);
-				var availableStudents = new List<Student>(studentsCopy);
+				var availableStudents = new List<Student>(students);
 				availableStudents.RemoveAll(i => combination.Contains(i));
 				var lvCombination = new List<List<Student>>();
 				lvCombination.Add(combination);
@@ -100,7 +99,7 @@ namespace UcenikShuffle.Common
 		/// <param name="groupSize">Size of the group (for example, if there are 5 numbers and group size is 3, only 3 of those numbers would be able to fit in a certain group combination)</param>
 		/// <param name="students">Students</param>
 		/// <returns></returns>
-		private static IEnumerable<IEnumerable<Student>> GetAllStudentCombinationsForGroup(int groupSize, List<Student> students)
+		private static IEnumerable<IEnumerable<Student>> GetAllStudentCombinationsForGroup(int groupSize, IList<Student> students)
 		{
 			var combination = new List<Student>();
 			
@@ -170,7 +169,7 @@ namespace UcenikShuffle.Common
 			int points = 0;
             
 			//Adding up complexity of each group
-			foreach (var size in groupSizes)
+			foreach (int size in groupSizes)
 			{
 				//Calculating number of group combinations
 				int combinations = 0;

@@ -4,7 +4,7 @@ namespace UcenikShuffle.Common
 {
 	public class CustomDictionary<T1> : Dictionary<T1, int>
 	{
-		new public int this[T1 index]
+		public new int this[T1 index]
 		{
 			get
 			{

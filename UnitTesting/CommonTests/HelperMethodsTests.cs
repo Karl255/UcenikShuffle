@@ -9,7 +9,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 {
 	public static class HelperMethodsTests
 	{
-		public static IEnumerable<object[]> GetAllStudentCombinations_ShouldWorkData = new List<object[]>()
+		public static IEnumerable<object[]> GetAllStudentCombinationsShouldWorkData = new List<object[]>()
 		{
 			//1 group test
 			new object[]
@@ -640,19 +640,18 @@ namespace UcenikShuffle.UnitTests.CommonTests
 				}
 			}
 		};
-		
 		[Theory]
-		[MemberData(nameof(GetAllStudentCombinations_ShouldWorkData))]
+		[MemberData(nameof(GetAllStudentCombinationsShouldWorkData))]
 		private static void GetAllStudentCombinations_ShouldWork(List<int> groupSizes, List<List<List<int>>> expected)
 		{
 			//Setup
 			var groups = new List<Group>();
 			var students = new List<Student>();
-			foreach (var size in groupSizes)
+			foreach (int size in groupSizes)
 			{
 				groups.Add(new Group(size));
 			}
-			foreach (var id in Enumerable.Range(1, groupSizes.Sum()).ToList())
+			foreach (int id in Enumerable.Range(1, groupSizes.Sum()).ToList())
 			{
 				students.Add(new Student() {Id = id});
 			}
@@ -674,7 +673,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			};
 		}
 
-		public static IEnumerable<object[]> GetAllStudentCombinations_ShouldThrowGroupSizeParameterExceptionData = new List<object[]>
+		public static IEnumerable<object[]> GetAllStudentCombinationsShouldThrowGroupSizeParameterExceptionData = new List<object[]>
 		{
 			//0
 			new object[]{new List<int>{ 0 }},
@@ -684,27 +683,149 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			new object[]{new List<int>{ 1,2,3,0 }},
 			new object[]{new List<int>{ 1,-1,2,3 }}
 		};
-		
 		[Theory]
-		[MemberData(nameof(GetAllStudentCombinations_ShouldThrowGroupSizeParameterExceptionData))]
+		[MemberData(nameof(GetAllStudentCombinationsShouldThrowGroupSizeParameterExceptionData))]
 		private static void GetAllStudentCombinations_ShouldThrowGroupSizeParameterException(List<int> groupSizes)
 		{
 			//Setup
 			var groups = new List<Group>();
 			var students = new List<Student>();
-			foreach (var size in groupSizes)
+			foreach (int size in groupSizes)
 			{
 				groups.Add(new Group(size));
 			}
-			var studentCount = groupSizes.Sum();
+			int studentCount = groupSizes.Sum();
 			studentCount = (studentCount < 0) ? 0 : studentCount;
-			foreach (var id in Enumerable.Range(1, studentCount))
+			foreach (int id in Enumerable.Range(1, studentCount))
 			{
 				students.Add(new Student(){ Id = id });
 			}
 			
 			//Testing
 			Assert.Throws<GroupSizeException>(() => HelperMethods.GetAllStudentCombinations(groups, students).ToList());
+		}
+
+		public static IEnumerable<object[]> CompareShuffleRecordsShouldWorkData = new List<object[]>()
+		{
+			////SINGLE GROUP
+			//1 (same) student in both records
+			new object[]
+			{
+				new List<List<int>>()
+				{
+					new List<int>(){1},
+				},
+				new List<List<int>>()
+				{
+					new List<int>(){1}
+				}, 
+				true
+			},
+			//Same records
+			new object[]
+			{
+				new List<List<int>>()
+				{
+					new List<int>(){1,2,3},
+				},
+				new List<List<int>>()
+				{
+					new List<int>(){1,2,3}
+				},
+				true
+			},
+			//Same records - different order
+			new object[]
+			{
+				new List<List<int>>()
+				{
+					new List<int>(){1,2,3}
+				},
+				new List<List<int>>()
+				{
+					new List<int>(){2,3,1}
+				},
+				true
+			},
+			//Different records
+			new object[]
+			{
+				new List<List<int>>()
+				{
+					new List<int>(){1,2,3}
+				},
+				new List<List<int>>()
+				{
+					new List<int>(){1,2,4}
+				},
+				false
+			},
+			//Different record lengths
+			new object[]
+			{
+				new List<List<int>>()
+				{
+					new List<int>(){1,2}
+				},
+				new List<List<int>>()
+				{
+					new List<int>(){1,2,3}
+				},
+				false
+			}
+			//Multiple groups
+			//Multiple same size groups, different order
+		};
+		[Theory]
+		[MemberData(nameof(CompareShuffleRecordsShouldWorkData))]
+		private static void CompareShuffleRecords_ShouldWork(List<List<int>> r1, List<List<int>> r2, bool expected)
+		{
+			//Populating student list with students
+			var students = new List<Student>();
+			foreach (var group in r1.Concat(r2))
+			{
+				foreach (int index in group)
+				{
+					if (students.All(s => s.Id != index))
+					{
+						students.Add(new Student(){Id = index});
+					}
+				}
+			}
+			
+			//Converting records from int lists to student lists
+			bool actual;
+			if (r1.Count != r2.Count)
+			{
+				actual = false;
+				Assert.Equal(expected, actual);
+				return;
+			}
+			var record1 = new List<List<Student>>();
+			var record2 = new List<List<Student>>();
+			for (int i = 0; i < 2; i++)
+			{
+				foreach (var group in (i == 0) ? r1 : r2)
+				{
+					var studentGroup = new List<Student>();
+					foreach (int index in group)
+					{
+						studentGroup.Add(students.First(s => s.Id == index));
+					}
+					if (i == 0)
+					{
+						record1.Add(studentGroup);
+					}
+					else
+					{
+						record2.Add(studentGroup);
+					}
+				}
+			}
+
+			//Checking if records are the same
+			actual = HelperMethods.CompareShuffleRecords(record1, record2);
+			Assert.Equal(expected, actual);
 		}
 	}
 }
