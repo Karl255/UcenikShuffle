@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using UcenikShuffle.Common;
+using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.Gui
 {
@@ -90,16 +91,13 @@ namespace UcenikShuffle.Gui
 
 			//Parsing lv count input
 			int lvCount;
-			try
+			
+			bool isInt = int.TryParse(LvCountInput.Text, out lvCount);
+			if (isInt == false)
 			{
-				lvCount = Parsers.StringToLvCount(LvCountInput.Text);
+				throw new LvCountException();
 			}
-			catch
-			{
-				var message = "Broj laboratorijskih vježbi mora biti pozitivni cijeli broj!";
-				MessageBox.Show(message, "Neispravno polje", MessageBoxButton.OK, MessageBoxImage.Warning);
-				return;
-			}
+
 
 			//Parsing group sizes input
 			var groupSizes = Parsers.StringToGroupSizes(GroupSizesInput.Text).ToList();

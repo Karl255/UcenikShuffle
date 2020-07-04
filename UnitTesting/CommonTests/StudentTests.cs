@@ -10,7 +10,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
         [Fact]
         public void GetIndexOfId_ShouldWork()
         {
-            var shuffler = new Shuffler(0, new List<int>(){2}, new CancellationTokenSource());
+            var shuffler = new Shuffler(1, new List<int>(){2}, new CancellationTokenSource());
             
             //Checking if Id's for created students are correct 
             int expected = 0;

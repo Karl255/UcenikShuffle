@@ -40,32 +40,5 @@ namespace UcenikShuffle.Common
 				yield return size;
 			}
 		}
-
-		/// <summary>
-		/// This method converts a string into lv count
-		/// </summary>
-		/// <param name="value">Value to be converted to lv count</param>
-		/// <returns></returns>
-		/// <exception cref="ArgumentException">Thrown if input isn't a positive integer</exception>
-		public static int StringToLvCount(string value)
-		{
-			//Checking if input value is empty
-			if (string.IsNullOrEmpty(value))
-			{
-				throw new ArgumentException();
-			}
-
-			//Checking if input value is a positive integer 
-			if (int.TryParse(value, out int lvCount) == false)
-			{
-				throw new ArgumentException();
-			}
-			if (lvCount <= 0)
-			{
-				throw new ArgumentException();
-			}
-
-			return lvCount;
-		}
 	}
 }

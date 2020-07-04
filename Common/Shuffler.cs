@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.Common
 {
@@ -17,16 +18,26 @@ namespace UcenikShuffle.Common
 
 		public Shuffler(int lvCount, List<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
-			_cancellationSource = cancellationSource;
+			//Checking if passed parameters are valid 
+			if (groupSizes == null || groupSizes.Count == 0 || groupSizes.Any(s => s <= 0))
+			{
+				throw new GroupSizeException();
+			}
+			if (lvCount <= 0)
+			{
+				throw new LvCountException();
+			}
 
+			////Initializing variables 
+			_cancellationSource = cancellationSource;
 			ShuffleResult = new List<List<List<Student>>>();
 			LvCount = lvCount;
-			Groups = new List<Group>(groupSizes.OrderBy(s => s).Select(x => new Group(x)));
-
-			//initializing Students
+			
+			groupSizes.Sort((g1, g2) => g1.CompareTo(g2));
+			Groups = groupSizes.Select(x => new Group(x)).ToList();
+			
 			int studentCount = groupSizes.Sum();
 			Students = new List<Student>();
-
 			for (int i = 0; i < studentCount; i++)
 			{
 				Students.Add(new Student { Id = i + 1 });
@@ -224,7 +235,6 @@ namespace UcenikShuffle.Common
 				}
 			}
 		}
-
 		private IEnumerable<int> GetStudentSittingHistoryValues()
 		{
 			foreach(var student in Students)

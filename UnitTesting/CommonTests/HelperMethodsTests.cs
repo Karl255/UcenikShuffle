@@ -696,16 +696,16 @@ namespace UcenikShuffle.UnitTests.CommonTests
 				{
 					throw new Exception("Expected and actual student combinations aren't the same");
 				}
-			};
+			}
 		}
 
 		public static IEnumerable<object[]> GetAllStudentCombinationsShouldThrowGroupSizeParameterExceptionData = new List<object[]>
 		{
 			//0
 			new object[]{new List<int>{ 0 }},
-			//negative number
+			//Negative number
 			new object[]{new List<int>{ -1 }},
-			//multiple groups
+			//Multiple groups
 			new object[]{new List<int>{ 1,2,3,0 }},
 			new object[]{new List<int>{ 1,-1,2,3 }}
 		};
@@ -733,6 +733,13 @@ namespace UcenikShuffle.UnitTests.CommonTests
 
 		public static IEnumerable<object[]> CompareShuffleRecordsShouldWorkData = new List<object[]>()
 		{
+			//EMPTY RECORDS
+			new object[]
+			{
+				new List<List<int>>(),
+				new List<List<int>>(),
+				true
+			},
 			////SINGLE GROUP
 			//1 (same) student in both records
 			new object[]
@@ -798,10 +805,52 @@ namespace UcenikShuffle.UnitTests.CommonTests
 					new List<int>(){1,2,3}
 				},
 				false
-			}
-			//TODO: finish this 
-			//Multiple groups
+			},
+			////MULTIPLE GROUPS
+			//Different amount of groups
+			new object[]
+			{
+				new List<List<int>>()
+				{
+					new List<int>(){1},
+					new List<int>(){1,2}
+				},
+				new List<List<int>>()
+				{
+					new List<int>(){1}
+				},
+				false
+			},
+			//Same records
+			new object[]
+			{
+				new List<List<int>>()
+				{
+					new List<int>(){1},
+					new List<int>(){2,3}
+				},
+				new List<List<int>>()
+				{
+					new List<int>(){1},
+					new List<int>(){3,2}
+				},
+				true
+			},
 			//Multiple same size groups, different order
+			new object[]
+			{
+				new List<List<int>>()
+				{
+					new List<int>(){1},
+					new List<int>(){2}
+				},
+				new List<List<int>>()
+				{
+					new List<int>(){2},
+					new List<int>(){1}
+				},
+				true
+			}
 		};
 		[Theory]
 		[MemberData(nameof(CompareShuffleRecordsShouldWorkData))]

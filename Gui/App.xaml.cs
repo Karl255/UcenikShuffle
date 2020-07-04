@@ -28,6 +28,10 @@ namespace UcenikShuffle.Gui
 					message = "Veličine grupa moraju biti pozitivni cijeli brojevi odvojeni zarezom\nPrimjeri:\n1,2,3,4,5\n1, 2, 3";
 					image = MessageBoxImage.Warning;
 					break;
+				case nameof(LvCountException):
+					message = "Broj laboratorijskih vježbi mora biti pozitivni cijeli broj!";
+					image = MessageBoxImage.Warning;
+					break;
 				case nameof(ArgumentException):
 					message = "Došlo je do pogreške u kodu!";
 					image = MessageBoxImage.Error;
