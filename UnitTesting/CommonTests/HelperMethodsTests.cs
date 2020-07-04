@@ -638,6 +638,32 @@ namespace UcenikShuffle.UnitTests.CommonTests
 						new List<int>(){0,1,2}
 					}
 				}
+			},
+			//2 groups - checking if #30 is fixed
+			new object[]
+			{
+				new List<int>(){1,1,2},
+				new List<List<List<int>>>()
+				{
+					new List<List<int>>()
+					{
+						new List<int>(){0},
+						new List<int>(){1},
+						new List<int>(){2,3},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){0},
+						new List<int>(){2},
+						new List<int>(){1,3},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){0},
+						new List<int>(){3},
+						new List<int>(){1,2},
+					}
+				}
 			}
 		};
 		[Theory]
@@ -773,12 +799,13 @@ namespace UcenikShuffle.UnitTests.CommonTests
 				},
 				false
 			}
+			//TODO: finish this 
 			//Multiple groups
 			//Multiple same size groups, different order
 		};
 		[Theory]
 		[MemberData(nameof(CompareShuffleRecordsShouldWorkData))]
-		private static void CompareShuffleRecords_ShouldWork(List<List<int>> r1, List<List<int>> r2, bool expected)
+		private static void CompareShuffleRecords_ShouldWork(IList<List<int>> r1, List<List<int>> r2, bool expected)
 		{
 			//Populating student list with students
 			var students = new List<Student>();

@@ -185,25 +185,24 @@ namespace UcenikShuffle.Common
 		/// <param name="r1">First record which is compared with the second one</param>
 		/// <param name="r2">Second record which is compared with the first one</param>
 		/// <returns>True if records are the same, false otherwise</returns>
-		public static bool CompareShuffleRecords(List<List<Student>> r1, List<List<Student>> r2)
+		public static bool CompareShuffleRecords(IReadOnlyList<List<Student>> r1, IReadOnlyList<List<Student>> r2)
 		{
+			//If number of groups isn't the same for both records 
 			if (r1.Count != r2.Count)
 			{
 				return false;
 			}
+
+			//Going trough each group in record 1, and checking if that group also exists in record 2
+			var tempR2 = new List<List<Student>>(r2);
 			for (int i = 0; i < r1.Count; i++)
 			{
-				if (r1[i].Count != r2[i].Count)
+				var group = tempR2.FirstOrDefault(r => r1[i].Count == r.Count && r1[i].Except(r).Any() == false);
+				if (group == null)
 				{
 					return false;
 				}
-				for (int j = 0; j < r1[i].Count; j++)
-				{
-					if (r1[i][j] != r2[i][j])
-					{
-						return false;
-					}
-				}
+				tempR2.Remove(group);
 			}
 			return true;
 		}
