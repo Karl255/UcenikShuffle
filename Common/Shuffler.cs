@@ -115,13 +115,17 @@ namespace UcenikShuffle.Common
 						//Variables are being populated using new data since some of the variables in this foreach loop might not have been updated (since that depends on what criteria the best combination was selected)
 						if (skipCombination == false)
 						{
-							minMaxSittingCount = studentSittingHistoryValues.Max();
-							minMinSittingCountCount = studentSittingHistoryValues.Count(v => v == studentSittingHistoryValues.Min());
-							minStudentSittingDiff = GetStudentSittingDiff(combination);
-							minMinMaxSum = GetMinMaxValues(combination).Sum();
-							maxMinSittingCount = studentSittingHistoryValues.Min();
 							bestCombination = combinationList;
-							firstCombination = false;
+							if (studentSittingHistoryValues.Count != 0)
+							{
+								int minStudentSittingHistoryValue = studentSittingHistoryValues.Min();
+								minMaxSittingCount = studentSittingHistoryValues.Max();
+								minMinSittingCountCount = studentSittingHistoryValues.Count(v => v == minStudentSittingHistoryValue);
+								minStudentSittingDiff = GetStudentSittingDiff(combination);
+								minMinMaxSum = GetMinMaxValues(combination).Sum();
+								maxMinSittingCount = minStudentSittingHistoryValue;
+								firstCombination = false;
+							}
 						}
 					}
 

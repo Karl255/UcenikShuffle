@@ -31,38 +31,26 @@ namespace UcenikShuffle.Common
 			}
 
 			//Getting combinations for the current group
-			//If group size is 1
-			if (groups[0].Size == 1)
+			var pivot = students[0];
+			List<List<Student>> tempCombinations;
+
+			//Pivot is a student which is present in each combination for this group and is used only if a group after this one has the same size
+			if (groups.Count > 1 && groups[0].Size == groups[1].Size)
 			{
-				foreach (var student in students)
+				var studentsCopy = new List<Student>(students);
+				studentsCopy.Remove(pivot);
+				tempCombinations = GetAllStudentCombinationsForGroup(groups[0].Size - 1, studentsCopy).Select(c => c.ToList()).ToList();
+				for (int i = 0; i < tempCombinations.Count; i++)
 				{
-					combinations.Add(new List<Student>() { student });
+					tempCombinations[i].Insert(0, pivot);
 				}
 			}
-			//If group size isn't 1
+			//Pivot isn't used if this is the last groups or if there aren't any groups of this size in the group list
 			else
 			{
-				var pivot = students[0];
-				List<List<Student>> tempCombinations;
-
-				//Pivot is a student which is present in each combination for this group and is used only if a group after this one has the same size
-				if (groups.Count > 1 && groups[0].Size == groups[1].Size)
-				{
-					var studentsCopy = new List<Student>(students);
-					studentsCopy.Remove(pivot);
-					tempCombinations = GetAllStudentCombinationsForGroup(groups[0].Size - 1, studentsCopy).Select(c => c.ToList()).ToList();
-					for (int i = 0; i < tempCombinations.Count; i++)
-					{
-						tempCombinations[i].Insert(0, pivot);
-					}
-				}
-				//Pivot isn't used if this is the last groups or if there aren't any groups of this size in the group list
-				else
-				{
-					tempCombinations = GetAllStudentCombinationsForGroup(groups[0].Size, students).Select(c => c.ToList()).ToList();
-				}
-				combinations.AddRange(tempCombinations);
+				tempCombinations = GetAllStudentCombinationsForGroup(groups[0].Size, students).Select(c => c.ToList()).ToList();
 			}
+			combinations.AddRange(tempCombinations);
 
 			//Getting combinations for other groups based on available indexes
 			foreach (var combination in combinations)
@@ -122,9 +110,9 @@ namespace UcenikShuffle.Common
 			
 			//Initial combination
 			for(int i = 0; i < groupSize; i++)
-            {
+			{
 				combination.Add(students[i]);
-            }
+			}
 			yield return new List<Student>(combination);
 
 			//Getting all combinations
