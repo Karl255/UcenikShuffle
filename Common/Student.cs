@@ -14,7 +14,6 @@ namespace UcenikShuffle.Common
 		}
 
 		public readonly CustomDictionary<Student> StudentSittingHistory = new CustomDictionary<Student>();
-		public readonly CustomDictionary<Group> GroupSittingHistory = new CustomDictionary<Group>();
 
 		/// <summary>
 		/// This method searches for a student with the specified ID and returns his index

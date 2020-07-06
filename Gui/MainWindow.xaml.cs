@@ -90,14 +90,11 @@ namespace UcenikShuffle.Gui
 			_cancellationToken = new CancellationTokenSource();
 
 			//Parsing lv count input
-			int lvCount;
-			
-			bool isInt = int.TryParse(LvCountInput.Text, out lvCount);
+			bool isInt = int.TryParse(LvCountInput.Text, out int lvCount);
 			if (isInt == false)
 			{
 				throw new LvCountException();
 			}
-
 
 			//Parsing group sizes input
 			var groupSizes = Parsers.StringToGroupSizes(GroupSizesInput.Text).ToList();

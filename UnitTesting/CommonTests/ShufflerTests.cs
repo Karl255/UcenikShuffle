@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using UcenikShuffle.Common;
 using UcenikShuffle.Common.Exceptions;
 using Xunit;
@@ -9,9 +11,6 @@ namespace UcenikShuffle.UnitTests.CommonTests
 {
 	public static class ShufflerTests
 	{
-		//TODO: test if cancellation works (both when cancellation token is null and then it isn't)
-		//TODO: check if shuffle algorithm works
-		
 		public static IEnumerable<object[]> ShuffleCtorShouldWorkData = new List<object[]>()
 		{
 			new object[]
@@ -74,6 +73,147 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		private static void Shuffle_Ctor_ShouldThrowLvCountException(int lvCount)
 		{
 			Assert.Throws<LvCountException>(() => new Shuffler(lvCount, new List<int>() {1}, null));
+		}
+
+		public static IEnumerable<object[]> ShuffleShouldWorkData = new List<object[]>()
+		{
+			//1 group of size 1
+			new object[]
+			{
+				1,
+				new List<int>(){1},
+				new List<List<List<int>>>()
+				{
+					new List<List<int>>()
+					{
+						new List<int>(){1}
+					}
+				}
+			},
+			//Only 1 lv should be returned since other lv's are just repeating
+			new object[]
+			{
+				2,
+				new List<int>(){1},
+				new List<List<List<int>>>()
+				{
+					new List<List<int>>()
+					{
+						new List<int>(){1}
+					}
+				}
+			},
+			//Only 3 lv's should be returned since other lv's are repeating
+			new object[]
+			{
+				5,
+				new List<int>(){1,2},
+				new List<List<List<int>>>()
+				{
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){2,3}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){2},
+						new List<int>(){1,3}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){3},
+						new List<int>(){1,2}
+					}
+				}
+			},
+			//Only 5 lv's should be returned since others are just repeating 
+			new object[]
+			{
+				20,
+				new List<int>(){2,2,1},
+				new List<List<List<int>>>()
+				{
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){2,3},
+						new List<int>(){4,5},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){2},
+						new List<int>(){1,4},
+						new List<int>(){3,5},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){3},
+						new List<int>(){1,5},
+						new List<int>(){2,4},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){4},
+						new List<int>(){1,3},
+						new List<int>(){2,5},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){5},
+						new List<int>(){1,2},
+						new List<int>(){3,4},
+					}
+				}
+			}
+		};
+		[Theory]
+		[MemberData(nameof(ShuffleShouldWorkData))]
+		private static void Shuffle_ShouldWork(int lvCount, List<int> groupSizes, List<List<List<int>>> expectedIndexes)
+		{
+			//Creating the shuffler
+			var shuffler = new Shuffler(lvCount, groupSizes.ToList(), null);
+			
+			//Shuffling twice to check if variables that store shuffle state/result are cleared when shuffle is started
+			for (int i = 0; i < 2; i++)
+			{
+				shuffler.Shuffle();
+			}
+
+			//Checking if shuffle result is correct after the shuffle
+			var expected = new List<List<List<Student>>>();
+			foreach (var lv in expectedIndexes)
+			{
+				var convertedLv = new List<List<Student>>();
+				foreach (var group in lv)
+				{
+					var convertedGroup = group.Select(i => shuffler.Students.First(s => s.Id == i)).ToList();
+					convertedLv.Add(convertedGroup);
+				}
+				expected.Add(convertedLv);
+			}
+			var actual = shuffler.ShuffleResult;
+			if (expected.Count != actual.Count)
+			{
+				throw new Exception("Expected and actual lv count aren't the same!");
+			}
+			for (int i = 0; i < expected.Count; i++)
+			{
+				if (HelperMethods.CompareShuffleRecords(expected[i], actual[i]) == false)
+				{
+					throw new Exception($"Expected and actual lv combinations for lv {i + 1} aren't the same!");
+				}
+			}
+		}
+
+		[Fact]
+		private static void Shuffle_ShouldThrowOperationCancelledException()
+		{
+			var cts = new CancellationTokenSource();
+			var shuffler = new Shuffler(1, new List<int>(){1,2,3}, cts);
+			cts.Cancel();
+			Assert.Throws<OperationCanceledException>(() => shuffler.Shuffle());
+			Assert.Empty(shuffler.ShuffleResult);
 		}
 	}
 }

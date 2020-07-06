@@ -43,8 +43,21 @@ namespace UcenikShuffle.Common
 				Students.Add(new Student { Id = i + 1 });
 			}
 		}
+		
+		/// <summary>
+		/// This method is used to create a student sitting combination based on the fields in this class
+		/// </summary>
+		/// <param name="progress">Object which holds data about shuffle progress</param>
+		/// <returns></returns>
 		public List<List<List<Student>>> Shuffle(Progress<double> progress = null)
 		{
+			//Clearing all current shuffle data before shuffling
+			foreach (var student in Students)
+			{
+				student.StudentSittingHistory.Clear();
+			}
+			ShuffleResult.Clear();
+			
 			var combinations = HelperMethods.GetAllStudentCombinations(Groups, Students);
 			_progress = progress;
 
@@ -61,12 +74,10 @@ namespace UcenikShuffle.Common
 				int minStudentSittingDiff = 0;
 				int minMinMaxSum = 0;
 				int maxMinSittingCount = 0;
-				int combinationsCount = 0;
 				foreach (var combination in combinations)
 				{
 					bool isBestCombination = false;
-					
-					_cancellationSource.Token.ThrowIfCancellationRequested();
+					_cancellationSource?.Token.ThrowIfCancellationRequested();
 					UpdateStudentHistory(combination, true);
 
 					var studentSittingHistoryValues = GetStudentSittingHistoryValues().ToList();
@@ -141,7 +152,6 @@ namespace UcenikShuffle.Common
 					}
 
 					UpdateStudentHistory(combination, false);
-					combinationsCount++;
 				}
 
 				//Updating shuffle result and progress
@@ -149,16 +159,14 @@ namespace UcenikShuffle.Common
 				ShuffleResult.Add(bestCombination);
 				_progress?.Report((float) (lv + 1) / LvCount);
 				
-				//If number of combinations is the same as number of lv's, there is no need to do further calculations since all of the students should have sat the same amount of times with one another
-				if(combinationsCount == ShuffleResult.Count)
+				//If every student sat with other students the same amount of times, there is no need to do further calculations since other lv's are just repeating
+				if(GetStudentSittingHistoryValues().Distinct().Count() <= 1)
 				{
 					break;
 				}
 			}
 
 			//DEBUGGING OUTPUT: used for testing purposes
-			//Console.WriteLine("\n\n\n\n\n\n\n\n\n\n");
-			//Console.WriteLine($"LV {lv}");
 			foreach (var student in Students)
 			{
 				Debug.WriteLine($"Student {student.Id}");
