@@ -639,7 +639,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 					}
 				}
 			},
-			//2 groups - checking if #30 is fixed
+			//2 groups - checking if #30 and #36 issues are fixed
 			new object[]
 			{
 				new List<int>(){1,1,2},
@@ -662,6 +662,24 @@ namespace UcenikShuffle.UnitTests.CommonTests
 						new List<int>(){0},
 						new List<int>(){3},
 						new List<int>(){1,2},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){2},
+						new List<int>(){0,3},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){3},
+						new List<int>(){0,2},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){2},
+						new List<int>(){3},
+						new List<int>(){0,1},
 					}
 				}
 			}
@@ -671,17 +689,12 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		private static void GetAllStudentCombinations_ShouldWork(List<int> groupSizes, List<List<List<int>>> expected)
 		{
 			//Setup
-			var groups = new List<Group>();
 			var students = new List<Student>();
-			foreach (int size in groupSizes)
-			{
-				groups.Add(new Group(size));
-			}
 			foreach (int id in Enumerable.Range(1, groupSizes.Sum()).ToList())
 			{
 				students.Add(new Student() {Id = id});
 			}
-			var actualCombinations = HelperMethods.GetAllStudentCombinations(groups, students).Select(c => c.Select(g => g.Select(s => s).ToList()).ToList()).ToList();
+			var actualCombinations = HelperMethods.GetAllStudentCombinations(groupSizes, students).Select(c => c.Select(g => g.Select(s => s).ToList()).ToList()).ToList();
 			var expectedCombinations = expected.Select(c => c.Select(g => g.Select(n => students[n]).ToList()).ToList()).ToList();
 			
 			//Testing if actual and expected combinations are the same 
@@ -714,12 +727,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		private static void GetAllStudentCombinations_ShouldThrowGroupSizeParameterException(List<int> groupSizes)
 		{
 			//Setup
-			var groups = new List<Group>();
 			var students = new List<Student>();
-			foreach (int size in groupSizes)
-			{
-				groups.Add(new Group(size));
-			}
 			int studentCount = groupSizes.Sum();
 			studentCount = (studentCount < 0) ? 0 : studentCount;
 			foreach (int id in Enumerable.Range(1, studentCount))
@@ -728,7 +736,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			}
 			
 			//Testing
-			Assert.Throws<GroupSizeException>(() => HelperMethods.GetAllStudentCombinations(groups, students).ToList());
+			Assert.Throws<GroupSizeException>(() => HelperMethods.GetAllStudentCombinations(groupSizes, students).ToList());
 		}
 
 		public static IEnumerable<object[]> CompareShuffleRecordsShouldWorkData = new List<object[]>()

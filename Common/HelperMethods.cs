@@ -10,17 +10,17 @@ namespace UcenikShuffle.Common
 		/// <summary>
 		/// This method returns all student sitting combinations for a lv
 		/// </summary>
-		/// <param name="groups">Groups in lv</param>
+		/// <param name="groupSizes">Sizes of groups</param>
 		/// <param name="students">Students</param>
 		/// <returns></returns>
-		public static IEnumerable<List<List<Student>>> GetAllStudentCombinations(IList<Group> groups, IList<Student> students)
+		public static IEnumerable<List<List<Student>>> GetAllStudentCombinations(IList<int> groupSizes, IList<Student> students)
 		{
-			var combinations = new List<List<Student>>();
+			List<List<Student>> combinations;
 
 			//Checking if passed parameters are valid
-			foreach (var group in groups)
+			foreach (int size in groupSizes)
 			{
-				if (group.Size <= 0)
+				if (size <= 0)
 				{
 					throw new GroupSizeException();
 				}
@@ -30,52 +30,103 @@ namespace UcenikShuffle.Common
 				throw new ArgumentException("Broj učenika mora biti pozitivni cijeli broj!");
 			}
 
-			//Getting combinations for the current group
-			var pivot = students[0];
-			List<List<Student>> tempCombinations;
-
-			//Pivot is a student which is present in each combination for this group and is used only if a group after this one has the same size
-			if (groups.Count > 1 && groups[0].Size == groups[1].Size)
+			bool allGroupsAreSameSize = groupSizes.Distinct().Count() == 1;
+			List<List<Student>> firstGroupCombinations;
+			var sameGroupSizes = groupSizes.Where(s => s == groupSizes[0]).ToList();
+			
+			//Getting all number combinations for the first group
+			if (groupSizes.Count > 1 && groupSizes[0] == groupSizes[1])
 			{
-				var studentsCopy = new List<Student>(students);
-				studentsCopy.Remove(pivot);
-				tempCombinations = GetAllStudentCombinationsForGroup(groups[0].Size - 1, studentsCopy).Select(c => c.ToList()).ToList();
-				for (int i = 0; i < tempCombinations.Count; i++)
+				//If the second group has the same size as the first one than all combinations for the first group are calculated, and all combinations for other groups are calculated later on
+				firstGroupCombinations = new List<List<Student>>();
+				var tempStudents = new List<Student>(students);
+				
+				//Max first number is the max number that can be used for the first place in the first group (max number limit is set so that all duplicates are removed) 
+				int maxFirstStudent = students.Count - sameGroupSizes.Sum() + 1;
+				for (int i = 0; i < maxFirstStudent; i++)
 				{
-					tempCombinations[i].Insert(0, pivot);
+					var firstStudent = tempStudents[0];
+					tempStudents.RemoveAt(0);
+					var tempCombinations =  GetAllStudentCombinationsForGroup(groupSizes[0] - 1, tempStudents).Select(c => c.ToList()).ToList();
+					for (int j = 0; j < tempCombinations.Count; j++)
+					{
+						tempCombinations[j].Insert(0, firstStudent);
+					}
+					firstGroupCombinations.AddRange(tempCombinations);
 				}
 			}
-			//Pivot isn't used if this is the last groups or if there aren't any groups of this size in the group list
 			else
 			{
-				tempCombinations = GetAllStudentCombinationsForGroup(groups[0].Size, students).Select(c => c.ToList()).ToList();
+				//If the second group doesn't have the same size as the first one, no fancy duplicate removal techniques are necessary   
+				firstGroupCombinations = GetAllStudentCombinationsForGroup(groupSizes[0], students).Select(c => c.ToList()).ToList();
 			}
-			combinations.AddRange(tempCombinations);
 
-			//Getting combinations for other groups based on available indexes
-			foreach (var combination in combinations)
+			//Returning all number combinations if there is only 1 number group
+			if (groupSizes.Count == 1)
 			{
-				var tempGroups = new List<Group>(groups);
-				tempGroups.Remove(groups[0]);
-				var availableStudents = new List<Student>(students);
-				availableStudents.RemoveAll(i => combination.Contains(i));
-				var lvCombination = new List<List<Student>>();
-				lvCombination.Add(combination);
-
-				//Not getting inner combinations if this is the last group
-				if (combination.Count == students.Count)
+				foreach (var combination in firstGroupCombinations)
 				{
-					yield return lvCombination;
+					yield return new List<List<Student>>() {combination};
 				}
-				//Getting inner combinations if this isn't the last group
+				yield break;
+			}
+
+			//Going trough each combination for the first group and getting all possible combinations for other groups
+			Student lastPivot = null;
+			var availableStudents = new List<Student>(students);
+			foreach (var firstGroupCombination in firstGroupCombinations)
+			{
+				var tempGroupSizes = new List<int>(sameGroupSizes);
+
+				//Getting all possible combinations for groups that have the same size as the first group
+				if (sameGroupSizes.Count > 1)
+				{
+					var tempAvailableStudents = availableStudents.Except(firstGroupCombination).ToList();
+					tempGroupSizes.RemoveAt(0);
+					var pivot = firstGroupCombination[0];
+					if (pivot != lastPivot)
+					{
+						lastPivot = pivot;
+						availableStudents.Remove(pivot);
+					}
+					foreach (var otherGroupsCombination in GetAllStudentCombinations(tempGroupSizes, tempAvailableStudents))
+					{
+						var lvCombination = new List<List<Student>> {firstGroupCombination};
+						lvCombination.AddRange(otherGroupsCombination.ToList());
+						
+						//Returning the combination if all groups have the same size
+						if (allGroupsAreSameSize)
+						{
+							yield return lvCombination;
+							continue;
+						}
+					
+						//Getting all possible combinations for the groups that don't have the same size as the first group
+						tempAvailableStudents = new List<Student>(students);
+						tempAvailableStudents.RemoveAll(i => firstGroupCombination.Contains(i));
+						foreach (var group in otherGroupsCombination)
+						{
+							tempAvailableStudents.RemoveAll(i => group.Contains(i));
+						}
+						tempGroupSizes = groupSizes.Where(s => s != groupSizes[0]).ToList();
+						foreach (var c in GetAllStudentCombinations(tempGroupSizes, tempAvailableStudents))
+						{
+							//Combining all of the group combinations into 1 combination
+							c.InsertRange(0, lvCombination);
+							yield return c;
+						}
+					}
+				}
 				else
 				{
-					var innerCombinations = GetAllStudentCombinations(tempGroups, availableStudents).ToList();
-					foreach (var innerCombination in innerCombinations)
+					//Getting number combinations for other groups
+					var tempAvailableIndexes = availableStudents.Except(firstGroupCombination).ToList();
+					tempGroupSizes = groupSizes.Where(s => s != groupSizes[0]).ToList();
+					foreach (var c in GetAllStudentCombinations(tempGroupSizes, tempAvailableIndexes))
 					{
-						var tempLvCombination = new List<List<Student>>(lvCombination);
-						tempLvCombination.AddRange(innerCombination.Select(c => c.ToList()).ToList());
-						yield return tempLvCombination;
+						//Combining all of the group combinations into 1 combination
+						c.Insert(0, firstGroupCombination);
+						yield return c;
 					}
 				}
 			}
