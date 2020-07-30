@@ -13,152 +13,159 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		{
 			//1 group test
 			new object[]
-			{ 
-				new List<int>(){ 2 },
+			{
+				new List<int>() {2},
 				new List<List<List<int>>>()
 				{
 					new List<List<int>>()
 					{
-						new List<int>(){0,1}
+						new List<int>() {0, 1}
 					}
-				} 
+				}
 			},
 			//2 groups test - same size groups
 			new object[]
 			{
-				new List<int>(){ 2,2 },
+				new List<int>() {2, 2},
 				new List<List<List<int>>>()
 				{
 					new List<List<int>>()
 					{
-						new List<int>(){0,1},
-						new List<int>(){2,3}
+						new List<int>() {0, 1},
+						new List<int>() {2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,2},
-						new List<int>(){1,3}
+						new List<int>() {0, 2},
+						new List<int>() {1, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,3},
-						new List<int>(){1,2}
+						new List<int>() {0, 3},
+						new List<int>() {1, 2}
 					}
 				}
 			},
 			//2 groups test - different size groups
 			new object[]
 			{
-				new List<int>(){ 1,2 }, 
+				new List<int>() {1, 2},
 				new List<List<List<int>>>()
 				{
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){1,2}
+						new List<int>() {0},
+						new List<int>() {1, 2}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){0,2}
-					},new List<List<int>>()
+						new List<int>() {1},
+						new List<int>() {0, 2}
+					},
+					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){0,1}
+						new List<int>() {2},
+						new List<int>() {0, 1}
 					}
-					
 				}
 			},
 			//3 groups test - different and same sizes
 			new object[]
 			{
-				new List<int>(){ 1,2,2 }, 
+				new List<int>() {1, 2, 2},
 				new List<List<List<int>>>()
 				{
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){1,2},
-						new List<int>(){3,4}
+						new List<int>() {0},
+						new List<int>() {1, 2},
+						new List<int>() {3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){1,3},
-						new List<int>(){2,4}
+						new List<int>() {0},
+						new List<int>() {1, 3},
+						new List<int>() {2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){1,4},
-						new List<int>(){2,3}
+						new List<int>() {0},
+						new List<int>() {1, 4},
+						new List<int>() {2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){0,2},
-						new List<int>(){3,4}
+						new List<int>() {1},
+						new List<int>() {0, 2},
+						new List<int>() {3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){0,3},
-						new List<int>(){2,4}
+						new List<int>() {1},
+						new List<int>() {0, 3},
+						new List<int>() {2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){0,4},
-						new List<int>(){2,3}
+						new List<int>() {1},
+						new List<int>() {0, 4},
+						new List<int>() {2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){0,1},
-						new List<int>(){3,4}
-					},new List<List<int>>()
-					{
-						new List<int>(){2},
-						new List<int>(){0,3},
-						new List<int>(){1,4}
-					},new List<List<int>>()
-					{
-						new List<int>(){2},
-						new List<int>(){0,4},
-						new List<int>(){1,3}
-					},new List<List<int>>()
-					{
-						new List<int>(){3},
-						new List<int>(){0,1},
-						new List<int>(){2,4}
-					},new List<List<int>>()
-					{
-						new List<int>(){3},
-						new List<int>(){0,2},
-						new List<int>(){1,4}
-					},new List<List<int>>()
-					{
-						new List<int>(){3},
-						new List<int>(){0,4},
-						new List<int>(){1,2}
+						new List<int>() {2},
+						new List<int>() {0, 1},
+						new List<int>() {3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){0,1},
-						new List<int>(){2,3}
-					},new List<List<int>>()
+						new List<int>() {2},
+						new List<int>() {0, 3},
+						new List<int>() {1, 4}
+					},
+					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){0,2},
-						new List<int>(){1,3}
-					},new List<List<int>>()
+						new List<int>() {2},
+						new List<int>() {0, 4},
+						new List<int>() {1, 3}
+					},
+					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){0,3},
-						new List<int>(){1,2}
+						new List<int>() {3},
+						new List<int>() {0, 1},
+						new List<int>() {2, 4}
+					},
+					new List<List<int>>()
+					{
+						new List<int>() {3},
+						new List<int>() {0, 2},
+						new List<int>() {1, 4}
+					},
+					new List<List<int>>()
+					{
+						new List<int>() {3},
+						new List<int>() {0, 4},
+						new List<int>() {1, 2}
+					},
+					new List<List<int>>()
+					{
+						new List<int>() {4},
+						new List<int>() {0, 1},
+						new List<int>() {2, 3}
+					},
+					new List<List<int>>()
+					{
+						new List<int>() {4},
+						new List<int>() {0, 2},
+						new List<int>() {1, 3}
+					},
+					new List<List<int>>()
+					{
+						new List<int>() {4},
+						new List<int>() {0, 3},
+						new List<int>() {1, 2}
 					}
-					
+
 					// new object[]{ 2,2, new int[][] { new[]{0,1} } },
 					// new object[]{ 2,3, new int[][] { new[]{0,1}, new[]{0,2}, new[]{1,2} } },
 					// new object[]{ 1,1, new int[][] { new[]{0} } },
@@ -167,523 +174,522 @@ namespace UcenikShuffle.UnitTests.CommonTests
 					// new object[]{ 5,2, new int[][] { new[]{0,1} } },
 					// //small group size
 					// new object[]{1,5, new int[][]{ new[]{0}, new[]{1}, new[]{2}, new[]{3}, new[]{4},  }}
-			
+
 					////Tests with multiple groups 
 				}
 			},
 			//3 groups test - same sizes
 			new object[]
 			{
-				new List<int>(){2,2,2},
+				new List<int>() {2, 2, 2},
 				new List<List<List<int>>>()
 				{
 					new List<List<int>>()
 					{
-						new List<int>(){0,1},
-						new List<int>(){2,3},
-						new List<int>(){4,5}
+						new List<int>() {0, 1},
+						new List<int>() {2, 3},
+						new List<int>() {4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,1},
-						new List<int>(){2,4},
-						new List<int>(){3,5}
+						new List<int>() {0, 1},
+						new List<int>() {2, 4},
+						new List<int>() {3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,1},
-						new List<int>(){2,5},
-						new List<int>(){3,4}
+						new List<int>() {0, 1},
+						new List<int>() {2, 5},
+						new List<int>() {3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,2},
-						new List<int>(){1,3},
-						new List<int>(){4,5}
+						new List<int>() {0, 2},
+						new List<int>() {1, 3},
+						new List<int>() {4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,2},
-						new List<int>(){1,4},
-						new List<int>(){3,5}
+						new List<int>() {0, 2},
+						new List<int>() {1, 4},
+						new List<int>() {3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,2},
-						new List<int>(){1,5},
-						new List<int>(){3,4}
+						new List<int>() {0, 2},
+						new List<int>() {1, 5},
+						new List<int>() {3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,3},
-						new List<int>(){1,2},
-						new List<int>(){4,5}
+						new List<int>() {0, 3},
+						new List<int>() {1, 2},
+						new List<int>() {4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,3},
-						new List<int>(){1,4},
-						new List<int>(){2,5}
+						new List<int>() {0, 3},
+						new List<int>() {1, 4},
+						new List<int>() {2, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,3},
-						new List<int>(){1,5},
-						new List<int>(){2,4}
+						new List<int>() {0, 3},
+						new List<int>() {1, 5},
+						new List<int>() {2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,4},
-						new List<int>(){1,2},
-						new List<int>(){3,5}
+						new List<int>() {0, 4},
+						new List<int>() {1, 2},
+						new List<int>() {3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,4},
-						new List<int>(){1,3},
-						new List<int>(){2,5}
+						new List<int>() {0, 4},
+						new List<int>() {1, 3},
+						new List<int>() {2, 5}
 					},
 					new List<List<int>>()
 					{
-						
-						new List<int>(){0,4},
-						new List<int>(){1,5},
-						new List<int>(){2,3}
-						
+						new List<int>() {0, 4},
+						new List<int>() {1, 5},
+						new List<int>() {2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,5},
-						new List<int>(){1,2},
-						new List<int>(){3,4}
+						new List<int>() {0, 5},
+						new List<int>() {1, 2},
+						new List<int>() {3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,5},
-						new List<int>(){1,3},
-						new List<int>(){2,4}
+						new List<int>() {0, 5},
+						new List<int>() {1, 3},
+						new List<int>() {2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0,5},
-						new List<int>(){1,4},
-						new List<int>(){2,3}
+						new List<int>() {0, 5},
+						new List<int>() {1, 4},
+						new List<int>() {2, 3}
 					}
 				}
 			},
 			//3 groups test - different sizes
-			new object[] 
+			new object[]
 			{
-				new List<int>(){1,2,3},
+				new List<int>() {1, 2, 3},
 				new List<List<List<int>>>()
 				{
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){1,2},
-						new List<int>(){3,4,5}
+						new List<int>() {0},
+						new List<int>() {1, 2},
+						new List<int>() {3, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){1,3},
-						new List<int>(){2,4,5}
+						new List<int>() {0},
+						new List<int>() {1, 3},
+						new List<int>() {2, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){1,4},
-						new List<int>(){2,3,5}
+						new List<int>() {0},
+						new List<int>() {1, 4},
+						new List<int>() {2, 3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){1,5},
-						new List<int>(){2,3,4}
+						new List<int>() {0},
+						new List<int>() {1, 5},
+						new List<int>() {2, 3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){2,3},
-						new List<int>(){1,4,5}
+						new List<int>() {0},
+						new List<int>() {2, 3},
+						new List<int>() {1, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){2,4},
-						new List<int>(){1,3,5}
+						new List<int>() {0},
+						new List<int>() {2, 4},
+						new List<int>() {1, 3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){2,5},
-						new List<int>(){1,3,4}
+						new List<int>() {0},
+						new List<int>() {2, 5},
+						new List<int>() {1, 3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){3,4},
-						new List<int>(){1,2,5}
+						new List<int>() {0},
+						new List<int>() {3, 4},
+						new List<int>() {1, 2, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){3,5},
-						new List<int>(){1,2,4}
+						new List<int>() {0},
+						new List<int>() {3, 5},
+						new List<int>() {1, 2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){4,5},
-						new List<int>(){1,2,3}
+						new List<int>() {0},
+						new List<int>() {4, 5},
+						new List<int>() {1, 2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){0,2},
-						new List<int>(){3,4,5}
+						new List<int>() {1},
+						new List<int>() {0, 2},
+						new List<int>() {3, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){0,3},
-						new List<int>(){2,4,5}
+						new List<int>() {1},
+						new List<int>() {0, 3},
+						new List<int>() {2, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){0,4},
-						new List<int>(){2,3,5}
+						new List<int>() {1},
+						new List<int>() {0, 4},
+						new List<int>() {2, 3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){0,5},
-						new List<int>(){2,3,4}
+						new List<int>() {1},
+						new List<int>() {0, 5},
+						new List<int>() {2, 3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){2,3},
-						new List<int>(){0,4,5}
+						new List<int>() {1},
+						new List<int>() {2, 3},
+						new List<int>() {0, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){2,4},
-						new List<int>(){0,3,5}
+						new List<int>() {1},
+						new List<int>() {2, 4},
+						new List<int>() {0, 3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){2,5},
-						new List<int>(){0,3,4}
+						new List<int>() {1},
+						new List<int>() {2, 5},
+						new List<int>() {0, 3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){3,4},
-						new List<int>(){0,2,5}
+						new List<int>() {1},
+						new List<int>() {3, 4},
+						new List<int>() {0, 2, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){3,5},
-						new List<int>(){0,2,4}
+						new List<int>() {1},
+						new List<int>() {3, 5},
+						new List<int>() {0, 2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){4,5},
-						new List<int>(){0,2,3}
+						new List<int>() {1},
+						new List<int>() {4, 5},
+						new List<int>() {0, 2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){0,1},
-						new List<int>(){3,4,5}
+						new List<int>() {2},
+						new List<int>() {0, 1},
+						new List<int>() {3, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){0,3},
-						new List<int>(){1,4,5}
+						new List<int>() {2},
+						new List<int>() {0, 3},
+						new List<int>() {1, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){0,4},
-						new List<int>(){1,3,5}
+						new List<int>() {2},
+						new List<int>() {0, 4},
+						new List<int>() {1, 3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){0,5},
-						new List<int>(){1,3,4}
+						new List<int>() {2},
+						new List<int>() {0, 5},
+						new List<int>() {1, 3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){1,3},
-						new List<int>(){0,4,5}
+						new List<int>() {2},
+						new List<int>() {1, 3},
+						new List<int>() {0, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){1,4},
-						new List<int>(){0,3,5}
+						new List<int>() {2},
+						new List<int>() {1, 4},
+						new List<int>() {0, 3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){1,5},
-						new List<int>(){0,3,4}
+						new List<int>() {2},
+						new List<int>() {1, 5},
+						new List<int>() {0, 3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){3,4},
-						new List<int>(){0,1,5}
+						new List<int>() {2},
+						new List<int>() {3, 4},
+						new List<int>() {0, 1, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){3,5},
-						new List<int>(){0,1,4}
+						new List<int>() {2},
+						new List<int>() {3, 5},
+						new List<int>() {0, 1, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){4,5},
-						new List<int>(){0,1,3}
+						new List<int>() {2},
+						new List<int>() {4, 5},
+						new List<int>() {0, 1, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){0,1},
-						new List<int>(){2,4,5}
+						new List<int>() {3},
+						new List<int>() {0, 1},
+						new List<int>() {2, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){0,2},
-						new List<int>(){1,4,5}
+						new List<int>() {3},
+						new List<int>() {0, 2},
+						new List<int>() {1, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){0,4},
-						new List<int>(){1,2,5}
+						new List<int>() {3},
+						new List<int>() {0, 4},
+						new List<int>() {1, 2, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){0,5},
-						new List<int>(){1,2,4}
+						new List<int>() {3},
+						new List<int>() {0, 5},
+						new List<int>() {1, 2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){1,2},
-						new List<int>(){0,4,5}
+						new List<int>() {3},
+						new List<int>() {1, 2},
+						new List<int>() {0, 4, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){1,4},
-						new List<int>(){0,2,5}
+						new List<int>() {3},
+						new List<int>() {1, 4},
+						new List<int>() {0, 2, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){1,5},
-						new List<int>(){0,2,4}
+						new List<int>() {3},
+						new List<int>() {1, 5},
+						new List<int>() {0, 2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){2,4},
-						new List<int>(){0,1,5}
+						new List<int>() {3},
+						new List<int>() {2, 4},
+						new List<int>() {0, 1, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){2,5},
-						new List<int>(){0,1,4}
+						new List<int>() {3},
+						new List<int>() {2, 5},
+						new List<int>() {0, 1, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){3},
-						new List<int>(){4,5},
-						new List<int>(){0,1,2}
+						new List<int>() {3},
+						new List<int>() {4, 5},
+						new List<int>() {0, 1, 2}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){0,1},
-						new List<int>(){2,3,5}
+						new List<int>() {4},
+						new List<int>() {0, 1},
+						new List<int>() {2, 3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){0,2},
-						new List<int>(){1,3,5}
+						new List<int>() {4},
+						new List<int>() {0, 2},
+						new List<int>() {1, 3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){0,3},
-						new List<int>(){1,2,5}
+						new List<int>() {4},
+						new List<int>() {0, 3},
+						new List<int>() {1, 2, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){0,5},
-						new List<int>(){1,2,3}
+						new List<int>() {4},
+						new List<int>() {0, 5},
+						new List<int>() {1, 2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){1,2},
-						new List<int>(){0,3,5}
+						new List<int>() {4},
+						new List<int>() {1, 2},
+						new List<int>() {0, 3, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){1,3},
-						new List<int>(){0,2,5}
+						new List<int>() {4},
+						new List<int>() {1, 3},
+						new List<int>() {0, 2, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){1,5},
-						new List<int>(){0,2,3}
+						new List<int>() {4},
+						new List<int>() {1, 5},
+						new List<int>() {0, 2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){2,3},
-						new List<int>(){0,1,5}
+						new List<int>() {4},
+						new List<int>() {2, 3},
+						new List<int>() {0, 1, 5}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){2,5},
-						new List<int>(){0,1,3}
+						new List<int>() {4},
+						new List<int>() {2, 5},
+						new List<int>() {0, 1, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){4},
-						new List<int>(){3,5},
-						new List<int>(){0,1,2}
+						new List<int>() {4},
+						new List<int>() {3, 5},
+						new List<int>() {0, 1, 2}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){0,1},
-						new List<int>(){2,3,4}
+						new List<int>() {5},
+						new List<int>() {0, 1},
+						new List<int>() {2, 3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){0,2},
-						new List<int>(){1,3,4}
+						new List<int>() {5},
+						new List<int>() {0, 2},
+						new List<int>() {1, 3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){0,3},
-						new List<int>(){1,2,4}
+						new List<int>() {5},
+						new List<int>() {0, 3},
+						new List<int>() {1, 2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){0,4},
-						new List<int>(){1,2,3}
+						new List<int>() {5},
+						new List<int>() {0, 4},
+						new List<int>() {1, 2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){1,2},
-						new List<int>(){0,3,4}
+						new List<int>() {5},
+						new List<int>() {1, 2},
+						new List<int>() {0, 3, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){1,3},
-						new List<int>(){0,2,4}
+						new List<int>() {5},
+						new List<int>() {1, 3},
+						new List<int>() {0, 2, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){1,4},
-						new List<int>(){0,2,3}
+						new List<int>() {5},
+						new List<int>() {1, 4},
+						new List<int>() {0, 2, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){2,3},
-						new List<int>(){0,1,4}
+						new List<int>() {5},
+						new List<int>() {2, 3},
+						new List<int>() {0, 1, 4}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){2,4},
-						new List<int>(){0,1,3}
+						new List<int>() {5},
+						new List<int>() {2, 4},
+						new List<int>() {0, 1, 3}
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){5},
-						new List<int>(){3,4},
-						new List<int>(){0,1,2}
+						new List<int>() {5},
+						new List<int>() {3, 4},
+						new List<int>() {0, 1, 2}
 					}
 				}
 			},
 			//2 groups - checking if #30 and #36 issues are fixed
 			new object[]
 			{
-				new List<int>(){1,1,2},
+				new List<int>() {1, 1, 2},
 				new List<List<List<int>>>()
 				{
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){1},
-						new List<int>(){2,3},
+						new List<int>() {0},
+						new List<int>() {1},
+						new List<int>() {2, 3},
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){2},
-						new List<int>(){1,3},
+						new List<int>() {0},
+						new List<int>() {2},
+						new List<int>() {1, 3},
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){0},
-						new List<int>(){3},
-						new List<int>(){1,2},
+						new List<int>() {0},
+						new List<int>() {3},
+						new List<int>() {1, 2},
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){2},
-						new List<int>(){0,3},
+						new List<int>() {1},
+						new List<int>() {2},
+						new List<int>() {0, 3},
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){1},
-						new List<int>(){3},
-						new List<int>(){0,2},
+						new List<int>() {1},
+						new List<int>() {3},
+						new List<int>() {0, 2},
 					},
 					new List<List<int>>()
 					{
-						new List<int>(){2},
-						new List<int>(){3},
-						new List<int>(){0,1},
+						new List<int>() {2},
+						new List<int>() {3},
+						new List<int>() {0, 1},
 					}
 				}
 			}
 		};
+
 		[Theory]
 		[MemberData(nameof(GetAllStudentCombinationsShouldWorkData))]
 		private static void GetAllStudentCombinations_ShouldWork(List<int> groupSizes, List<List<List<int>>> expected)
@@ -692,20 +698,22 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			var students = new List<Student>();
 			foreach (int id in Enumerable.Range(1, groupSizes.Sum()).ToList())
 			{
-				students.Add(new Student() {Id = id});
+				students.Add(new Student() { Id = id });
 			}
+
 			var actualCombinations = HelperMethods.GetAllStudentCombinations(groupSizes, students).Select(c => c.Select(g => g.Select(s => s).ToList()).ToList()).ToList();
 			var expectedCombinations = expected.Select(c => c.Select(g => g.Select(n => students[n]).ToList()).ToList()).ToList();
-			
+
 			//Testing if actual and expected combinations are the same 
 			Assert.Equal(expectedCombinations.Count, actualCombinations.Count);
 			if (actualCombinations.Count != expected.Count)
 			{
 				throw new Exception("Actual combination count and expected combination count aren't the same!");
 			}
-			for(int i = 0; i < actualCombinations.Count; i++)
+
+			for (int i = 0; i < actualCombinations.Count; i++)
 			{
-				if(HelperMethods.CompareShuffleRecords(actualCombinations[i], expectedCombinations[i]) == false)
+				if (HelperMethods.CompareShuffleRecords(actualCombinations[i], expectedCombinations[i]) == false)
 				{
 					throw new Exception("Expected and actual student combinations aren't the same");
 				}
@@ -715,13 +723,14 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		public static IEnumerable<object[]> GetAllStudentCombinationsShouldThrowGroupSizeParameterExceptionData = new List<object[]>
 		{
 			//0
-			new object[]{new List<int>{ 0 }},
+			new object[] {new List<int> {0}},
 			//Negative number
-			new object[]{new List<int>{ -1 }},
+			new object[] {new List<int> {-1}},
 			//Multiple groups
-			new object[]{new List<int>{ 1,2,3,0 }},
-			new object[]{new List<int>{ 1,-1,2,3 }}
+			new object[] {new List<int> {1, 2, 3, 0}},
+			new object[] {new List<int> {1, -1, 2, 3}}
 		};
+
 		[Theory]
 		[MemberData(nameof(GetAllStudentCombinationsShouldThrowGroupSizeParameterExceptionData))]
 		private static void GetAllStudentCombinations_ShouldThrowGroupSizeParameterException(List<int> groupSizes)
@@ -732,9 +741,9 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			studentCount = (studentCount < 0) ? 0 : studentCount;
 			foreach (int id in Enumerable.Range(1, studentCount))
 			{
-				students.Add(new Student(){ Id = id });
+				students.Add(new Student() { Id = id });
 			}
-			
+
 			//Testing
 			Assert.Throws<GroupSizeException>(() => HelperMethods.GetAllStudentCombinations(groupSizes, students).ToList());
 		}
@@ -754,12 +763,12 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				new List<List<int>>()
 				{
-					new List<int>(){1},
+					new List<int>() {1},
 				},
 				new List<List<int>>()
 				{
-					new List<int>(){1}
-				}, 
+					new List<int>() {1}
+				},
 				true
 			},
 			//Same records
@@ -767,11 +776,11 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				new List<List<int>>()
 				{
-					new List<int>(){1,2,3},
+					new List<int>() {1, 2, 3},
 				},
 				new List<List<int>>()
 				{
-					new List<int>(){1,2,3}
+					new List<int>() {1, 2, 3}
 				},
 				true
 			},
@@ -780,11 +789,11 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				new List<List<int>>()
 				{
-					new List<int>(){1,2,3}
+					new List<int>() {1, 2, 3}
 				},
 				new List<List<int>>()
 				{
-					new List<int>(){2,3,1}
+					new List<int>() {2, 3, 1}
 				},
 				true
 			},
@@ -793,11 +802,11 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				new List<List<int>>()
 				{
-					new List<int>(){1,2,3}
+					new List<int>() {1, 2, 3}
 				},
 				new List<List<int>>()
 				{
-					new List<int>(){1,2,4}
+					new List<int>() {1, 2, 4}
 				},
 				false
 			},
@@ -806,11 +815,11 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				new List<List<int>>()
 				{
-					new List<int>(){1,2}
+					new List<int>() {1, 2}
 				},
 				new List<List<int>>()
 				{
-					new List<int>(){1,2,3}
+					new List<int>() {1, 2, 3}
 				},
 				false
 			},
@@ -820,12 +829,12 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				new List<List<int>>()
 				{
-					new List<int>(){1},
-					new List<int>(){1,2}
+					new List<int>() {1},
+					new List<int>() {1, 2}
 				},
 				new List<List<int>>()
 				{
-					new List<int>(){1}
+					new List<int>() {1}
 				},
 				false
 			},
@@ -834,13 +843,13 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				new List<List<int>>()
 				{
-					new List<int>(){1},
-					new List<int>(){2,3}
+					new List<int>() {1},
+					new List<int>() {2, 3}
 				},
 				new List<List<int>>()
 				{
-					new List<int>(){1},
-					new List<int>(){3,2}
+					new List<int>() {1},
+					new List<int>() {3, 2}
 				},
 				true
 			},
@@ -849,17 +858,18 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				new List<List<int>>()
 				{
-					new List<int>(){1},
-					new List<int>(){2}
+					new List<int>() {1},
+					new List<int>() {2}
 				},
 				new List<List<int>>()
 				{
-					new List<int>(){2},
-					new List<int>(){1}
+					new List<int>() {2},
+					new List<int>() {1}
 				},
 				true
 			}
 		};
+
 		[Theory]
 		[MemberData(nameof(CompareShuffleRecordsShouldWorkData))]
 		private static void CompareShuffleRecords_ShouldWork(IList<List<int>> r1, List<List<int>> r2, bool expected)
@@ -872,11 +882,11 @@ namespace UcenikShuffle.UnitTests.CommonTests
 				{
 					if (students.All(s => s.Id != index))
 					{
-						students.Add(new Student(){Id = index});
+						students.Add(new Student() { Id = index });
 					}
 				}
 			}
-			
+
 			//Converting records from int lists to student lists
 			bool actual;
 			if (r1.Count != r2.Count)
@@ -885,6 +895,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 				Assert.Equal(expected, actual);
 				return;
 			}
+
 			var record1 = new List<List<Student>>();
 			var record2 = new List<List<Student>>();
 			for (int i = 0; i < 2; i++)
@@ -896,6 +907,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 					{
 						studentGroup.Add(students.First(s => s.Id == index));
 					}
+
 					if (i == 0)
 					{
 						record1.Add(studentGroup);
@@ -910,6 +922,29 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			//Checking if records are the same
 			actual = HelperMethods.CompareShuffleRecords(record1, record2);
 			Assert.Equal(expected, actual);
+		}
+
+		//TODO: check once again if expected variable for all cases is correct
+		//TODO: test what happens to GetCombinationCount if unexpected variables are passed to it (negative group size, empty group sizes list etc.)
+		[Theory]
+		[InlineData(new[] { 2, 2, 3 }, 105)]
+		[InlineData(new[] { 6, 1 }, 7)]
+		[InlineData(new[] { 1, 6 }, 7)]
+		[InlineData(new[] { 1, 2, 3 }, 60)]
+		[InlineData(new[] { 1, 3, 3 }, 70)]
+		[InlineData(new[] { 1, 2, 2 }, 15)]
+		[InlineData(new[] { 1, 2, 3, 4 }, 12600)]
+		[InlineData(new[] { 5 }, 1)]
+		[InlineData(new[] { 1, 1, 1 }, 1)]
+		[InlineData(new[] { 5, 4 }, 126)]
+		[InlineData(new[] { 1, 3, 3, 3, 3 }, 200200)]
+		[InlineData(new[] { 1, 2, 1 }, 6)]
+		//[InlineData(new[] { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5, 5 }, someAmmount)]
+		[InlineData(new[] { 1, 1, 2, 3 }, 210)]
+		private static void GetCombinationCount_ShouldWork(int[] groupSizes, ulong expected)
+		{
+			long actual = HelperMethods.GetCombinationCount(groupSizes);
+			Assert.Equal(expected.ToString(), actual.ToString());
 		}
 	}
 }
