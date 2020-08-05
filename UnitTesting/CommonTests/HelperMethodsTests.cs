@@ -165,17 +165,6 @@ namespace UcenikShuffle.UnitTests.CommonTests
 						new List<int>() {0, 3},
 						new List<int>() {1, 2}
 					}
-
-					// new object[]{ 2,2, new int[][] { new[]{0,1} } },
-					// new object[]{ 2,3, new int[][] { new[]{0,1}, new[]{0,2}, new[]{1,2} } },
-					// new object[]{ 1,1, new int[][] { new[]{0} } },
-					// //Unexpected data tests
-					// //(higher group size than number count)
-					// new object[]{ 5,2, new int[][] { new[]{0,1} } },
-					// //small group size
-					// new object[]{1,5, new int[][]{ new[]{0}, new[]{1}, new[]{2}, new[]{3}, new[]{4},  }}
-
-					////Tests with multiple groups 
 				}
 			},
 			//3 groups test - same sizes
@@ -644,7 +633,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 					}
 				}
 			},
-			//2 groups - checking if #30 and #36 issues are fixed
+			//3 groups - checking if #30 and #36 issues are fixed
 			new object[]
 			{
 				new List<int>() {1, 1, 2},
@@ -941,9 +930,10 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[InlineData(new[] { 1, 2, 1 }, 6)]
 		//[InlineData(new[] { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5, 5 }, someAmmount)]
 		[InlineData(new[] { 1, 1, 2, 3 }, 210)]
+		[InlineData(new[] { 2,2 }, 3)]
 		private static void GetCombinationCount_ShouldWork(int[] groupSizes, ulong expected)
 		{
-			long actual = HelperMethods.GetCombinationCount(groupSizes);
+			ulong actual = HelperMethods.GetCombinationCount(groupSizes);
 			Assert.Equal(expected.ToString(), actual.ToString());
 		}
 	}

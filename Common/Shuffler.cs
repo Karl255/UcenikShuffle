@@ -58,7 +58,7 @@ namespace UcenikShuffle.Common
 				student.StudentSittingHistory.Clear();
 			}
 			ShuffleResult.Clear();
-			var combinations = HelperMethods.GetAllStudentCombinations(Groups.Select(g => g.Size).ToList(), Students).Distinct();
+			var combinations = HelperMethods.GetAllStudentCombinations(Groups.Select(g => g.Size).ToList(), Students).ToList();
 			_progress = progress;
 
 			//Going trough each LV

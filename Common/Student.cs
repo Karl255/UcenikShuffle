@@ -1,8 +1,10 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace UcenikShuffle.Common
 {
+	[DebuggerDisplay("{Id}")]
 	public class Student
 	{
 		public int Id;
