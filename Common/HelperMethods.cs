@@ -12,11 +12,11 @@ namespace UcenikShuffle.Common
 		/// </summary>
 		/// <param name="groupSizes">Sizes of groups</param>
 		/// <param name="students">Students</param>
-		/// <param name="maxCombinationCount">Maximum number of combinations that will be returned (if there are more combinations than <paramref name="maxCombinationCount"/>, every nth combinations will be skipped - n depends on number of combinations and <paramref name="maxCombinationCount"/>)</param>
+		/// <param name="maxCombinationCount">Maximum number of combinations that will be returned (if there are more combinations than <paramref name="maxCombinationCount"/>, every nth combinations will be skipped - n depends on number of combinations and <paramref name="maxCombinationCount"/>). Setting the value of this parameter below 0 disables max combination count limit (all combinations are returned)</param>
 		/// <param name="takeOffset">SHOULDN'T BE SET OUTSIDE OF THIS METHOD! This parameter should only be used on recursive calls in this method. It specifies the offset of the number which will be taken. For example, if every second combination is taken and offset is 3, following combinations will be returned: 5th, 7th, 9th, 11th...</param>
 		/// <param name="takeEvery">SHOULDN'T BE SET OUTSIDE OF THIS METHOD! This parameter should only be used on recursive calls in this method. It specifies which combinations will be returned. If there are 1000 combinations and <paramref name="maxCombinationCount"/> is 100, this parameter will be 10. That means that 10th, 20th, 30th etc. combinations will be returned</param>
 		/// <returns></returns>
-		public static IEnumerable<List<List<Student>>> GetAllStudentCombinations(IList<int> groupSizes, IList<Student> students, int maxCombinationCount = 100000, double takeEvery = 0, double takeOffset = 0)
+		public static IEnumerable<List<List<Student>>> GetAllStudentCombinations(IList<int> groupSizes, IList<Student> students, int maxCombinationCount = -1, double takeEvery = 0, double takeOffset = 0)
 		{
 			//Checking if passed parameters are valid
 			foreach (int size in groupSizes)
@@ -38,7 +38,7 @@ namespace UcenikShuffle.Common
 			//Setting takeEvery value if this is the first time this method was called
 			if (takeEvery == 0 && takeOffset == 0)
 			{
-				takeEvery = (double)GetCombinationCount(groupSizes) / maxCombinationCount;
+				takeEvery = (maxCombinationCount < 0) ? -1 : (double)GetCombinationCount(groupSizes) / maxCombinationCount;
 			}
 
 			//Getting all number combinations for the first group
