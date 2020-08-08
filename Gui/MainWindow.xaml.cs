@@ -37,7 +37,7 @@ namespace UcenikShuffle.Gui
 			}
 
 			// rows for the header and LVs
-			for (int i = 0; i < shuffler.LvCount + 1; i++)
+			for (int i = 0; i < shuffler.ShuffleResult.Count + 1; i++)
 			{
 				OutputGrid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
 			}
@@ -46,7 +46,7 @@ namespace UcenikShuffle.Gui
 			OutputGrid.AddTextAt("LV", 0, 0);
 
 			// LVs
-			for (int i = 1; i <= shuffler.LvCount; i++)
+			for (int i = 1; i <= shuffler.ShuffleResult.Count; i++)
 			{
 				OutputGrid.AddTextAt(i.ToString(), 0, i);
 			}
@@ -100,7 +100,7 @@ namespace UcenikShuffle.Gui
 			var groupSizes = Parsers.StringToGroupSizes(GroupSizesInput.Text).ToList();
 
 			//if the numbers are too large, ask user for confirmation
-			int complexity = HelperMethods.GetShuffleComplexity(groupSizes, lvCount);
+			int complexity = new ShuffleComplexityCalculator(groupSizes, lvCount).Complexity;
 			if (complexity > 10000 || lvCount > 200)
 			{
 				var choice = MessageBox.Show(
@@ -171,15 +171,15 @@ namespace UcenikShuffle.Gui
 			//filling up the OutputGrid
 			{
 				//Outputting each student combination to the output grid
-				for(int i = 0; i < shuffler.LvCount; i++)
+				for(int i = 0; i < shuffler.ShuffleResult.Count; i++)
 				{
 					var lvCombination = shuffler.ShuffleResult[i % shuffler.ShuffleResult.Count];
 					int column = 1;
-					for (int j = 0; j < lvCombination.Count; j++)
+					for (int j = 0; j < lvCombination.Combination.Count; j++)
 					{
-						for (int k = 0; k < lvCombination[j].Count; k++)
+						for (int k = 0; k < lvCombination.Combination[j].Count; k++)
 						{
-							OutputGrid.AddTextAt(lvCombination[j][k].Label, column, i + 1);
+							OutputGrid.AddTextAt(lvCombination.Combination[j][k].Label, column, i + 1);
 							column++;
 						}
 					}

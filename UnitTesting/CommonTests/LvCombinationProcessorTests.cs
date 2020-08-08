@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using UcenikShuffle.Common;
 using UcenikShuffle.Common.Exceptions;
 using Xunit;
 
 namespace UcenikShuffle.UnitTests.CommonTests
 {
-	public static class HelperMethodsTests
+	public class LvCombinationProcessorTests
 	{
+
 		public static IEnumerable<object[]> GetAllStudentCombinationsShouldWorkData = new List<object[]>()
 		{
 			//1 group test
@@ -681,17 +683,17 @@ namespace UcenikShuffle.UnitTests.CommonTests
 
 		[Theory]
 		[MemberData(nameof(GetAllStudentCombinationsShouldWorkData))]
-		private static void GetAllStudentCombinations_ShouldWork(List<int> groupSizes, List<List<List<int>>> expected)
+		private static void GetLvStudentCombinations_ShouldWork(List<int> groupSizes, List<List<List<int>>> expected)
 		{
 			//Setup
 			var students = new List<Student>();
 			foreach (int id in Enumerable.Range(1, groupSizes.Sum()).ToList())
 			{
-				students.Add(new Student() { Id = id });
+				students.Add(new Student(id));
 			}
 
-			var actualCombinations = HelperMethods.GetAllStudentCombinations(groupSizes, students).Select(c => c.Select(g => g.Select(s => s).ToList()).ToList()).ToList();
-			var expectedCombinations = expected.Select(c => c.Select(g => g.Select(n => students[n]).ToList()).ToList()).ToList();
+			var actualCombinations = new LvCombinationProcessor(groupSizes, students).LvCombinations.ToList();
+			var expectedCombinations = expected.Select(c => new LvCombination(c.Select(g => g.Select(n => students[n]).ToList()).ToList())).ToList();
 
 			//Testing if actual and expected combinations are the same 
 			Assert.Equal(expectedCombinations.Count, actualCombinations.Count);
@@ -702,27 +704,61 @@ namespace UcenikShuffle.UnitTests.CommonTests
 
 			for (int i = 0; i < actualCombinations.Count; i++)
 			{
-				if (HelperMethods.CompareShuffleRecords(actualCombinations[i], expectedCombinations[i]) == false)
+				if (actualCombinations[i].CompareTo(expectedCombinations[i]) == false)
 				{
 					throw new Exception("Expected and actual student combinations aren't the same");
 				}
 			}
 		}
 
-		public static IEnumerable<object[]> GetAllStudentCombinationsShouldThrowGroupSizeParameterExceptionData = new List<object[]>
+		[Theory]
+		//2 same groups - different max combination count
+		[InlineData(new int[] { 1, 2 }, -10, new int[] { 0, 1, 2 })]
+		[InlineData(new int[] { 1, 2 }, -1, new int[] { 0, 1, 2 })]
+		[InlineData(new int[] { 1, 2 }, 0, new int[] { 0, 1, 2 })]
+		[InlineData(new int[] { 1, 2 }, 1, new int[] { 0 })]
+		[InlineData(new int[] { 1, 2 }, 2, new int[] { 0, 2 })]
+		[InlineData(new int[] { 1, 2 }, 10, new int[] { 0, 1, 2 })]
+		//1 group
+		[InlineData(new int[] { 3 }, 0, new int[] { 0 })]
+		[InlineData(new int[] { 3 }, 1, new int[] { 0 })]
+		//3 groups
+		[InlineData(new int[] { 1, 2, 2 }, 0, new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 })]
+		[InlineData(new int[] { 1, 2, 2 }, 2, new int[] { 0, 8 })]
+		[InlineData(new int[] { 1, 1, 2 }, 2, new int[] { 0, 3 })]
+		private static void GetLvStudentCombinations_UsingMaxCombinationCount_ShouldWork(int[] groupSizes, int maxCombinationCount, int[] expectedReturnIdexes)
 		{
-			//0
-			new object[] {new List<int> {0}},
-			//Negative number
-			new object[] {new List<int> {-1}},
-			//Multiple groups
-			new object[] {new List<int> {1, 2, 3, 0}},
-			new object[] {new List<int> {1, -1, 2, 3}}
-		};
+			var students = new List<Student>();
+			for (int i = 0; i < groupSizes.Sum(); i++)
+			{
+				students.Add(new Student(i + 1));
+			}
+			var limitedCombinations = new LvCombinationProcessor(groupSizes.ToList(), students, maxCombinationCount).LvCombinations.ToList();
+			var unlimitedCombinations = new LvCombinationProcessor(groupSizes.ToList(), students).LvCombinations.ToList();
+			var actualReturnIndexes = new List<int>();
+			foreach (var combination in limitedCombinations)
+			{
+				var c = unlimitedCombinations.FirstOrDefault(c => combination.CompareTo(c));
+				if (c == null)
+				{
+					throw new Exception("Expected indexes and actual indexes aren't the same!");
+				}
+				int index = unlimitedCombinations.IndexOf(c);
+				actualReturnIndexes.Add(index);
+			}
+			Assert.Equal(expectedReturnIdexes.Length, actualReturnIndexes.Count);
+			Assert.True(actualReturnIndexes.Except(expectedReturnIdexes).Count() == 0);
+		}
 
 		[Theory]
-		[MemberData(nameof(GetAllStudentCombinationsShouldThrowGroupSizeParameterExceptionData))]
-		private static void GetAllStudentCombinations_ShouldThrowGroupSizeParameterException(List<int> groupSizes)
+		//0
+		[InlineData(new int[] { 0 })]
+		//Negative number
+		[InlineData(new int[] { -1 })]
+		//Multiple groups
+		[InlineData(new int[] { 1, 2, 3, 0 })]
+		[InlineData(new int[] { 1, -1, 2, 3 })]
+		private static void GetLvStudentCombinations_ShouldThrowGroupSizeParameterException(int[] groupSizes)
 		{
 			//Setup
 			var students = new List<Student>();
@@ -730,211 +766,19 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			studentCount = (studentCount < 0) ? 0 : studentCount;
 			foreach (int id in Enumerable.Range(1, studentCount))
 			{
-				students.Add(new Student() { Id = id });
+				students.Add(new Student(id));
 			}
 
 			//Testing
-			Assert.Throws<GroupSizeException>(() => HelperMethods.GetAllStudentCombinations(groupSizes, students).ToList());
+			Assert.Throws<GroupSizeException>(() => new LvCombinationProcessor(groupSizes.ToList(), students).LvCombinations.ToList());
 		}
 
-		public static IEnumerable<object[]> CompareShuffleRecordsShouldWorkData = new List<object[]>()
+		[Fact]
+		private static void GetLvStudentCombinations_ShouldThrowArgumentException()
 		{
-			//EMPTY RECORDS
-			new object[]
-			{
-				new List<List<int>>(),
-				new List<List<int>>(),
-				true
-			},
-			////SINGLE GROUP
-			//1 (same) student in both records
-			new object[]
-			{
-				new List<List<int>>()
-				{
-					new List<int>() {1},
-				},
-				new List<List<int>>()
-				{
-					new List<int>() {1}
-				},
-				true
-			},
-			//Same records
-			new object[]
-			{
-				new List<List<int>>()
-				{
-					new List<int>() {1, 2, 3},
-				},
-				new List<List<int>>()
-				{
-					new List<int>() {1, 2, 3}
-				},
-				true
-			},
-			//Same records - different order
-			new object[]
-			{
-				new List<List<int>>()
-				{
-					new List<int>() {1, 2, 3}
-				},
-				new List<List<int>>()
-				{
-					new List<int>() {2, 3, 1}
-				},
-				true
-			},
-			//Different records
-			new object[]
-			{
-				new List<List<int>>()
-				{
-					new List<int>() {1, 2, 3}
-				},
-				new List<List<int>>()
-				{
-					new List<int>() {1, 2, 4}
-				},
-				false
-			},
-			//Different record lengths
-			new object[]
-			{
-				new List<List<int>>()
-				{
-					new List<int>() {1, 2}
-				},
-				new List<List<int>>()
-				{
-					new List<int>() {1, 2, 3}
-				},
-				false
-			},
-			////MULTIPLE GROUPS
-			//Different amount of groups
-			new object[]
-			{
-				new List<List<int>>()
-				{
-					new List<int>() {1},
-					new List<int>() {1, 2}
-				},
-				new List<List<int>>()
-				{
-					new List<int>() {1}
-				},
-				false
-			},
-			//Same records
-			new object[]
-			{
-				new List<List<int>>()
-				{
-					new List<int>() {1},
-					new List<int>() {2, 3}
-				},
-				new List<List<int>>()
-				{
-					new List<int>() {1},
-					new List<int>() {3, 2}
-				},
-				true
-			},
-			//Multiple same size groups, different order
-			new object[]
-			{
-				new List<List<int>>()
-				{
-					new List<int>() {1},
-					new List<int>() {2}
-				},
-				new List<List<int>>()
-				{
-					new List<int>() {2},
-					new List<int>() {1}
-				},
-				true
-			}
-		};
-
-		[Theory]
-		[MemberData(nameof(CompareShuffleRecordsShouldWorkData))]
-		private static void CompareShuffleRecords_ShouldWork(IList<List<int>> r1, List<List<int>> r2, bool expected)
-		{
-			//Populating student list with students
-			var students = new List<Student>();
-			foreach (var group in r1.Concat(r2))
-			{
-				foreach (int index in group)
-				{
-					if (students.All(s => s.Id != index))
-					{
-						students.Add(new Student() { Id = index });
-					}
-				}
-			}
-
-			//Converting records from int lists to student lists
-			bool actual;
-			if (r1.Count != r2.Count)
-			{
-				actual = false;
-				Assert.Equal(expected, actual);
-				return;
-			}
-
-			var record1 = new List<List<Student>>();
-			var record2 = new List<List<Student>>();
-			for (int i = 0; i < 2; i++)
-			{
-				foreach (var group in (i == 0) ? r1 : r2)
-				{
-					var studentGroup = new List<Student>();
-					foreach (int index in group)
-					{
-						studentGroup.Add(students.First(s => s.Id == index));
-					}
-
-					if (i == 0)
-					{
-						record1.Add(studentGroup);
-					}
-					else
-					{
-						record2.Add(studentGroup);
-					}
-				}
-			}
-
-			//Checking if records are the same
-			actual = HelperMethods.CompareShuffleRecords(record1, record2);
-			Assert.Equal(expected, actual);
-		}
-
-		//TODO: check once again if expected variable for all cases is correct
-		//TODO: test what happens to GetCombinationCount if unexpected variables are passed to it (negative group size, empty group sizes list etc.)
-		[Theory]
-		[InlineData(new[] { 2, 2, 3 }, 105)]
-		[InlineData(new[] { 6, 1 }, 7)]
-		[InlineData(new[] { 1, 6 }, 7)]
-		[InlineData(new[] { 1, 2, 3 }, 60)]
-		[InlineData(new[] { 1, 3, 3 }, 70)]
-		[InlineData(new[] { 1, 2, 2 }, 15)]
-		[InlineData(new[] { 1, 2, 3, 4 }, 12600)]
-		[InlineData(new[] { 5 }, 1)]
-		[InlineData(new[] { 1, 1, 1 }, 1)]
-		[InlineData(new[] { 5, 4 }, 126)]
-		[InlineData(new[] { 1, 3, 3, 3, 3 }, 200200)]
-		[InlineData(new[] { 1, 2, 1 }, 6)]
-		//[InlineData(new[] { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 5, 5, 5 }, someAmmount)]
-		[InlineData(new[] { 1, 1, 2, 3 }, 210)]
-		[InlineData(new[] { 2,2 }, 3)]
-		private static void GetCombinationCount_ShouldWork(int[] groupSizes, ulong expected)
-		{
-			ulong actual = HelperMethods.GetCombinationCount(groupSizes);
-			Assert.Equal(expected.ToString(), actual.ToString());
+			var groupSizes = new List<int>() { 1 };
+			Assert.Throws<ArgumentException>(() => new LvCombinationProcessor(groupSizes, null).LvCombinations.ToList());
+			Assert.Throws<ArgumentException>(() => new LvCombinationProcessor(groupSizes, new List<Student>()).LvCombinations.ToList());
 		}
 	}
 }

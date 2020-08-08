@@ -7,30 +7,30 @@ namespace UcenikShuffle.Common
 	[DebuggerDisplay("{Id}")]
 	public class Student
 	{
-		public int Id;
-		private string _label;
+		/// <summary>
+		/// Id of the student
+		/// </summary>
+		public readonly int Id;
+
+		/// <summary>
+		/// Label of the student which will be used when displaying information about the student (if it's not set, Id will be used instead)
+		/// </summary>
 		public string Label
 		{
 			get => _label ?? Id.ToString();
 			set => _label = value;
 		}
 
+		/// <summary>
+		/// List which contains information about the amount of times this student sat with other students
+		/// </summary>
 		public readonly CustomDictionary<Student> StudentSittingHistory = new CustomDictionary<Student>();
 
-		/// <summary>
-		/// This method searches for a student with the specified ID and returns his index
-		/// </summary>
-		/// <param name="students">List of students to be searched</param>
-		/// <param name="id">ID of the student whose index will be returned</param>
-		/// <returns></returns>
-		public static int GetIndexOfId(List<Student> students, int id)
+		private string _label;
+
+		public Student(int id)
 		{
-			var student = students.FirstOrDefault(s => s.Id == id);
-			if (student == null)
-			{
-				return -1;
-			}
-			return students.IndexOf(student);
+			Id = id;
 		}
 	}
 }

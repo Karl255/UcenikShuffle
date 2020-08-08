@@ -31,11 +31,11 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		private static void Shuffle_Ctor_ShouldWork(int lvCount, List<int> groupSizes, CancellationTokenSource cancellationTokenSource)
 		{
 			var shuffler = new Shuffler(lvCount, groupSizes, cancellationTokenSource);
-			
-			//Checking if lv count parameter is correct 
-			Assert.Equal(lvCount, shuffler.LvCount);
-			
-			//Checking if group list parameter is correct
+
+			//Checking if shuffle result field is correct
+			Assert.True(shuffler.ShuffleResult != null && shuffler.ShuffleResult.Count == 0);
+
+			//Checking if groups field is correct
 			for (int i = 0; i < groupSizes.Count; i++)
 			{
 				int actualGroupCount = shuffler.Groups.Count(g => g.Size == groupSizes[i]);
@@ -43,7 +43,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 				Assert.Equal(expectedGroupCount, actualGroupCount);
 			}
 			
-			//Checking if student list parameter is correct
+			//Checking if students field is correct
 			for (int i = 1; i < groupSizes.Sum(); i++)
 			{
 				int studentCount = shuffler.Students.Count(s => s.Id == i && s.Label == s.Id.ToString());
@@ -199,7 +199,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			}
 			for (int i = 0; i < expected.Count; i++)
 			{
-				if (HelperMethods.CompareShuffleRecords(expected[i], actual[i]) == false)
+				if (new LvCombination(expected[i]).CompareTo(actual[i]) == false)
 				{
 					throw new Exception($"Expected and actual lv combinations for lv {i + 1} aren't the same!");
 				}

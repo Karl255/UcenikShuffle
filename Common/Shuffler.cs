@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,12 +9,24 @@ namespace UcenikShuffle.Common
 {
 	public class Shuffler
 	{
-		public int LvCount { get; private set; }
-		public List<Group> Groups { get; private set; }
-		public List<Student> Students { get; private set; }
+		private int _lvCount;
 		private readonly CancellationTokenSource _cancellationSource;
 		private IProgress<double> _progress;
-		public List<List<List<Student>>> ShuffleResult { get; private set; }
+
+		/// <summary>
+		/// List of groups
+		/// </summary>
+		public List<Group> Groups { get; private set; }
+
+		/// <summary>
+		/// List of students
+		/// </summary>
+		public List<Student> Students { get; private set; }
+
+		/// <summary>
+		/// Result of the shuffle operation
+		/// </summary>
+		public List<LvCombination> ShuffleResult { get; private set; }
 
 		public Shuffler(int lvCount, List<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
@@ -31,26 +42,26 @@ namespace UcenikShuffle.Common
 
 			////Initializing variables 
 			_cancellationSource = cancellationSource;
-			ShuffleResult = new List<List<List<Student>>>();
-			LvCount = lvCount;
-			
+			ShuffleResult = new List<LvCombination>();
+			_lvCount = lvCount;
+
 			groupSizes.Sort((g1, g2) => g1.CompareTo(g2));
 			Groups = groupSizes.Select(x => new Group(x)).ToList();
-			
+
 			int studentCount = groupSizes.Sum();
 			Students = new List<Student>();
 			for (int i = 0; i < studentCount; i++)
 			{
-				Students.Add(new Student { Id = i + 1 });
+				Students.Add(new Student(i + 1));
 			}
 		}
-		
+
 		/// <summary>
 		/// This method is used to create a student sitting combination based on the fields in this class
 		/// </summary>
 		/// <param name="progress">Object which holds data about shuffle progress</param>
 		/// <returns></returns>
-		public List<List<List<Student>>> Shuffle(Progress<double> progress = null)
+		public void Shuffle(Progress<double> progress = null)
 		{
 			//Clearing all current shuffle data before shuffling
 			foreach (var student in Students)
@@ -58,16 +69,16 @@ namespace UcenikShuffle.Common
 				student.StudentSittingHistory.Clear();
 			}
 			ShuffleResult.Clear();
-			var combinations = HelperMethods.GetAllStudentCombinations(Groups.Select(g => g.Size).ToList(), Students, 100000).ToList();
+			var combinations = new LvCombinationProcessor(Groups.Select(g => g.Size).ToList(), Students, 100000).LvCombinations.ToList();
 			_progress = progress;
 
 			//Going trough each LV
 			_progress?.Report(0);
-			for (int lv = 0; lv < LvCount; lv++)
+			for (int lv = 0; lv < _lvCount; lv++)
 			{
 				//Getting best student sitting combination for current lv
 				//student sitting diff is max - min difference in student sitting count (student sitting count is the amount of times a student sat with other students)
-				List<List<Student>> bestCombination = null;
+				LvCombination bestCombination = null;
 				bool firstCombination = true;
 				int minMaxSittingCount = 0;
 				int minMinSittingCountCount = 0;
@@ -122,13 +133,11 @@ namespace UcenikShuffle.Common
 					//Updating variables if this is the best combination so far
 					if (isBestCombination || firstCombination)
 					{
-						var combinationList = combination.Select(g => g.ToList()).ToList();
-
 						//Combination will be skipped if it was already used
 						bool skipCombination = false;
-						foreach(var record in ShuffleResult)
+						foreach (var record in ShuffleResult)
 						{
-							if(HelperMethods.CompareShuffleRecords(record, combinationList))
+							if (combination.CompareTo(record))
 							{
 								skipCombination = true;
 							}
@@ -137,7 +146,7 @@ namespace UcenikShuffle.Common
 						//Variables are being populated using new data since some of the variables in this foreach loop might not have been updated (since that depends on what criteria the best combination was selected)
 						if (skipCombination == false)
 						{
-							bestCombination = combinationList;
+							bestCombination = combination;
 							if (studentSittingHistoryValues.Count != 0)
 							{
 								int minStudentSittingHistoryValue = studentSittingHistoryValues.Min();
@@ -157,10 +166,10 @@ namespace UcenikShuffle.Common
 				//Updating shuffle result and progress
 				UpdateStudentHistory(bestCombination, true);
 				ShuffleResult.Add(bestCombination);
-				_progress?.Report((float) (lv + 1) / LvCount);
-				
+				_progress?.Report((float)(lv + 1) / _lvCount);
+
 				//If every student sat with other students the same amount of times, there is no need to do further calculations since other lv's are just repeating
-				if(GetStudentSittingHistoryValues().Distinct().Count() <= 1)
+				if (GetStudentSittingHistoryValues().Distinct().Count() <= 1)
 				{
 					break;
 				}
@@ -176,13 +185,11 @@ namespace UcenikShuffle.Common
 				}
 				Debug.WriteLine("");
 			}
-
-			return ShuffleResult;
 		}
 
-		private static void UpdateStudentHistory(IEnumerable<List<Student>> students, bool increment)
+		private static void UpdateStudentHistory(LvCombination combination, bool increment)
 		{
-			foreach (var groupCombination in students)
+			foreach (var groupCombination in combination.Combination)
 			{
 				foreach (var student in groupCombination)
 				{
@@ -201,12 +208,12 @@ namespace UcenikShuffle.Common
 				}
 			}
 		}
-		private static int GetStudentSittingDiff(IEnumerable<IEnumerable<Student>> combination)
+		private static int GetStudentSittingDiff(LvCombination combination)
 		{
 			int minCount = 0;
 			int maxCount = 0;
 			bool firstStudent = true;
-			foreach (var groupCombination in combination)
+			foreach (var groupCombination in combination.Combination)
 			{
 				foreach (var student in groupCombination)
 				{
@@ -224,9 +231,9 @@ namespace UcenikShuffle.Common
 			}
 			return maxCount - minCount;
 		}
-		private IEnumerable<int> GetMinMaxValues(IEnumerable<IEnumerable<Student>> combination)
+		private IEnumerable<int> GetMinMaxValues(LvCombination combination)
 		{
-			foreach (var group in combination)
+			foreach (var group in combination.Combination)
 			{
 				foreach (var student in group)
 				{
@@ -245,16 +252,16 @@ namespace UcenikShuffle.Common
 		}
 		private IEnumerable<int> GetStudentSittingHistoryValues()
 		{
-			foreach(var student in Students)
+			foreach (var student in Students)
 			{
 				//Returning student sitting history values for the current student
-				foreach(var record in student.StudentSittingHistory)
+				foreach (var record in student.StudentSittingHistory)
 				{
 					yield return record.Value;
 				}
-				
+
 				//Returning 0's for all students that aren't present in the student sitting history list
-				for(int i = student.StudentSittingHistory.Count; i < Students.Count - 1; i++)
+				for (int i = student.StudentSittingHistory.Count; i < Students.Count - 1; i++)
 				{
 					yield return 0;
 				}
