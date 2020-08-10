@@ -6,7 +6,7 @@ namespace UcenikShuffle.Common.Exceptions
 	{
 		public LvCountException() : base()
 		{
-			
+
 		}
 	}
 }

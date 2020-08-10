@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,7 +13,7 @@ namespace UcenikShuffle.Common
 		{
 			get
 			{
-				if(_complexity < 0)
+				if (_complexity < 0)
 				{
 					_complexity = GetShuffleComplexity();
 				}

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UcenikShuffle.Common.Exceptions;
 
 namespace UcenikShuffle.Common
@@ -12,7 +11,7 @@ namespace UcenikShuffle.Common
 		{
 			get
 			{
-				if(_lvCombinations == null)
+				if (_lvCombinations == null)
 				{
 					_lvCombinations = GetLvCombinations(_groupSizes, _students).ToList();
 				}
@@ -49,7 +48,6 @@ namespace UcenikShuffle.Common
 		private IEnumerable<LvCombination> GetLvCombinations(List<int> groupSizes, List<Student> students, double takeEvery = 0, double takeOffset = 0)
 		{
 			bool allGroupsAreSameSize = groupSizes.Distinct().Count() == 1;
-			IEnumerable<LvCombination> firstGroupCombinations;
 			var sameGroupSizes = groupSizes.Where(s => s == groupSizes[0]).ToList();
 
 			//Setting takeEvery value if this is the first time this method was called
@@ -59,22 +57,13 @@ namespace UcenikShuffle.Common
 				takeEvery = (takeEvery <= 1) ? -1 : takeEvery;
 			}
 
-			//Getting all number combinations for the first group
-			if (groupSizes.Count > 1 && groupSizes[0] == groupSizes[1])
+			//Going trough each combination for the first group and getting all possible combinations for other groups
+			Student currentFirstCombinationNumber = null;
+			var availableStudents = new List<Student>(students);
+			foreach (var firstGroupCombination in GetLvCombinationsForFirstGroup(groupSizes, students))
 			{
-				firstGroupCombinations = GetLvCombinationsForFirstGroup(groupSizes, students);
-			}
-			else
-			{
-				//If the second group doesn't have the same size as the first one, no fancy duplicate removal techniques are necessary   
-				firstGroupCombinations = GetLvCombinationsForGroup(groupSizes[0], students).ToList();
-			}
-
-			//Returning all number combinations if there is only 1 number group
-			//TODO: it might be possible to simplify the algorithm by putting this in the foreach loop below this if (maybe special treatment isn't even necessary)
-			if (groupSizes.Count == 1)
-			{
-				foreach (var combination in firstGroupCombinations)
+				//Returning first group combination if there is only 1 number group
+				if (groupSizes.Count == 1)
 				{
 					//Skipping the combination if necessary
 					if (takeOffset > 0)
@@ -84,33 +73,23 @@ namespace UcenikShuffle.Common
 					}
 
 					takeOffset += takeEvery - 1;
-					yield return new LvCombination(combination.Combination);
+					yield return new LvCombination(firstGroupCombination.Combination);
+					continue;
 				}
-				yield break;
-			}
 
-			//Going trough each combination for the first group and getting all possible combinations for other groups
-			Student lastPivot = null;
-			var availableStudents = new List<Student>(students);
-			foreach (var firstGroupCombination in firstGroupCombinations)
-			{
 				//Removing some available students if the first student in the combination changed
 				if (sameGroupSizes.Count > 1)
 				{
-					var pivot = firstGroupCombination.Combination[0][0];
-					if (pivot != lastPivot)
+					var firstCombinationNumber = firstGroupCombination.Combination[0][0];
+					if (firstCombinationNumber != currentFirstCombinationNumber)
 					{
-						lastPivot = pivot;
-						availableStudents.Remove(pivot);
+						currentFirstCombinationNumber = firstCombinationNumber;
+						availableStudents.Remove(firstCombinationNumber);
 					}
 				}
 
 				//Skipping the combination if all combinations in this group would be skipped
-				ulong combinationCount;
-				ulong count1 = new LvCombinationCountCalculator(sameGroupSizes.Skip(1).ToList(), availableStudents.Count - groupSizes[0] + 1).GetLvCombinationCount();
-				var tempGroups = groupSizes.Where(s => s != groupSizes[0]).ToList();
-				ulong count2 = new LvCombinationCountCalculator(tempGroups, tempGroups.Sum()).GetLvCombinationCount();
-				combinationCount = (count1 == 0 ? 1 : count1) * (count2 == 0 ? 1 : count2);
+				ulong combinationCount = GetCombinationCount(groupSizes, availableStudents);
 				if (takeOffset - combinationCount > 0)
 				{
 					takeOffset -= combinationCount;
@@ -150,7 +129,7 @@ namespace UcenikShuffle.Common
 						{
 							tempAvailableStudents.RemoveAll(i => group.Contains(i));
 						}
-						tempGroupSizes = groupSizes.Where(s => s != groupSizes[0]).ToList();
+						tempGroupSizes = groupSizes.Except(sameGroupSizes).ToList();
 						var otherGroupsCombinations = GetLvCombinations(tempGroupSizes, tempAvailableStudents, takeEvery, takeOffset + combinationCount);
 						foreach (var otherGroupsCombination in otherGroupsCombinations)
 						{
@@ -165,6 +144,7 @@ namespace UcenikShuffle.Common
 				{
 					//Getting number combinations for other groups
 					var tempAvailableIndexes = availableStudents.Except(firstGroupCombination.Combination[0]).ToList();
+					//TODO: figure out why s != groupSizes[0] can't be replaced by groupSizes.Except(sameGroupSizes)
 					tempGroupSizes = groupSizes.Where(s => s != groupSizes[0]).ToList();
 					var combinations = GetLvCombinations(tempGroupSizes, tempAvailableIndexes, takeEvery, takeOffset + combinationCount);
 					foreach (var c in combinations)
@@ -255,6 +235,14 @@ namespace UcenikShuffle.Common
 					yield return combination;
 				}
 			}
-		}		
+		}
+		private ulong GetCombinationCount(IList<int> groupSizes, IList<Student> availableStudents)
+		{
+			ulong count1 = new LvCombinationCountCalculator(groupSizes.Where(s => s == groupSizes[0]).Skip(1).ToList(), availableStudents.Count - groupSizes[0] + 1).GetLvCombinationCount();
+			var tempGroups = groupSizes.Where(s => s != groupSizes[0]).ToList();
+			ulong count2 = new LvCombinationCountCalculator(tempGroups, tempGroups.Sum()).GetLvCombinationCount();
+			ulong combinationCount = (count1 == 0 ? 1 : count1) * (count2 == 0 ? 1 : count2);
+			return combinationCount;
+		}
 	}
 }

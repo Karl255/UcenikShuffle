@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using UcenikShuffle.Common;
 using UcenikShuffle.Common.Exceptions;
 using Xunit;
@@ -10,11 +9,11 @@ namespace UcenikShuffle.UnitTests.CommonTests
 	{
 		[Theory]
 		//Spaces
-		[InlineData("1, 2, 3", new[]{1,2,3})]
+		[InlineData("1, 2, 3", new[] { 1, 2, 3 })]
 		//Multiple delimiters in a row
-		[InlineData("5,20,,1", new[]{5,20,1})]
+		[InlineData("5,20,,1", new[] { 5, 20, 1 })]
 		//Single group size
-		[InlineData("1", new[]{1})]
+		[InlineData("1", new[] { 1 })]
 		public void StringToGroupSizes_ShouldWork(string value, int[] expected)
 		{
 			expected = expected.OrderBy(s => s).ToArray();

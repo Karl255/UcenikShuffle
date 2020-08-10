@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-using System.Threading.Tasks;
 using UcenikShuffle.Common;
 using UcenikShuffle.Common.Exceptions;
 using Xunit;
@@ -17,13 +16,13 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				1,
 				new List<int>(){1,2,3},
-				new CancellationTokenSource() 
+				new CancellationTokenSource()
 			},
 			new object[]
 			{
 				1,
 				new List<int>(){1,2,3},
-				null 
+				null
 			},
 		};
 		[Theory]
@@ -42,7 +41,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 				int expectedGroupCount = groupSizes.Count(s => s == groupSizes[i]);
 				Assert.Equal(expectedGroupCount, actualGroupCount);
 			}
-			
+
 			//Checking if students field is correct
 			for (int i = 1; i < groupSizes.Sum(); i++)
 			{
@@ -50,29 +49,29 @@ namespace UcenikShuffle.UnitTests.CommonTests
 				Assert.Equal(1, studentCount);
 			}
 		}
-		
+
 		[Theory]
 		//Null list
 		[InlineData(null)]
 		//Empty list
-		[InlineData(new int[]{})]
+		[InlineData(new int[] { })]
 		//Group whose size is 0
-		[InlineData(new int[]{0})]
-		[InlineData(new int[]{0,1,2})]
+		[InlineData(new int[] { 0 })]
+		[InlineData(new int[] { 0, 1, 2 })]
 		//Negative group size
-		[InlineData(new int[]{-1})]
-		[InlineData(new int[]{1,2,-1,3})]
+		[InlineData(new int[] { -1 })]
+		[InlineData(new int[] { 1, 2, -1, 3 })]
 		private static void Shuffle_Ctor_ShouldThrowGroupSizeException(int[] groupSizes)
 		{
 			Assert.Throws<GroupSizeException>(() => new Shuffler(1, groupSizes?.ToList(), null));
 		}
-		
+
 		[Theory]
 		[InlineData(0)]
 		[InlineData(-1)]
 		private static void Shuffle_Ctor_ShouldThrowLvCountException(int lvCount)
 		{
-			Assert.Throws<LvCountException>(() => new Shuffler(lvCount, new List<int>() {1}, null));
+			Assert.Throws<LvCountException>(() => new Shuffler(lvCount, new List<int>() { 1 }, null));
 		}
 
 		public static IEnumerable<object[]> ShuffleShouldWorkData = new List<object[]>()
@@ -173,7 +172,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		{
 			//Creating the shuffler
 			var shuffler = new Shuffler(lvCount, groupSizes.ToList(), null);
-			
+
 			//Shuffling twice to check if variables that store shuffle state/result are cleared when shuffle is started
 			for (int i = 0; i < 2; i++)
 			{
@@ -210,7 +209,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		private static void Shuffle_ShouldThrowOperationCancelledException()
 		{
 			var cts = new CancellationTokenSource();
-			var shuffler = new Shuffler(1, new List<int>(){1,2,3}, cts);
+			var shuffler = new Shuffler(1, new List<int>() { 1, 2, 3 }, cts);
 			cts.Cancel();
 			Assert.Throws<OperationCanceledException>(() => shuffler.Shuffle());
 			Assert.Empty(shuffler.ShuffleResult);

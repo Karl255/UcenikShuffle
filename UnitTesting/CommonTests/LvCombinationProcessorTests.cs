@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UcenikShuffle.Common;
 using UcenikShuffle.Common.Exceptions;
 using Xunit;
@@ -683,7 +682,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 
 		[Theory]
 		[MemberData(nameof(GetAllStudentCombinationsShouldWorkData))]
-		private static void GetLvStudentCombinations_ShouldWork(List<int> groupSizes, List<List<List<int>>> expected)
+		public static void GetLvStudentCombinations_ShouldWork(List<int> groupSizes, List<List<List<int>>> expected)
 		{
 			//Setup
 			var students = new List<Student>();
@@ -726,7 +725,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[InlineData(new int[] { 1, 2, 2 }, 0, new int[] { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14 })]
 		[InlineData(new int[] { 1, 2, 2 }, 2, new int[] { 0, 8 })]
 		[InlineData(new int[] { 1, 1, 2 }, 2, new int[] { 0, 3 })]
-		private static void GetLvStudentCombinations_UsingMaxCombinationCount_ShouldWork(int[] groupSizes, int maxCombinationCount, int[] expectedReturnIdexes)
+		public static void GetLvStudentCombinations_UsingMaxCombinationCount_ShouldWork(int[] groupSizes, int maxCombinationCount, int[] expectedReturnIdexes)
 		{
 			var students = new List<Student>();
 			for (int i = 0; i < groupSizes.Sum(); i++)
@@ -758,7 +757,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		//Multiple groups
 		[InlineData(new int[] { 1, 2, 3, 0 })]
 		[InlineData(new int[] { 1, -1, 2, 3 })]
-		private static void GetLvStudentCombinations_ShouldThrowGroupSizeParameterException(int[] groupSizes)
+		public static void GetLvStudentCombinations_ShouldThrowGroupSizeParameterException(int[] groupSizes)
 		{
 			//Setup
 			var students = new List<Student>();
@@ -774,7 +773,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		}
 
 		[Fact]
-		private static void GetLvStudentCombinations_ShouldThrowArgumentException()
+		public static void GetLvStudentCombinations_ShouldThrowArgumentException()
 		{
 			var groupSizes = new List<int>() { 1 };
 			Assert.Throws<ArgumentException>(() => new LvCombinationProcessor(groupSizes, null).LvCombinations.ToList());

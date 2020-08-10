@@ -171,7 +171,7 @@ namespace UcenikShuffle.Gui
 			//filling up the OutputGrid
 			{
 				//Outputting each student combination to the output grid
-				for(int i = 0; i < shuffler.ShuffleResult.Count; i++)
+				for (int i = 0; i < shuffler.ShuffleResult.Count; i++)
 				{
 					var lvCombination = shuffler.ShuffleResult[i % shuffler.ShuffleResult.Count];
 					int column = 1;
