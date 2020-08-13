@@ -69,11 +69,12 @@ namespace UcenikShuffle.Common
 				student.StudentSittingHistory.Clear();
 			}
 			ShuffleResult.Clear();
-			var combinations = new LvCombinationProcessor(Groups.Select(g => g.Size).ToList(), Students, 100000).LvCombinations.ToList();
 			_progress = progress;
+			_progress?.Report(0);
+
+			var combinations = new LvCombinationProcessor(Groups.Select(g => g.Size).ToList(), Students, 100000).LvCombinations.ToList();
 
 			//Going trough each LV
-			_progress?.Report(0);
 			for (int lv = 0; lv < _lvCount; lv++)
 			{
 				//Getting best student sitting combination for current lv
