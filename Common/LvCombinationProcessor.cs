@@ -95,20 +95,15 @@ namespace UcenikShuffle.Common
 					takeOffset -= combinationCount;
 					continue;
 				}
-				else
-				{
-					takeOffset -= combinationCount;
-				}
-
-				var tempGroupSizes = new List<int>(sameGroupSizes);
 
 				//Getting all possible combinations for groups that have the same size as the first group
 				if (sameGroupSizes.Count > 1)
 				{
 					var tempAvailableStudents = availableStudents.Except(firstGroupCombination.Combination[0]).ToList();
+					var tempGroupSizes = new List<int>(sameGroupSizes);
 					tempGroupSizes.RemoveAt(0);
 
-					var sameSizeCombinations = GetLvCombinations(tempGroupSizes, tempAvailableStudents, takeEvery, takeOffset + combinationCount);
+					var sameSizeCombinations = GetLvCombinations(tempGroupSizes, tempAvailableStudents, takeEvery, takeOffset);
 					foreach (var sameSizeCombination in sameSizeCombinations)
 					{
 						var lvCombination = new LvCombination(new List<List<Student>>(firstGroupCombination.Combination));
@@ -125,13 +120,9 @@ namespace UcenikShuffle.Common
 						//Getting all possible combinations for the groups that don't have the same size as the first group
 						tempAvailableStudents = new List<Student>(students);
 						tempAvailableStudents.RemoveAll(i => firstGroupCombination.Combination[0].Contains(i));
-						foreach (var group in sameSizeCombination.Combination)
-						{
-							tempAvailableStudents.RemoveAll(i => group.Contains(i));
-						}
+						sameSizeCombination.Combination.ForEach(g => tempAvailableStudents.RemoveAll(i => g.Contains(i)));
 						tempGroupSizes = groupSizes.Except(sameGroupSizes).ToList();
-						var otherGroupsCombinations = GetLvCombinations(tempGroupSizes, tempAvailableStudents, takeEvery, takeOffset + combinationCount);
-						foreach (var otherGroupsCombination in otherGroupsCombinations)
+						foreach (var otherGroupsCombination in GetLvCombinations(tempGroupSizes, tempAvailableStudents, takeEvery, takeOffset))
 						{
 							//Combining all of the group combinations into 1 combination
 							otherGroupsCombination.Combination.InsertRange(0, lvCombination.Combination);
@@ -143,11 +134,9 @@ namespace UcenikShuffle.Common
 				else
 				{
 					//Getting number combinations for other groups
-					var tempAvailableIndexes = availableStudents.Except(firstGroupCombination.Combination[0]).ToList();
-					//TODO: figure out why s != groupSizes[0] can't be replaced by groupSizes.Except(sameGroupSizes)
-					tempGroupSizes = groupSizes.Where(s => s != groupSizes[0]).ToList();
-					var combinations = GetLvCombinations(tempGroupSizes, tempAvailableIndexes, takeEvery, takeOffset + combinationCount);
-					foreach (var c in combinations)
+					var tempAvailableStudents = availableStudents.Except(firstGroupCombination.Combination[0]).ToList();
+					var tempGroupSizes = groupSizes.Where(s => s != groupSizes[0]).ToList();
+					foreach (var c in GetLvCombinations(tempGroupSizes, tempAvailableStudents, takeEvery, takeOffset))
 					{
 						//Combining all of the group combinations into 1 combination
 						c.Combination.Insert(0, firstGroupCombination.Combination[0]);
@@ -155,9 +144,9 @@ namespace UcenikShuffle.Common
 						yield return c;
 					}
 				}
+				takeOffset -= combinationCount;
 			}
 		}
-
 		private IEnumerable<LvCombination> GetLvCombinationsForGroup(int groupSize, List<Student> students)
 		{
 			var groupCombination = new List<Student>();
@@ -238,9 +227,14 @@ namespace UcenikShuffle.Common
 		}
 		private ulong GetCombinationCount(IList<int> groupSizes, IList<Student> availableStudents)
 		{
-			ulong count1 = new LvCombinationCountCalculator(groupSizes.Where(s => s == groupSizes[0]).Skip(1).ToList(), availableStudents.Count - groupSizes[0] + 1).GetLvCombinationCount();
-			var tempGroups = groupSizes.Where(s => s != groupSizes[0]).ToList();
-			ulong count2 = new LvCombinationCountCalculator(tempGroups, tempGroups.Sum()).GetLvCombinationCount();
+			var sameGroupSizes = groupSizes.Where(s => s == groupSizes[0]).Skip(1);
+			var otherGroups = groupSizes.Where(s => s != groupSizes[0]);
+			if (sameGroupSizes.Count() == 0)
+			{
+				otherGroups = new List<int>(groupSizes.Skip(1));
+			}
+			ulong count1 = new LvCombinationCountCalculator(sameGroupSizes.ToList(), availableStudents.Count - groupSizes[0] + 1).GetLvCombinationCount();
+			ulong count2 = new LvCombinationCountCalculator(otherGroups.ToList(), otherGroups.Sum()).GetLvCombinationCount();
 			ulong combinationCount = (count1 == 0 ? 1 : count1) * (count2 == 0 ? 1 : count2);
 			return combinationCount;
 		}

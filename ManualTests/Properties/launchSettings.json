@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ManualTests": {
+      "commandName": "Project",
+      "commandLineArgs": "y"
+    }
+  }
+}
