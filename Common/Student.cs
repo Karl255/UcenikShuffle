@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace UcenikShuffle.Common
 {
@@ -22,7 +23,7 @@ namespace UcenikShuffle.Common
 		/// <summary>
 		/// List which contains information about the amount of times this student sat with other students
 		/// </summary>
-		public readonly CustomDictionary<Student> StudentSittingHistory = new CustomDictionary<Student>();
+		public readonly Dictionary<Student,int> StudentSittingHistory = new Dictionary<Student, int>();
 
 		private string _label;
 
