@@ -100,8 +100,8 @@ namespace UcenikShuffle.Gui
 			var groupSizes = Parsers.StringToGroupSizes(GroupSizesInput.Text).ToList();
 
 			//if the numbers are too large, ask user for confirmation
-			int complexity = new ShuffleComplexityCalculator(groupSizes, lvCount).Complexity;
-			if (complexity > 10000 || lvCount > 200)
+			ulong complexity = new ShuffleComplexityCalculator(groupSizes, lvCount, Shuffler.MaxCombinationCount).Complexity;
+			if (complexity > 10000000)
 			{
 				var choice = MessageBox.Show(
 					"S velikim brojevima proces može potrajati dosta dugo. Želite li nastaviti?",

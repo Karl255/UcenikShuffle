@@ -12,9 +12,11 @@ namespace UcenikShuffle.Common
 		private readonly int _lvCount;
 		private readonly CancellationTokenSource _cancellationSource;
 		private IProgress<double> _progress;
-		private List<Group> _groups;
-		private List<Student> _students;
-		private List<LvCombination> _shuffleResult;
+		private readonly List<Group> _groups;
+		private readonly List<Student> _students;
+		private readonly List<LvCombination> _shuffleResult;
+
+		public static readonly int MaxCombinationCount = 100000;
 
 		/// <summary>
 		/// List of groups
@@ -73,7 +75,7 @@ namespace UcenikShuffle.Common
 			_progress = progress;
 			_progress?.Report(0);
 
-			var combinations = new LvCombinationProcessor(Groups.Select(g => g.Size).ToList(), Students.ToList(), 100000).LvCombinations.ToList();
+			var combinations = new LvCombinationProcessor(Groups.Select(g => g.Size).ToList(), Students.ToList(), MaxCombinationCount).LvCombinations.ToList();
 
 			//Going trough each LV
 			for (int lv = 0; lv < _lvCount; lv++)
