@@ -13,21 +13,21 @@ namespace UcenikShuffle.Common
 		{
 			get
 			{
-				if (_complexity < 0)
+				if (_complexity == null)
 				{
 					_complexity = GetShuffleComplexity();
 				}
-				return _complexity;
+				return (int)_complexity;
 			}
 		}
 
-		private readonly IEnumerable<int> _groupSizes;
+		private readonly List<int> _groupSizes;
 		private readonly int _lvCount;
-		private int _complexity = -1;
+		private int? _complexity = null;
 
-		public ShuffleComplexityCalculator(IEnumerable<int> groupSizes, int lvCount)
+		public ShuffleComplexityCalculator(IReadOnlyList<int> groupSizes, int lvCount)
 		{
-			_groupSizes = groupSizes;
+			_groupSizes = groupSizes.ToList();
 			_lvCount = lvCount;
 		}
 
