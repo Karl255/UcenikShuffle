@@ -27,7 +27,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		};
 		[Theory]
 		[MemberData(nameof(ShuffleCtorShouldWorkData))]
-		private static void Shuffle_Ctor_ShouldWork(int lvCount, List<int> groupSizes, CancellationTokenSource cancellationTokenSource)
+		public static void Shuffle_Ctor_ShouldWork(int lvCount, List<int> groupSizes, CancellationTokenSource cancellationTokenSource)
 		{
 			var shuffler = new Shuffler(lvCount, groupSizes, cancellationTokenSource);
 
@@ -61,7 +61,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		//Negative group size
 		[InlineData(new int[] { -1 })]
 		[InlineData(new int[] { 1, 2, -1, 3 })]
-		private static void Shuffle_Ctor_ShouldThrowGroupSizeException(int[] groupSizes)
+		public static void Shuffle_Ctor_ShouldThrowGroupSizeException(int[] groupSizes)
 		{
 			Assert.Throws<GroupSizeException>(() => new Shuffler(1, groupSizes?.ToList(), null));
 		}
@@ -69,7 +69,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		[Theory]
 		[InlineData(0)]
 		[InlineData(-1)]
-		private static void Shuffle_Ctor_ShouldThrowLvCountException(int lvCount)
+		public static void Shuffle_Ctor_ShouldThrowLvCountException(int lvCount)
 		{
 			Assert.Throws<LvCountException>(() => new Shuffler(lvCount, new List<int>() { 1 }, null));
 		}
@@ -168,7 +168,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		};
 		[Theory]
 		[MemberData(nameof(ShuffleShouldWorkData))]
-		private static void Shuffle_ShouldWork(int lvCount, List<int> groupSizes, List<List<List<int>>> expectedIndexes)
+		public static void Shuffle_ShouldWork(int lvCount, List<int> groupSizes, List<List<List<int>>> expectedIndexes)
 		{
 			//Creating the shuffler
 			var shuffler = new Shuffler(lvCount, groupSizes.ToList(), null);
@@ -206,7 +206,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 		}
 
 		[Fact]
-		private static void Shuffle_ShouldThrowOperationCancelledException()
+		public static void Shuffle_ShouldThrowOperationCancelledException()
 		{
 			var cts = new CancellationTokenSource();
 			var shuffler = new Shuffler(1, new List<int>() { 1, 2, 3 }, cts);

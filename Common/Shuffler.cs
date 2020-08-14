@@ -9,26 +9,29 @@ namespace UcenikShuffle.Common
 {
 	public class Shuffler
 	{
-		private int _lvCount;
+		private readonly int _lvCount;
 		private readonly CancellationTokenSource _cancellationSource;
 		private IProgress<double> _progress;
+		private List<Group> _groups;
+		private List<Student> _students;
+		private List<LvCombination> _shuffleResult;
 
 		/// <summary>
 		/// List of groups
 		/// </summary>
-		public List<Group> Groups { get; private set; }
+		public IReadOnlyList<Group> Groups => _groups;
 
 		/// <summary>
 		/// List of students
 		/// </summary>
-		public List<Student> Students { get; private set; }
+		public IReadOnlyList<Student> Students => _students;
 
 		/// <summary>
 		/// Result of the shuffle operation
 		/// </summary>
-		public List<LvCombination> ShuffleResult { get; private set; }
+		public IReadOnlyList<LvCombination> ShuffleResult => _shuffleResult;
 
-		public Shuffler(int lvCount, List<int> groupSizes, CancellationTokenSource cancellationSource)
+		public Shuffler(int lvCount, IReadOnlyList<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
 			//Checking if passed parameters are valid 
 			if (groupSizes == null || groupSizes.Count == 0 || groupSizes.Any(s => s <= 0))
@@ -40,19 +43,17 @@ namespace UcenikShuffle.Common
 				throw new LvCountException();
 			}
 
-			////Initializing variables 
+			//Initializing variables 
 			_cancellationSource = cancellationSource;
-			ShuffleResult = new List<LvCombination>();
+			_shuffleResult = new List<LvCombination>();
 			_lvCount = lvCount;
-
-			groupSizes.Sort((g1, g2) => g1.CompareTo(g2));
-			Groups = groupSizes.Select(x => new Group(x)).ToList();
+			_groups = groupSizes.ToList().OrderBy(s => s).Select(s => new Group(s)).ToList();
 
 			int studentCount = groupSizes.Sum();
-			Students = new List<Student>();
+			_students = new List<Student>();
 			for (int i = 0; i < studentCount; i++)
 			{
-				Students.Add(new Student(i + 1));
+				_students.Add(new Student(i + 1));
 			}
 		}
 
@@ -68,11 +69,11 @@ namespace UcenikShuffle.Common
 			{
 				student.StudentSittingHistory.Clear();
 			}
-			ShuffleResult.Clear();
+			_shuffleResult.Clear();
 			_progress = progress;
 			_progress?.Report(0);
 
-			var combinations = new LvCombinationProcessor(Groups.Select(g => g.Size).ToList(), Students, 100000).LvCombinations.ToList();
+			var combinations = new LvCombinationProcessor(Groups.Select(g => g.Size).ToList(), Students.ToList(), 100000).LvCombinations.ToList();
 
 			//Going trough each LV
 			for (int lv = 0; lv < _lvCount; lv++)
@@ -166,7 +167,7 @@ namespace UcenikShuffle.Common
 
 				//Updating shuffle result and progress
 				UpdateStudentHistory(bestCombination, true);
-				ShuffleResult.Add(bestCombination);
+				_shuffleResult.Add(bestCombination);
 				_progress?.Report((float)(lv + 1) / _lvCount);
 
 				//If every student sat with other students the same amount of times, there is no need to do further calculations since other lv's are just repeating

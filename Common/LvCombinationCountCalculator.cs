@@ -7,11 +7,11 @@ namespace UcenikShuffle.Common
 {
 	public class LvCombinationCountCalculator
 	{
-		List<int> _groupSizes;
+		private readonly List<int> _groupSizes;
 
-		public LvCombinationCountCalculator(List<int> groupSizes, int availableStudentCount)
+		public LvCombinationCountCalculator(IReadOnlyList<int> groupSizes, int availableStudentCount)
 		{
-			_groupSizes = groupSizes;
+			_groupSizes = groupSizes?.ToList();
 			int groupSizesSum = groupSizes == null ? 0 : groupSizes.Sum();
 			if (availableStudentCount > groupSizesSum)
 			{

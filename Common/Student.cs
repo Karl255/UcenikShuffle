@@ -6,6 +6,8 @@ namespace UcenikShuffle.Common
 	[DebuggerDisplay("{Id}")]
 	public class Student
 	{
+		private string _label;
+
 		/// <summary>
 		/// Id of the student
 		/// </summary>
@@ -24,8 +26,6 @@ namespace UcenikShuffle.Common
 		/// List which contains information about the amount of times this student sat with other students
 		/// </summary>
 		public readonly Dictionary<Student,int> StudentSittingHistory = new Dictionary<Student, int>();
-
-		private string _label;
 
 		public Student(int id)
 		{

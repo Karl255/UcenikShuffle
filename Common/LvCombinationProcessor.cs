@@ -20,11 +20,11 @@ namespace UcenikShuffle.Common
 		}
 
 		private List<LvCombination> _lvCombinations;
-		private List<int> _groupSizes;
-		private List<Student> _students;
-		private int _maxCombinationCount;
+		private readonly List<int> _groupSizes;
+		private readonly List<Student> _students;
+		private readonly int _maxCombinationCount;
 
-		public LvCombinationProcessor(List<int> groupSizes, List<Student> students, int maxCombinationCount = 0)
+		public LvCombinationProcessor(IReadOnlyList<int> groupSizes, IReadOnlyList<Student> students, int maxCombinationCount = 0)
 		{
 			if (groupSizes == null || groupSizes.Count == 0 || groupSizes.Any(s => s <= 0))
 			{
@@ -34,8 +34,8 @@ namespace UcenikShuffle.Common
 			{
 				throw new ArgumentException("Broj učenika mora biti pozitivni cijeli broj!");
 			}
-			_groupSizes = groupSizes;
-			_students = students;
+			_groupSizes = groupSizes.ToList();
+			_students = students.ToList();
 			_maxCombinationCount = maxCombinationCount;
 		}
 
