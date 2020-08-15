@@ -101,7 +101,7 @@ namespace UcenikShuffle.Common
 			}
 			_shuffleResult.Clear();
 			progressPercentage?.Report(0);
-			progressText?.Report("Dohvaćanje svih kombinacija sjedenja");
+			progressText?.Report("Računanje svih kombinacija sjedenja");
 			progressTimeLeft?.Report(new TimeSpan(0));
 
 			ulong combinationCount = new LvCombinationCountCalculator(_groups.Select(g => g.Size).ToList(), _students.Count).GetLvCombinationCount();

@@ -156,10 +156,19 @@ namespace UcenikShuffle.Gui
 			LoadingScreen.Visibility = Visibility.Visible;
 			UniButton.Content = "Prekini";
 
-			var progressPercentage = new Progress<double>(x =>
+			DateTime? lastProgressPercentageUpdate = null;
+			var progressPercentage = new Progress<double>(p =>
 			{
-				ProgressBar.Value = x;
-				ProgressText.Text = $"{ Math.Round(x * 100, 2) }%";
+				//Making sure progress value doesn't change too often
+				if(lastProgressPercentageUpdate != null && DateTime.Now.Subtract((DateTime)lastProgressPercentageUpdate).TotalMilliseconds < 250 && p != 0 && p != 1)
+				{
+					return;
+				}
+				lastProgressPercentageUpdate = (p == 0 || p == 1) ? null : (DateTime?)DateTime.Now;
+				
+				//Updating the value
+				ProgressBar.Value = p;
+				ProgressText.Text = $"{ Math.Round(p * 100, 2) }%";
 			});
 			var progressText = new Progress<string>(t =>
 			{
@@ -168,12 +177,15 @@ namespace UcenikShuffle.Gui
 			DateTime? lastTimeLeftUpdate = null;
 			var progressTimeLeft = new Progress<TimeSpan>(t =>
 			{
+				//Making sure time left value doesn't change too often
 				if(lastTimeLeftUpdate != null && DateTime.Now.Subtract((DateTime)lastTimeLeftUpdate).TotalSeconds < 1 && t.Ticks != 0)
 				{
 					return;
 				}
 				lastTimeLeftUpdate = (t.Ticks == 0) ? null : (DateTime?)DateTime.Now;
-				ShuffleTimeLeftText = $"{(int)t.TotalHours}:{t.Minutes}:{t.Seconds}";
+
+				//Updating the value
+				ShuffleTimeLeftText = $"Preostalo vrijeme: {((int)t.TotalHours):00}:{t.Minutes:00}:{t.Seconds:00}";
 			});
 
 			//Shuffling
