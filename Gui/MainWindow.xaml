@@ -34,31 +34,40 @@
 		</ScrollViewer>
 
 		<!-- This grid is a loading screen which is used when shuffling is in progress -->
-		<UniformGrid x:Name="LoadingScreen" Grid.Row="0"
-					 Columns="1" Rows="2"
-					 Background="LightGray" Visibility="Collapsed">
-			<TextBlock FontSize="28"
-			           Text="Raspored se stvara..." 
-			           TextAlignment="Center" 
-			           HorizontalAlignment="Center"
-			           VerticalAlignment="Bottom" />
+		<Grid x:Name="LoadingScreen" Grid.Row="0"
+			  Background="LightGray" Visibility="Collapsed"
+			  HorizontalAlignment="Stretch" 
+			  VerticalAlignment="Stretch">
+			
+			<!-- Shuffle progress information -->
+			<StackPanel HorizontalAlignment="Center"
+						VerticalAlignment="Center"
+						Orientation="Vertical">
 
-			<!-- ProgressBar and TextBlock in the same exact spot -->
-			<Grid Grid.Row="1" Margin="10"
-				  HorizontalAlignment="Center"
-				  VerticalAlignment="Top">
-				
-				<ProgressBar x:Name="ProgressBar"
-							 Height="30" Width="500"
-							 Minimum="0" Maximum="1"/>
+				<!-- Current shuffle step -->
+				<TextBlock FontSize="28"
+						   Text="{Binding ShuffleProgressText}" 
+						   TextAlignment="Center" 
+						   HorizontalAlignment="Center"/>
 
-				<TextBlock x:Name="ProgressText" FontSize="20"
-						   Text="0%" TextAlignment="Center" />
+				<!-- ProgressBar and TextBlock in the same exact spot -->
+				<Grid>
+					<ProgressBar x:Name="ProgressBar"
+								 Height="30" Width="500"
+								 Minimum="0" Maximum="1"/>
 
-			</Grid>
-		</UniformGrid>
+					<TextBlock x:Name="ProgressText" FontSize="20"
+							   Text="0%" TextAlignment="Center" />
+				</Grid>
 
-		<!-- grid with input controls -->
+				<!-- Approximate time left -->
+				<TextBlock Text="{Binding ShuffleTimeLeftText}"
+						   HorizontalAlignment="Center"/>
+
+			</StackPanel>
+		</Grid>
+
+        <!-- grid with input controls -->
 		<Grid Grid.Row="1" Margin="2">
 			<!-- these styles give all grid elements a Margin of 2 -->
 			<Grid.Resources>

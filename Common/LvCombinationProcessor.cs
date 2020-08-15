@@ -7,19 +7,19 @@ namespace UcenikShuffle.Common
 {
 	public class LvCombinationProcessor
 	{
-		public List<LvCombination> LvCombinations
+		public IEnumerable<LvCombination> LvCombinations
 		{
 			get
 			{
 				if (_lvCombinations == null)
 				{
-					_lvCombinations = GetLvCombinations(_groupSizes, _students).ToList();
+					_lvCombinations = GetLvCombinations(_groupSizes, _students);
 				}
 				return _lvCombinations;
 			}
 		}
 
-		private List<LvCombination> _lvCombinations;
+		private IEnumerable<LvCombination> _lvCombinations;
 		private readonly List<int> _groupSizes;
 		private readonly List<Student> _students;
 		private readonly int _maxCombinationCount;

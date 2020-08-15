@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,12 +13,46 @@ namespace UcenikShuffle.Gui
 	/// <summary>
 	/// Interaction logic for MainWindow.xaml
 	/// </summary>
-	public partial class MainWindow : Window
+	public partial class MainWindow : Window, INotifyPropertyChanged
 	{
 		private Task _currentShuffleTask = null;
 		private CancellationTokenSource _cancellationToken;
+		private string _shuffleProgressText;
+		private string _shuffleTimeLeftText;
 
-		public MainWindow() => InitializeComponent();
+		public event PropertyChangedEventHandler PropertyChanged = (o,e) => {};
+
+		/// <summary>
+		/// Text holding information about current shuffle step
+		/// </summary>
+		public string ShuffleProgressText 
+		{
+			get => _shuffleProgressText;
+			set 
+			{
+				_shuffleProgressText = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShuffleProgressText)));
+			}
+		}
+
+		/// <summary>
+		/// Aproximate time left until current shuffle step is completed
+		/// </summary>
+		public string ShuffleTimeLeftText
+		{
+			get => _shuffleTimeLeftText;
+			set
+			{
+				_shuffleTimeLeftText = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShuffleTimeLeftText)));
+			}
+		}
+
+		public MainWindow()
+		{
+			DataContext = this;
+			InitializeComponent();
+		}
 
 		private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e) => _cancellationToken?.Cancel();
 
@@ -121,15 +156,29 @@ namespace UcenikShuffle.Gui
 			LoadingScreen.Visibility = Visibility.Visible;
 			UniButton.Content = "Prekini";
 
-			var progress = new Progress<double>(x =>
+			var progressPercentage = new Progress<double>(x =>
 			{
 				ProgressBar.Value = x;
 				ProgressText.Text = $"{ Math.Round(x * 100, 2) }%";
 			});
+			var progressText = new Progress<string>(t =>
+			{
+				ShuffleProgressText = t;
+			});
+			DateTime? lastTimeLeftUpdate = null;
+			var progressTimeLeft = new Progress<TimeSpan>(t =>
+			{
+				if(lastTimeLeftUpdate != null && DateTime.Now.Subtract((DateTime)lastTimeLeftUpdate).TotalSeconds < 1 && t.Ticks != 0)
+				{
+					return;
+				}
+				lastTimeLeftUpdate = (t.Ticks == 0) ? null : (DateTime?)DateTime.Now;
+				ShuffleTimeLeftText = $"{(int)t.TotalHours}:{t.Minutes}:{t.Seconds}";
+			});
 
 			//Shuffling
 			var shuffler = new Shuffler(lvCount, groupSizes, _cancellationToken);
-			_currentShuffleTask = Task.Factory.StartNew(() => shuffler.Shuffle(progress));
+			_currentShuffleTask = Task.Factory.StartNew(() => shuffler.Shuffle(progressPercentage, progressText, progressTimeLeft));
 
 			try
 			{

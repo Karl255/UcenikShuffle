@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading;
@@ -11,11 +12,13 @@ namespace UcenikShuffle.Common
 	{
 		private readonly int _lvCount;
 		private readonly CancellationTokenSource _cancellationSource;
-		private IProgress<double> _progress;
 		private readonly List<Group> _groups;
 		private readonly List<Student> _students;
 		private readonly List<LvCombination> _shuffleResult;
 
+		/// <summary>
+		/// Defaulf maximum for the amount of student combinations that will be returned by the shuffle operation
+		/// </summary>
 		public static readonly int MaxCombinationCount = 100000;
 
 		/// <summary>
@@ -62,9 +65,11 @@ namespace UcenikShuffle.Common
 		/// <summary>
 		/// This method is used to create a student sitting combination based on the fields in this class
 		/// </summary>
-		/// <param name="progress">Object which holds data about shuffle progress</param>
+		/// <param name="progressPercentage">Completed percentage for the shuffle step which is being executed at that moment</param>
+		/// <param name="progressText">Text containing data about shuffle step which is being executed at that moment</param>
+		/// <param name="progressTimeLeft">Estimated time left for shuffle step which is being executed at that moment to finish</param>
 		/// <returns></returns>
-		public void Shuffle(Progress<double> progress = null)
+		public void Shuffle(IProgress<double> progressPercentage = null, IProgress<string> progressText = null, IProgress<TimeSpan> progressTimeLeft = null)
 		{
 			//Clearing all current shuffle data before shuffling
 			foreach (var student in Students)
@@ -72,12 +77,25 @@ namespace UcenikShuffle.Common
 				student.StudentSittingHistory.Clear();
 			}
 			_shuffleResult.Clear();
-			_progress = progress;
-			_progress?.Report(0);
+			progressPercentage?.Report(0);
+			progressText?.Report("Dohvaćanje svih kombinacija sjedenja");
+			progressTimeLeft?.Report(new TimeSpan(0));
 
-			var combinations = new LvCombinationProcessor(Groups.Select(g => g.Size).ToList(), Students.ToList(), MaxCombinationCount).LvCombinations.ToList();
+			ulong combinationCount = new LvCombinationCountCalculator(_groups.Select(g => g.Size).ToList(), _students.Count).GetLvCombinationCount();
+			if(combinationCount > (ulong)MaxCombinationCount)
+			{
+				combinationCount = (ulong)MaxCombinationCount;
+			}
+
+			var combinations = GetLvCombinations(progressPercentage, progressTimeLeft, combinationCount);
 
 			//Going trough each LV
+			progressPercentage?.Report(0);
+			progressText?.Report("Rasporeda se stvara");
+			progressTimeLeft?.Report(new TimeSpan(0));
+			var timeEstimator = new TimeLeftEstimator();
+			var combinationsLoopStopwatch = new Stopwatch();
+			combinationsLoopStopwatch.Start();
 			for (int lv = 0; lv < _lvCount; lv++)
 			{
 				//Getting best student sitting combination for current lv
@@ -89,6 +107,7 @@ namespace UcenikShuffle.Common
 				int minStudentSittingDiff = 0;
 				int minMinMaxSum = 0;
 				int maxMinSittingCount = 0;
+				int loopCount = 0;
 				foreach (var combination in combinations)
 				{
 					bool isBestCombination = false;
@@ -165,19 +184,33 @@ namespace UcenikShuffle.Common
 					}
 
 					UpdateStudentHistory(combination, false);
+
+					loopCount++;
+					if (loopCount % 1000 == 0 || loopCount == combinations.Count)
+					{
+						combinationsLoopStopwatch.Stop();
+						timeEstimator?.AddTime(new TimeSpan(combinationsLoopStopwatch.ElapsedTicks));
+						var timeLeft = timeEstimator.GetTimeLeft((combinations.Count - loopCount) / 1000 + (_lvCount - lv - 1) * combinations.Count / 1000);
+						progressTimeLeft?.Report(timeLeft);
+						progressPercentage?.Report((double)((lv + (double)loopCount / combinations.Count) / _lvCount));
+						combinationsLoopStopwatch.Restart();
+					}
 				}
 
 				//Updating shuffle result and progress
 				UpdateStudentHistory(bestCombination, true);
 				_shuffleResult.Add(bestCombination);
-				_progress?.Report((float)(lv + 1) / _lvCount);
 
 				//If every student sat with other students the same amount of times, there is no need to do further calculations since other lv's are just repeating
 				if (GetStudentSittingHistoryValues().Distinct().Count() <= 1)
 				{
 					break;
 				}
+
+				combinationsLoopStopwatch.Stop();
 			}
+			progressTimeLeft?.Report(new TimeSpan(0));
+
 
 			//DEBUGGING OUTPUT: used for testing purposes
 			foreach (var student in Students)
@@ -270,6 +303,31 @@ namespace UcenikShuffle.Common
 					yield return 0;
 				}
 			}
+		}
+		private List<LvCombination> GetLvCombinations(IProgress<double> progressPercentage, IProgress<TimeSpan> progressTimeLeft, ulong combinationCount)
+		{
+			var timeEstimator = new TimeLeftEstimator();
+			var getCombinationsStopwatch = new Stopwatch();
+			getCombinationsStopwatch.Start();
+			ulong loopCount = 0;
+			var combinations =
+				new LvCombinationProcessor(Groups.Select(g => g.Size).ToList(), Students.ToList(), MaxCombinationCount).LvCombinations
+				.Select(c =>
+				{
+					_cancellationSource?.Token.ThrowIfCancellationRequested();
+					loopCount++;
+					if (loopCount % 100 == 0)
+					{
+						getCombinationsStopwatch.Stop();
+						progressPercentage?.Report((double)loopCount / combinationCount);
+						timeEstimator.AddTime(new TimeSpan(getCombinationsStopwatch.ElapsedTicks));
+						progressTimeLeft?.Report(timeEstimator.GetTimeLeft((long)combinationCount - (long)loopCount) / 100);
+						getCombinationsStopwatch.Restart();
+					}
+					return c;
+				})
+				.ToList();
+			return combinations;
 		}
 	}
 }
