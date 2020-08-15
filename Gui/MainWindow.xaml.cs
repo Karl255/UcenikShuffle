@@ -17,21 +17,41 @@ namespace UcenikShuffle.Gui
 	{
 		private Task _currentShuffleTask = null;
 		private CancellationTokenSource _cancellationToken;
-		private string _shuffleProgressText;
+		private double _shuffleProgress;
+		private string _shuffleCurrentStepText;
 		private string _shuffleTimeLeftText;
 
 		public event PropertyChangedEventHandler PropertyChanged = (o,e) => {};
 
 		/// <summary>
+		/// Shuffle progress (in percentages)
+		/// </summary>
+		public double ShuffleProgress
+		{
+			get => _shuffleProgress;
+			set
+			{
+				_shuffleProgress = value;
+				PropertyChanged(this, new PropertyChangedEventArgs(nameof(ShuffleProgress)));
+				PropertyChanged(this, new PropertyChangedEventArgs(nameof(ShuffleProgressText)));
+			}
+		}
+
+		/// <summary>
+		/// Shuffle progress (in percentages) in textual form
+		/// </summary>
+		public string ShuffleProgressText => $"{ Math.Round(ShuffleProgress * 100, 2) }%".ToString();
+
+		/// <summary>
 		/// Text holding information about current shuffle step
 		/// </summary>
-		public string ShuffleProgressText 
+		public string ShuffleCurrentStepText 
 		{
-			get => _shuffleProgressText;
+			get => _shuffleCurrentStepText;
 			set 
 			{
-				_shuffleProgressText = value;
-				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShuffleProgressText)));
+				_shuffleCurrentStepText = value;
+				PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ShuffleCurrentStepText)));
 			}
 		}
 
@@ -167,12 +187,11 @@ namespace UcenikShuffle.Gui
 				lastProgressPercentageUpdate = (p == 0 || p == 1) ? null : (DateTime?)DateTime.Now;
 				
 				//Updating the value
-				ProgressBar.Value = p;
-				ProgressText.Text = $"{ Math.Round(p * 100, 2) }%";
+				ShuffleProgress = p;
 			});
 			var progressText = new Progress<string>(t =>
 			{
-				ShuffleProgressText = t;
+				ShuffleCurrentStepText = t;
 			});
 			DateTime? lastTimeLeftUpdate = null;
 			var progressTimeLeft = new Progress<TimeSpan>(t =>

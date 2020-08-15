@@ -46,7 +46,7 @@
 
 				<!-- Current shuffle step -->
 				<TextBlock FontSize="28"
-						   Text="{Binding ShuffleProgressText}" 
+						   Text="{Binding ShuffleCurrentStepText}" 
 						   TextAlignment="Center" 
 						   HorizontalAlignment="Center"/>
 
@@ -54,10 +54,12 @@
 				<Grid>
 					<ProgressBar x:Name="ProgressBar"
 								 Height="30" Width="500"
-								 Minimum="0" Maximum="1"/>
+								 Minimum="0" Maximum="1"
+								 Value="{Binding ShuffleProgress}"/>
 
 					<TextBlock x:Name="ProgressText" FontSize="20"
-							   Text="0%" TextAlignment="Center" />
+							   TextAlignment="Center"
+							   Text="{Binding ShuffleProgressText}"/>
 				</Grid>
 
 				<!-- Approximate time left -->
