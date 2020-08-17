@@ -72,7 +72,7 @@ namespace UcenikShuffle.Common
 		public void Shuffle(IProgress<double> progressPercentage = null, IProgress<string> progressText = null, IProgress<TimeSpan> progressTimeLeft = null)
 		{
 			/*BEST COMBINATION ALGORITHM EXPLANATION:
-			 An algorithm which calculates best combination takes 5 parameters into consideration:
+			 An algorithm which calculates best combination takes 6 parameters into consideration:
 			
 			1st (most important) parameter is maxSittingCount:
 			max amount of times a student sat with with another student. 
@@ -90,7 +90,11 @@ namespace UcenikShuffle.Common
 			sum of (max amount of times a student sat with another student) - (min amount of times that same student student sat with another student) for all students.
 			Lower is better.
 
-			5th (least important) parameter is groupRepetitionCount:
+			5th parameter is minAndMaxSittingCountCount:
+			count of student sitting count values (student sitting count values - amount of times students sat with each other) where student sitting count is min or max.
+			Lower is better since it means that the deviation from average student sitting count is lower.
+
+			6th (least important) parameter is groupRepetitionCount:
 			Sum of amount of times each group in the combination was used in previous combinations
 
 			Algorithm is pretty much doing 
@@ -202,6 +206,12 @@ namespace UcenikShuffle.Common
 				}
 			}
 		}
+		private int GetMinAndMaxSittingCountCount(IReadOnlyList<int> studentSittingHistoryValues) 
+		{
+			int minSittingCount = studentSittingHistoryValues.Min();
+			int maxSittingCount = studentSittingHistoryValues.Max();
+			return studentSittingHistoryValues.Where(v => v == minSittingCount || v == maxSittingCount).Count();
+		}
 		private int GetGroupRepetitionCount(LvCombination combination)
 		{
 			int count = 0;
@@ -274,6 +284,7 @@ namespace UcenikShuffle.Common
 			int minStudentSittingDiff = 0;
 			int minMinMaxSum = 0;
 			int maxMinSittingCount = 0;
+			int minMinAndMaxSittingCountCount = 0;
 			int minGroupRepetitionCount = 0;
 			int loopCount = 0;
 			var timeEstimator = new TimeLeftEstimator();
@@ -285,7 +296,7 @@ namespace UcenikShuffle.Common
 
 				UpdateStudentHistory(combination, true);
 				var studentSittingHistoryValues = GetStudentSittingHistoryValues().ToList();
-				bool isBestCombination = firstCombination || IsBestCombination(combination, studentSittingHistoryValues, minMaxSittingCount, maxMinSittingCount, minStudentSittingDiff, minMinMaxSum, minGroupRepetitionCount);
+				bool isBestCombination = firstCombination || IsBestCombination(combination, studentSittingHistoryValues, minMaxSittingCount, maxMinSittingCount, minStudentSittingDiff, minMinMaxSum, minMinAndMaxSittingCountCount, minGroupRepetitionCount);
 
 				//Updating variables if this is the best combination so far
 				if (isBestCombination)
@@ -300,6 +311,7 @@ namespace UcenikShuffle.Common
 						minStudentSittingDiff = GetStudentSittingDiff(combination);
 						minMinMaxSum = GetMinMaxValues(combination).Sum();
 						minGroupRepetitionCount = GetGroupRepetitionCount(combination);
+						minMinAndMaxSittingCountCount = GetMinAndMaxSittingCountCount(studentSittingHistoryValues);
 						firstCombination = false;
 					}
 				}
@@ -319,7 +331,7 @@ namespace UcenikShuffle.Common
 			}
 			return bestCombination;
 		}
-		private bool IsBestCombination(LvCombination combination, List<int> studentSittingHistoryValues, int minMaxSittingCount, int maxMinSittingCount, int minStudentSittingDiff, int minMinMaxSum, int minGroupRepetitionCount)
+		private bool IsBestCombination(LvCombination combination, List<int> studentSittingHistoryValues, int minMaxSittingCount, int maxMinSittingCount, int minStudentSittingDiff, int minMinMaxSum, int minMinAndMaxSittingCountCount, int minGroupRepetitionCount)
 		{
 			//Checking if max sitting count is better
 			int maxSittingCount = studentSittingHistoryValues.Max();
@@ -340,6 +352,11 @@ namespace UcenikShuffle.Common
 			int minMaxSum = GetMinMaxValues(combination).Sum();
 			if (minMaxSum < minMinMaxSum) return true;
 			else if(minMaxSum > minMinMaxSum) return false;
+
+			//Checking if minMinAndMax sitting count is better or if min sitting count is higher or if max sitting count is lower
+			int minAndMaxSittingCountCount = GetMinAndMaxSittingCountCount(studentSittingHistoryValues);
+			if (minMinAndMaxSittingCountCount < minAndMaxSittingCountCount) return true;
+			else if (minMinAndMaxSittingCountCount > minAndMaxSittingCountCount) return false;
 
 			//Checking is group repetition count is better
 			int groupRepetitionCount = GetGroupRepetitionCount(combination);

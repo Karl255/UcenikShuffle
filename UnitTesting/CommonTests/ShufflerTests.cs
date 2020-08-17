@@ -76,6 +76,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 
 		public static IEnumerable<object[]> ShuffleShouldWorkData = new List<object[]>()
 		{
+			////MORE LV'S THAN COMBINATION CASES
 			//1 group of size 1
 			new object[]
 			{
@@ -164,6 +165,121 @@ namespace UcenikShuffle.UnitTests.CommonTests
 						new List<int>(){3,4},
 					}
 				}
+			},
+			////LESS LV'S THAN COMBINATIONS CASES
+			new object[]
+			{
+				2,
+				new List<int>{ 1,2 },
+				new List<List<List<int>>>()
+				{
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){2,3}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){2},
+						new List<int>(){1,3}
+					}
+				}
+			},
+			new object[]
+			{
+				8,
+				new List<int>(){1,2,3},
+				new List<List<List<int>>>()
+				{
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){2,3},
+						new List<int>(){4,5,6}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){4},
+						new List<int>(){2,5},
+						new List<int>(){1,3,6}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){6},
+						new List<int>(){3,5},
+						new List<int>(){1,2,4}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){2},
+						new List<int>(){1,5},
+						new List<int>(){3,4,6}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){3},
+						new List<int>(){1,4},
+						new List<int>(){2,5,6}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){6},
+						new List<int>(){4,5},
+						new List<int>(){1,2,3}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){5},
+						new List<int>(){1,6},
+						new List<int>(){2,3,4}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){4},
+						new List<int>(){2,6},
+						new List<int>(){1,3,5}
+					}
+				}
+			},
+			new object[]
+			{
+				4,
+				new List<int>(){1,3,3,3,3},
+				new List<List<List<int>>>()
+				{
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){2,3,4},
+						new List<int>(){5,6,7},
+						new List<int>(){8,9,10},
+						new List<int>(){11,12,13}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){2},
+						new List<int>(){1,3,5},
+						new List<int>(){4,8,11},
+						new List<int>(){6,9,13},
+						new List<int>(){7,10,12}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){3},
+						new List<int>(){1,2,6},
+						new List<int>(){4,10,13},
+						new List<int>(){5,8,12},
+						new List<int>(){7,9,11}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){4},
+						new List<int>(){1,7,8},
+						new List<int>(){2,5,13},
+						new List<int>(){3,9,12},
+						new List<int>(){6,10,11}
+					}
+				}
 			}
 		};
 		[Theory]
@@ -200,7 +316,7 @@ namespace UcenikShuffle.UnitTests.CommonTests
 			{
 				if (new LvCombination(expected[i]).CompareTo(actual[i]) == false)
 				{
-					throw new Exception($"Expected and actual lv combinations for lv {i + 1} aren't the same!");
+					throw new Exception($"Expected and actual student sitting combinations combinations for lv {i + 1} aren't the same!");
 				}
 			}
 		}
