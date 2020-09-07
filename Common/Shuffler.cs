@@ -342,7 +342,7 @@ namespace UcenikShuffle.Common
 			if (minSittingCount > bestCombinationMinSittingCount) return true;
 			else if (minSittingCount < bestCombinationMinSittingCount) return false;
 
-			//Checking if min sitting student sitting diff is better
+			//Checking if min student sitting diff is better
 			int studentSittingDiff = GetStudentSittingDiff(combination);
 			if (studentSittingDiff < bestCombinationStudentSittingDiff) return true;
 			else if (studentSittingDiff > bestCombinationStudentSittingDiff) return false;
