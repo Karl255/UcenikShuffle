@@ -34,7 +34,7 @@ namespace UcenikShuffle.Common
 		/// <summary>
 		/// Result of the shuffle operation
 		/// </summary>
-		public IReadOnlyList<LvCombination> ShuffleResult => _shuffleResult;
+		public IReadOnlyList<LvCombination> ShuffleResult => GetShuffleResult().ToList();
 
 		public Shuffler(int lvCount, IReadOnlyList<int> groupSizes, CancellationTokenSource cancellationSource)
 		{
@@ -372,6 +372,17 @@ namespace UcenikShuffle.Common
 					Debug.WriteLine($"{h.Key.Id}: {h.Value}");
 				}
 				Debug.WriteLine("");
+			}
+		}
+		private IEnumerable<LvCombination> GetShuffleResult()
+		{
+			if(_shuffleResult.Count == 0)
+			{
+				yield break;
+			}
+			for (int i = 0; i < _lvCount; i++)
+			{
+				yield return _shuffleResult[i % _shuffleResult.Count];
 			}
 		}
 	}
