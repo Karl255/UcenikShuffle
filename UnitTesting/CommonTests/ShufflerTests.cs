@@ -90,20 +90,26 @@ namespace UcenikShuffle.UnitTests.CommonTests
 					}
 				}
 			},
-			//Only 1 lv should be returned since other lv's are just repeating
+			//Same lv should be repeating since there is only 1 combination
 			new object[]
 			{
 				2,
-				new List<int>(){1},
+				new List<int>(){1,1},
 				new List<List<List<int>>>()
 				{
 					new List<List<int>>()
 					{
-						new List<int>(){1}
+						new List<int>(){1},
+						new List<int>(){2}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){2}
 					}
 				}
 			},
-			//Only 3 lv's should be returned since other lv's are repeating
+			//3 unique combinations, and other 2 are repeats of 1st and 2nd combination
 			new object[]
 			{
 				5,
@@ -124,13 +130,23 @@ namespace UcenikShuffle.UnitTests.CommonTests
 					{
 						new List<int>(){3},
 						new List<int>(){1,2}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){2,3}
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){2},
+						new List<int>(){1,3}
 					}
 				}
 			},
-			//Only 5 lv's should be returned since others are just repeating 
+			//First 5 lv's are unique, next 5 are repeating
 			new object[]
 			{
-				20,
+				10,
 				new List<int>(){2,2,1},
 				new List<List<List<int>>>()
 				{
@@ -163,8 +179,38 @@ namespace UcenikShuffle.UnitTests.CommonTests
 						new List<int>(){5},
 						new List<int>(){1,2},
 						new List<int>(){3,4},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){1},
+						new List<int>(){2,3},
+						new List<int>(){4,5},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){2},
+						new List<int>(){1,4},
+						new List<int>(){3,5},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){3},
+						new List<int>(){1,5},
+						new List<int>(){2,4},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){4},
+						new List<int>(){1,3},
+						new List<int>(){2,5},
+					},
+					new List<List<int>>()
+					{
+						new List<int>(){5},
+						new List<int>(){1,2},
+						new List<int>(){3,4},
 					}
-				}
+				},
 			},
 			////LESS LV'S THAN COMBINATIONS CASES
 			new object[]
